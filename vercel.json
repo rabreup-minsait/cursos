@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/Chatbot/AulaChatbot.html"
+      "destination": "Chatbot/AulaChatbot.html"
     }
   ]
 }
