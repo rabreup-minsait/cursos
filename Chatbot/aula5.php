@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 5 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f8f7f5;
+  --surface:   #ffffff;
+  --border:    #e2ddd8;
+  --text:      #1e1916;
+  --text2:     #3d3630;
+  --text3:     #7a726a;
+  --accent:    #1f5fa6;
+  --accent-lt: #e8f0fb;
+  --green:     #0d6e50;
+  --green-lt:  #e4f3ed;
+  --gold:      #a06820;
+  --gold-lt:   #fdf2e0;
+  --red:       #a83030;
+  --red-lt:    #fceeed;
+  --board:     #182e1e;
+  --shadow-sm: 0 1px 4px rgba(30,25,22,.09);
+  --shadow:    0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text2); font-family:'Nunito',system-ui,sans-serif; line-height:1.85; }
+
+/* ── SCREENSHOT DE INSTALAÇÃO ── */
+.install-step {
+  margin: 24px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.install-step-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: .82rem; font-weight: 800; color: var(--text2);
+}
+.install-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fira Code', monospace; font-size: 11px;
+  flex-shrink: 0;
+}
+.install-step img { width: 100%; display: block; }
+.install-step-desc {
+  padding: 10px 16px;
+  font-size: .85rem; color: var(--text2); line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+/* ── LOUSA - compacta, como uma anotação no quadro ── */
+.lousa {
+  background: var(--board);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 22px auto;
+  max-width: 480px;
+  box-shadow: var(--shadow-sm);
+}
+.lousa-title {
+  font-family: 'Nunito', sans-serif; font-weight: 800;
+  font-size: .7rem; text-transform: uppercase; letter-spacing: .1em;
+  color: #6aaa78; margin-bottom: 10px;
+}
+.lousa-row {
+  display: flex; gap: 9px; align-items: flex-start;
+  margin-bottom: 7px; font-size: .86rem;
+  color: #c8e4cc; line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+}
+.lousa-row:last-child { margin-bottom: 0; }
+.lousa-row .bul { color: #5ad68a; flex-shrink: 0; margin-top: 2px; }
+.lousa strong { color: #e8f5e8; font-weight: 700; }
+.lousa code { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.18); color: #a8e8c0; font-size: .8em; }
+
+.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:48px; position:sticky; top:0; z-index:50; }
+.tb-logo { display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.85rem; color:var(--text); }
+.tb-logo-icon { width:24px; height:24px; background:var(--accent); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+.tb-nav { display:flex; align-items:center; gap:4px; }
+.tb-btn { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:var(--text3); text-decoration:none; padding:5px 10px; border:1px solid var(--border); border-radius:5px; background:var(--bg); transition:all .15s; }
+.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tb-btn.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tb-btn.next:hover { background:#1a4f8a; }
+.tb-lesson { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); letter-spacing:.06em; padding:0 12px; }
+
+.prog { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:100; width:0; transition:width .1s; }
+.wrap { max-width:680px; margin:0 auto; padding:44px 28px 90px; }
+
+.cover { margin-bottom:52px; }
+.cover-tag { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.cover h1 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.5vw,2.3rem); font-weight:700; line-height:1.2; color:var(--text); margin-bottom:16px; }
+.cover h1 em { color:var(--accent); font-style:italic; }
+.cover p { font-size:1rem; color:var(--text2); line-height:1.85; }
+
+p { font-size:.97rem; color:var(--text2); margin-bottom:20px; line-height:1.85; }
+p:last-child { margin-bottom:0; }
+strong { color:var(--text); font-weight:700; }
+code { font-family:'Fira Code',monospace; font-size:.82em; background:var(--accent-lt); border:1px solid rgba(31,95,166,.16); border-radius:4px; padding:1px 6px; color:var(--accent); }
+
+.bubble { display:flex; gap:10px; align-items:flex-start; margin:28px 0 8px; }
+.bubble-avatar { flex-shrink:0; width:32px; height:32px; background:#f0a500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:2px; box-shadow:0 2px 6px rgba(240,165,0,.3); }
+.bubble-body { background:#fffbf0; border:1.5px solid #f0c040; border-radius:4px 14px 14px 14px; padding:11px 15px; font-size:.9rem; color:#4a3800; font-weight:600; box-shadow:0 2px 8px rgba(240,165,0,.15); line-height:1.65; max-width:500px; }
+
+.dica { border-left:3px solid var(--accent); background:var(--accent-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#1a3a6a; line-height:1.75; }
+.dica strong { color:#1a3a6a; font-weight:800; }
+.atencao { border-left:3px solid var(--gold); background:var(--gold-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#5a3808; line-height:1.75; }
+.atencao strong { color:#5a3808; font-weight:800; }
+.aviso { border-left:3px solid var(--red); background:var(--red-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#6a1515; line-height:1.75; }
+.aviso strong { color:#6a1515; font-weight:800; }
+
+.cblock { background:#f5f3f0; border:1px solid #ddd8d0; border-radius:8px; margin:20px 0; overflow:hidden; box-shadow:var(--shadow-sm); }
+.cblock-head { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface); border-bottom:1px solid #ddd8d0; }
+.cdots { display:flex; gap:5px; }
+.cdots span { width:9px; height:9px; border-radius:50%; }
+.c1{background:#ff6058;} .c2{background:#ffbd2e;} .c3{background:#28ca42;}
+.cfname { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); }
+.cblock pre { padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px; line-height:1.8; overflow-x:auto; color:#2a2420; white-space:pre; }
+.kw{color:#6d28d9;} .fn{color:#1d4ed8;} .st{color:#166534;}
+.nm{color:#b45309;} .cm{color:#888078;font-style:italic;}
+.vr{color:#b91c1c;} .op{color:#0d6e50;} .bi{color:#a06820;}
+
+.code-ann { margin:16px 0 24px; border-collapse:collapse; width:100%; }
+.code-ann tr { border-bottom:1px solid var(--border); }
+.code-ann tr:last-child { border-bottom:none; }
+.code-ann td { padding:8px 10px; font-size:.85rem; vertical-align:top; line-height:1.65; }
+.code-ann td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; white-space:nowrap; color:var(--accent); background:var(--accent-lt); border-radius:4px; width:1%; padding:8px 12px; }
+.code-ann td:last-child { color:var(--text2); }
+.code-ann td strong { color:var(--text); }
+
+.break { background:var(--gold-lt); border:1px solid rgba(160,104,32,.2); border-radius:8px; padding:18px 22px; text-align:center; margin:44px 0; }
+.break .be { font-size:1.8rem; display:block; margin-bottom:6px; }
+.break h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1rem; font-style:normal; margin-bottom:4px; }
+.break p { font-size:.83rem; color:#7a5010; margin:0; }
+
+.exercise { background:var(--surface); border:1.5px solid var(--accent); border-radius:8px; padding:20px 22px; margin:32px 0; box-shadow:var(--shadow-sm); }
+.ex-tag { font-family:'Fira Code',monospace; font-size:9.5px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:block; }
+.exercise h3 { font-family:'Playfair Display',serif; color:var(--text); font-size:1.05rem; margin-bottom:12px; }
+.exercise ol { padding-left:18px; font-size:.88rem; line-height:2.1; color:var(--text2); }
+.ex-diff { font-family:'Fira Code',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
+.diff-1 { background:var(--green-lt); color:var(--green); }
+.diff-2 { background:var(--gold-lt);  color:var(--gold); }
+.diff-3 { background:var(--red-lt);   color:var(--red); }
+.ex-ans { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.ex-ans-body { display:none; }
+.ex-ans-body.visible { display:block; }
+.btn-ans { display:inline-flex; align-items:center; gap:6px; font-family:'Fira Code',monospace; font-size:.75rem; font-weight:600; color:var(--green); background:var(--green-lt); border:1.5px solid rgba(13,110,80,.25); border-radius:5px; padding:6px 14px; cursor:pointer; transition:all .15s; margin-top:4px; letter-spacing:.03em; }
+.btn-ans:hover { background:#d0ece3; border-color:rgba(13,110,80,.5); }
+
+.downloads { margin:48px 0 32px; }
+.downloads-title { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.dl-grid { display:flex; flex-direction:column; gap:7px; }
+.dl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px 14px; text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:border-color .15s,box-shadow .15s; }
+.dl-item:hover { border-color:var(--accent); box-shadow:var(--shadow); }
+.dl-icon { font-size:1.1rem; flex-shrink:0; }
+.dl-info { flex:1; }
+.dl-name { font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); font-weight:500; }
+.dl-desc { font-size:.75rem; color:var(--text3); margin-top:1px; }
+.dl-badge { font-family:'Fira Code',monospace; font-size:9px; background:var(--accent-lt); color:var(--accent); border-radius:4px; padding:2px 8px; flex-shrink:0; }
+
+.ready { background:var(--green-lt); border:1.5px solid rgba(13,110,80,.3); border-radius:8px; padding:26px; text-align:center; margin:48px 0; }
+.ready .re { font-size:2rem; display:block; margin-bottom:10px; }
+.ready h2 { font-family:'Playfair Display',serif; color:var(--green); font-size:1.25rem; margin:0 0 8px; }
+.ready p { font-size:.88rem; color:#0a4535; margin:0; }
+
+.nav-bottom { display:flex; justify-content:space-between; margin-top:52px; padding-top:20px; border-top:1px solid var(--border); }
+.nav-link { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--text3); text-decoration:none; padding:7px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); transition:all .15s; }
+.nav-link:hover { border-color:var(--accent); color:var(--accent); }
+.nav-link.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.nav-link.next:hover { background:#1a4f8a; }
+
+footer { border-top:1px solid var(--border); padding:14px 28px; display:flex; justify-content:space-between; font-family:'Fira Code',monospace; font-size:10px; color:var(--text3); background:var(--surface); }
+footer a { color:inherit; text-decoration:none; }
+
+@media (max-width:600px) {
+  .param-table tbody td:nth-child(2) { white-space:normal; }
+}
+</style>
+</head>
+<body>
+
+<div id="prog" class="prog"></div>
+
+<header class="topbar">
+  <a class="tb-logo" href="AulaChatbot.html">
+    <div class="tb-logo-icon">🐍</div>
+    Chatbots com Python
+  </a>
+  <div class="tb-nav">
+    <a class="tb-btn" href="AulaChatbot.html">⊞ índice</a>
+    <span class="tb-lesson">aula 05 - JSON e memória</span>
+    <a class="tb-btn" href="revisao.php">←</a>
+    <a class="tb-btn next" href="aula6.php">→</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="cover">
+    <span class="cover-tag">aula 05</span>
+    <h1>Respostas que o código <em>consegue ler</em></h1>
+    <p>Até agora, o GPT sempre respondeu em texto corrido, como se estivesse escrevendo uma mensagem. Isso funciona bem para conversa. Mas pensa no seguinte: e se nós quisermos usar a resposta em alguma outra parte do sistema? Exibir numa tabela, salvar num banco de dados, processar automaticamente? Texto livre não serve para isso.</p>
+    <p>É aí que entra o <strong>JSON</strong>. Em vez de pedir ao GPT que escreva uma resposta, nós pedimos que ele organize as informações num formato estruturado que o Python consegue ler e manipular diretamente. Nesta aula nós também vamos atacar um problema que surgiu na aula passada: o histórico que cresce sem parar. Em vez de simplesmente cortá-lo, nós vamos fazer algo mais inteligente, resumir o que já foi dito antes de descartar.</p>
+  </div>
+
+  <p>Antes de ver o código, precisamos entender o que é JSON. A sigla vem do inglês <em>JavaScript Object Notation</em>, mas não deixe isso te assustar: JSON é só uma forma de organizar informações usando chave e valor, como uma ficha bem estruturada. Você já viu algo parecido no Python quando usamos dicionários.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">JSON na prática</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>chave:</strong> o nome do campo, sempre entre aspas duplas</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>valor:</strong> o conteúdo do campo, pode ser texto, número, lista ou null</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>null:</strong> indica que o campo existe, mas não tem valor naquele caso</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>listas:</strong> usam colchetes [ ] e podem conter vários itens</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>Python lê JSON com a biblioteca <code>json</code>, já inclusa na linguagem</span></div>
+  </div>
+
+  <p>Um exemplo simples: imagine que pedimos ao GPT informações sobre um filme. Em vez de uma resposta em parágrafo, nós pedimos que ele responda assim:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">exemplo de resposta em JSON</div>
+    </div>
+    <pre>{
+  <span class="st">"titulo"</span>: <span class="st">"Estômago"</span>,
+  <span class="st">"diretor"</span>: <span class="st">"Marcos Jorge"</span>,
+  <span class="st">"ano"</span>: <span class="nm">2007</span>,
+  <span class="st">"genero"</span>: <span class="st">"Drama/Comédia"</span>,
+  <span class="st">"sinopse"</span>: <span class="st">"Raimundo Nonato descobre o poder da culinária ao chegar em São Paulo."</span>,
+  <span class="st">"avaliacao"</span>: <span class="kw">null</span>
+}</pre>
+  </div>
+
+  <p>Perceba o campo <code>"avaliacao": null</code>. Quando um campo não tem um valor confiável, nós instruímos o GPT a retornar <code>null</code> em vez de inventar um número. Isso é fundamental: a IA pode alucinar dados, e campos com valores fictícios causam problemas sérios num sistema real. O <code>null</code> diz claramente "esse campo existe, mas não tenho informação confiável aqui".</p>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Mas como eu faço o GPT responder em JSON? Ele não vai só escrever texto normal?</div>
+  </div>
+
+  <p>Por padrão, sim. É por isso que o <strong>prompt</strong> precisa ser muito específico. Nós instruímos o GPT no system prompt a retornar apenas JSON válido, sem nenhum texto fora do formato, sem explicações, sem introdução. E além disso, nós descrevemos exatamente a estrutura que queremos, campo por campo, indicando quais são obrigatórios e quais podem ser <code>null</code>.</p>
+
+  <p>Vamos ver como isso funciona na prática. O código abaixo pede ao GPT que responda sobre filmes de comédia brasileiros premiados, sempre em JSON estruturado:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">036_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> json
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 filmes de comédia brasileiros premiados.
+Responda APENAS em JSON válido, sem nenhum texto fora do JSON.
+Use exatamente esta estrutura para cada filme:
+{
+  "filmes": [
+    {
+      "titulo": "string",
+      "diretor": "string",
+      "ano": número,
+      "sinopse": "string com 1 frase",
+      "premio": "string descrevendo o prêmio principal",
+      "plataforma": "string ou null se não souber"
+    }
+  ]
+}
+Regras: retorne apenas JSON válido. Se não tiver certeza de algum campo, use null."""</span>
+
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+)
+
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
+
+<span class="fn">print</span>(<span class="st">"Resposta da IA:"</span>)
+<span class="fn">print</span>(<span class="vr">texto</span>)
+<span class="fn">print</span>(<span class="st">"---"</span>)
+
+<span class="kw">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
+    <span class="fn">print</span>(<span class="st">"\nPrimeiro filme:"</span>, <span class="vr">dados</span>[<span class="st">"filmes"</span>][<span class="nm">0</span>][<span class="st">"titulo"</span>])
+<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+    <span class="fn">print</span>(<span class="st">"A IA não retornou JSON válido."</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>import json</td>
+      <td><strong>Importa a biblioteca de JSON do Python.</strong> Ela já vem instalada com o Python, não precisa de pip. Nós a usamos para converter a string de texto que o GPT retornou num dicionário Python que o código consegue acessar.</td>
+    </tr>
+    <tr>
+      <td>o prompt com estrutura</td>
+      <td><strong>O coração desse código.</strong> Em vez de fazer uma pergunta aberta, nós descrevemos exatamente o JSON que queremos: os campos, os tipos de dado de cada um e a regra de usar null quando necessário. Quanto mais precisa a estrutura no prompt, mais confiável a resposta.</td>
+    </tr>
+    <tr>
+      <td>temperature=0.2</td>
+      <td><strong>Temperature baixa para dados estruturados.</strong> Nós não queremos criatividade aqui, queremos precisão. Com 0.2 o GPT tende a ser mais consistente no formato, reduzindo a chance de ele sair do JSON.</td>
+    </tr>
+    <tr>
+      <td>texto = texto.strip()...</td>
+      <td><strong>Remove marcações de markdown que o GPT às vezes insere.</strong> Mesmo pedindo apenas JSON, o modelo pode embrulhar a resposta com <code>```json</code> e <code>```</code>. O <code>removeprefix()</code> remove o início se ele existir, e o <code>removesuffix()</code> remove o fechamento. Com isso, o <code>json.loads()</code> sempre recebe um texto limpo.</td>
+    </tr>
+    <tr>
+      <td>print(texto)</td>
+      <td><strong>Exibe o JSON bruto que a IA retornou.</strong> Esse é o resultado real da chamada: uma string com estrutura JSON. É importante ver isso para entender que a IA respondeu em formato estruturado, não em texto livre.</td>
+    </tr>
+    <tr>
+      <td>json.loads(texto)</td>
+      <td><strong>Converte a string JSON em dicionário Python.</strong> O GPT devolve tudo como texto. O <code>json.loads()</code> lê esse texto e transforma num dicionário real, com o qual nós podemos usar colchetes, loops e tudo mais.</td>
+    </tr>
+    <tr>
+      <td>dados["filmes"][0]["titulo"]</td>
+      <td><strong>Navega dentro do dicionário.</strong> Depois do <code>json.loads()</code>, <code>dados</code> é um dicionário Python normal. Nós acessamos a lista de filmes, pegamos o primeiro item com <code>[0]</code> e lemos o campo <code>"titulo"</code> diretamente.</td>
+    </tr>
+    <tr>
+      <td>except json.JSONDecodeError</td>
+      <td><strong>Trata o caso em que o JSON não é válido.</strong> Mesmo pedindo explicitamente, a IA às vezes comete algum erro de formatação. O <code>except</code> captura esse erro sem travar o programa.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Executando o 031 - JSON bruto retornado pela IA</div>
+    <img src="img/078.png" alt="JSON bruto retornado pela IA no terminal">
+  </div>
+
+  <p>Como falamos um pouco mais para cima, nem tudo o que o Chat retorna podemos confiar 100%, nesse exemplo, ele retornou premios que os filmes "Minha Mãe é uma Peça" e "Homem do Futuro" não receberam. kkk Por isso fique atento, sempre valide as informações.</p>
+
+  <p>Veja que o terminal mostra o JSON puro, exatamente como a IA retornou. Esse é o dado estruturado. A linha seguinte já mostra que o Python consegue navegar dentro dele com <code>dados["filmes"][0]["titulo"]</code>. Isso é o que faz a diferença quando nós precisamos usar a resposta da IA num sistema real: não texto livre, mas dados com estrutura definida, que o código consegue acessar campo por campo.</p>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">O que acontece se o GPT colocar um texto antes do JSON, tipo "Aqui estão os filmes:"?</div>
+  </div>
+
+  <p>O <code>json.loads()</code> vai falhar, e o <code>except</code> vai capturar o erro. Por isso o prompt precisa ser muito claro: "retorne APENAS JSON válido, sem nenhum texto fora do JSON". Na maioria das vezes o GPT obedece, mas nunca é 100% garantido. Uma estratégia adicional é procurar o primeiro <code>{</code> na resposta e extrair só a partir daí, descartando qualquer introdução que a IA tenha adicionado. Nós não precisamos fazer isso agora, mas é bom saber que existe.</p>
+
+  <p>Nós podemos usar esse mesmo padrão para qualquer tipo de dado estruturado. No exemplo abaixo, nós pedimos uma explicação das Leis de Newton, mas toda organizada em JSON com campos definidos:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">exemplo de prompt para dados educativos</div>
+    </div>
+    <pre><span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Explique a Primeira Lei de Newton.
+Responda APENAS em JSON válido com esta estrutura:
+{
+  "nome": "string",
+  "descricao_simples": "string",
+  "formula": "string ou null se não houver",
+  "exemplo_pratico": "string",
+  "explicacao_detalhada": "string"
+}
+Sem texto fora do JSON."""</span></pre>
+  </div>
+
+  <p>Antes de avançar, tem um ponto que faz muita diferença na hora de montar o prompt: nem todos os campos de um JSON precisam sempre ter valor. A distinção entre campos obrigatórios e campos opcionais precisa estar explícita no prompt, ou o GPT vai inventar valores onde não há nada a dizer.</p>
+
+  <p>O exemplo mais claro é uma receita. Pensa assim: toda receita tem um modo de preparo. Esse campo é obrigatório, sempre. Mas o campo <code>"recheio"</code> só faz sentido para certos tipos de prato. Um bolo recheado tem. Uma salada não tem. Se nós não dissermos isso no prompt, o GPT vai preencher <code>"recheio"</code> com algo inventado para a salada, só para não deixar o campo vazio. O mesmo vale para <code>"massa"</code>, que existe numa lasanha mas não num frango grelhado, e para <code>"molho"</code>, que existe numa macarronada mas não num brigadeiro.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">Campos obrigatórios vs opcionais</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>obrigatório:</strong> sempre presente, independente do tipo. Ex: <code>modo_preparo</code></span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>opcional:</strong> existe só em alguns casos. Retornar <code>null</code> quando não se aplica</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>diga no prompt: "se o campo não se aplicar a este item, retorne null"</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>nunca deixe o GPT decidir sozinho o que preencher ou não</span></div>
+  </div>
+
+  <p>No prompt, a instrução fica assim: <em>"campos como recheio, massa e molho devem ser retornados como null quando não se aplicarem ao tipo de receita"</em>. Dessa forma, o sistema que recebe o JSON sabe exatamente o que esperar: se o campo está null, é porque aquele prato simplesmente não tem aquele componente, não é porque a IA esqueceu.</p>
+
+  <div class="atencao">
+    <strong>Nunca confie cegamente nos dados que a IA retornou.</strong> O GPT pode inventar prêmios, datas, nomes e avaliações que parecem reais mas não são. Para campos como avaliação média de filmes ou ISBN de livros, sempre oriente o GPT a retornar <code>null</code> quando não tiver certeza. Um <code>null</code> honesto é infinitamente melhor do que um dado falso convincente.
+  </div>
+
+  <!-- COFFEE BREAK -->
+  <div class="break">
+    <span class="be">☕</span>
+    <h3>Pausa para o café!</h3>
+    <p>Nós acabamos de ensinar o GPT a falar em JSON. Descansa um pouco, e quando voltar a gente resolve o segundo problema: a memória que cresce sem parar.</p>
+  </div>
+
+  <p>Voltou? Ótimo. Vamos falar de memória. Na aula passada nós cortávamos o histórico quando ele ficava longo, mantendo só as últimas mensagens. O problema é que ao cortar, nós perdemos contexto. Se o usuário disse o nome dele na primeira mensagem e depois de 10 trocas o histórico foi cortado, o bot esquece o nome. Isso é ruim.</p>
+
+  <p>A solução é mais elegante: em vez de simplesmente descartar as mensagens antigas, nós pedimos ao próprio GPT que as <strong>resuma</strong> numa frase curta. Esse resumo ocupa muito menos espaço que as mensagens originais, mas preserva o essencial do que foi discutido. O histórico deixa de crescer infinitamente, mas o contexto não se perde.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">Como funciona a memória resumida</div>
+    <div class="lousa-row"><span class="bul">◆</span><span>nós definimos um <strong>limite</strong> de mensagens no histórico</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>quando o histórico passa do limite, nós pegamos as mensagens mais antigas</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>fazemos uma chamada separada ao GPT pedindo um <strong>resumo em 1 frase</strong></span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>substituímos as mensagens antigas pelo resumo</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>as mensagens recentes ficam intactas, o contexto geral é preservado</span></div>
+  </div>
+
+  <p>Veja como isso fica no código:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">037_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">10</span>
+<span class="vr">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">5</span>
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    }
+]
+
+<span class="kw">def</span> <span class="fn">resumir_conversa</span>(<span class="vr">mensagens_antigas</span>):
+    <span class="st">"""Gera um resumo das mensagens antigas usando o GPT"""</span>
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">mensagens_antigas</span>])
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span>[
+            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase curta."</span>},
+            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>}
+        ],
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">50</span>,
+        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+    )
+    <span class="kw">return</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="cm"># Se passou do limite, resumimos as mensagens mais antigas</span>
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="vr">LIMITE_MENSAGENS</span>:
+        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>]
+        <span class="kw">if</span> <span class="vr">antigas</span>:
+            <span class="vr">resumo</span> <span class="op">=</span> <span class="fn">resumir_conversa</span>(<span class="vr">antigas</span>)
+            <span class="vr">mensagens</span> <span class="op">=</span> [
+                <span class="vr">mensagens</span>[<span class="nm">0</span>],
+                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">f"Resumo da conversa anterior: {resumo}"</span>}
+            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>:]
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+            <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
+            <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="fn">print</span>(<span class="st">f"Erro na API: {e}"</span>)
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>LIMITE_MENSAGENS = 10</td>
+      <td><strong>Define quando o resumo é acionado.</strong> Quando o histórico ultrapassar 10 mensagens, o código vai separar as mais antigas e resumi-las. Esse valor pode ser ajustado conforme o custo que queremos controlar.</td>
+    </tr>
+    <tr>
+      <td>ULTIMAS_MENSAGENS = 5</td>
+      <td><strong>Quantas mensagens recentes preservar intactas.</strong> As últimas 5 mensagens ficam no histórico sem resumo, porque são o contexto mais imediato da conversa. Somente as anteriores a elas são comprimidas.</td>
+    </tr>
+    <tr>
+      <td>def resumir_conversa(mensagens_antigas)</td>
+      <td><strong>Uma função separada que faz uma chamada à API só para resumir.</strong> Nós passamos as mensagens antigas como texto, pedimos ao GPT um resumo em 1 frase curta, e retornamos esse resumo. É uma chamada pequena e barata, com max_tokens=50.</td>
+    </tr>
+    <tr>
+      <td>texto = "\n".join([...])</td>
+      <td><strong>Junta todas as mensagens antigas numa string só.</strong> O <code>join</code> concatena os itens da lista separando cada um por uma quebra de linha. Assim nós transformamos a lista de dicionários num texto que o GPT consegue ler para resumir.</td>
+    </tr>
+    <tr>
+      <td>mensagens[1:-ULTIMAS_MENSAGENS]</td>
+      <td><strong>Pega as mensagens do meio: nem o system prompt, nem as recentes.</strong> O <code>[1:]</code> pula o system prompt (posição 0). O <code>[:-5]</code> para antes das últimas 5. O resultado é exatamente o bloco "velho" que será resumido.</td>
+    </tr>
+    <tr>
+      <td>mensagens = [mensagens[0], resumo_msg] + mensagens[-5:]</td>
+      <td><strong>Reconstrói o histórico comprimido.</strong> Fica com: o system prompt original, uma nova mensagem de sistema com o resumo, e as últimas 5 mensagens reais. O histórico nunca cresce além disso.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Chatbot com memória resumida em execução</div>
+    <img src="img/079.png" alt="Chatbot com memória resumida funcionando">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Resumo sendo gerado quando o limite é atingido</div>
+    <img src="img/080.png" alt="Resumo automático do histórico sendo acionado">
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">O resumo vai sempre lembrar de tudo? E se o usuário tiver dito o nome dele lá atrás?</div>
+  </div>
+
+  <p>Depende do que o GPT considerou importante no resumo. Por padrão, um resumo de 1 frase prioriza o tema da conversa, não detalhes pessoais. É por isso que, em situações onde dados do usuário importam, a solução mais robusta é salvar essas informações em arquivo, em vez de depender que o resumo as preserve.</p>
+
+  <div class="dica">
+    <strong>Cuidado com o que você manda para a IA.</strong> Tudo que vai no histórico, vai para os servidores da OpenAI. Nunca envie CPF, senha, dados bancários ou qualquer informação sensível do usuário numa conversa com o GPT. Além de ser uma boa prática de privacidade, pode ter implicações legais sérias dependendo do contexto da aplicação.
+  </div>
+
+  <p>Tem uma situação comum em projetos reais: o chatbot termina a sessão e na próxima vez que o usuário abre, tudo foi perdido. Para resolver isso, nós podemos salvar a lista de <code>mensagens</code> inteira num arquivo JSON no disco. Na próxima sessão, nós carregamos esse arquivo e o chatbot continua de onde parou.</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">038_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> json
+<span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
+
+<span class="kw">def</span> <span class="fn">carregar_memoria</span>():
+    <span class="kw">if</span> os.path.<span class="fn">exists</span>(<span class="vr">ARQUIVO_MEMORIA</span>):
+        <span class="kw">try</span>:
+            <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
+                <span class="kw">return</span> json.<span class="fn">load</span>(<span class="vr">f</span>)
+        <span class="kw">except</span> (json.<span class="fn">JSONDecodeError</span>, <span class="fn">ValueError</span>):
+            <span class="kw">pass</span>
+    <span class="kw">return</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
+
+<span class="kw">def</span> <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>):
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
+        json.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="kw">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
+
+<span class="vr">mensagens</span> <span class="op">=</span> <span class="fn">carregar_memoria</span>()
+
+<span class="fn">print</span>(<span class="st">"Chatbot com memória iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+        <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
+        <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
+    )
+
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)
+
+    <span class="cm"># Salva o histórico completo após cada resposta</span>
+    <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>ARQUIVO_MEMORIA = "memoria.json"</td>
+      <td><strong>Define o nome do arquivo onde o histórico será salvo.</strong> Esse arquivo fica na mesma pasta do script. Se você abrir num editor depois de conversar, vai ver todas as mensagens em formato JSON.</td>
+    </tr>
+    <tr>
+      <td>def carregar_memoria()</td>
+      <td><strong>Lê o arquivo e retorna as mensagens salvas.</strong> Se o arquivo não existir ainda, primeira execução, retorna uma lista com apenas o system prompt padrão. Nas execuções seguintes, o chatbot começa exatamente de onde parou.</td>
+    </tr>
+    <tr>
+      <td>def salvar_memoria(mensagens)</td>
+      <td><strong>Grava a lista inteira de mensagens no arquivo JSON.</strong> O <code>ensure_ascii=False</code> garante que acentos sejam salvos corretamente. O <code>indent=2</code> formata o arquivo de forma legível.</td>
+    </tr>
+    <tr>
+      <td>salvar_memoria(mensagens)</td>
+      <td><strong>Salva após cada resposta.</strong> Isso garante que, mesmo que o programa feche de forma inesperada, nada seja perdido. O arquivo sempre está atualizado com a conversa mais recente.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Chatbot com memória persistente em arquivo</div>
+    <img src="img/081.png" alt="Chatbot com memória persistente funcionando">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Arquivo memoria.json gerado após a conversa</div>
+    <img src="img/082.png" alt="Arquivo JSON com histórico salvo em disco">
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Esse arquivo vai crescer para sempre? A cada conversa fica maior?</div>
+  </div>
+
+  <p>Exatamente, esse é o ponto. A memória persistente em arquivo guarda tudo, o que é ótimo para contexto, mas pode ficar pesado. Por isso os dois mecanismos se complementam: a memória resumida controla o tamanho em memória, e o arquivo persiste entre sessões. Você pode combinar os dois conforme a necessidade do projeto.</p>
+
+
+  <p>Agora é a sua vez.</p>
+
+  <!-- EXERCÍCIO 034 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 039 - resposta em JSON</span>
+    <h3>Peça ao GPT informações estruturadas em JSON <span class="ex-diff diff-1">iniciante</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>039_Exercicio.py</code> com o código visto na aula</li>
+      <li>Execute e observe a saída no terminal</li>
+      <li>Troque o tema do prompt: em vez de filmes, peça ao GPT 3 livros de literatura brasileira com os campos título, autor, ano, sinopse e disponível_digitalmente (true, false ou null)</li>
+      <li>Adicione um campo de validação: antes de imprimir, verifique se <code>"livros"</code> existe no dicionário retornado</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 036_Exercicio.py da aula com o tema trocado</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">039_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> json
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 livros clássicos da literatura brasileira.
+Responda APENAS em JSON válido, sem nenhum texto fora do JSON.
+Use exatamente esta estrutura:
+{
+  "livros": [
+    {
+      "titulo": "string",
+      "autor": "string",
+      "ano": número,
+      "sinopse": "string com 1 frase",
+      "disponivel_digitalmente": true ou false ou null
+    }
+  ]
+}
+Sem texto fora do JSON."""</span>
+
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+)
+
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
+
+<span class="kw">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
+    <span class="kw">if</span> <span class="st">"livros"</span> <span class="kw">not in</span> <span class="vr">dados</span>:
+        <span class="fn">print</span>(<span class="st">"Campo 'livros' não encontrado no JSON."</span>)
+    <span class="kw">else</span>:
+        <span class="kw">for</span> <span class="vr">livro</span> <span class="kw">in</span> <span class="vr">dados</span>[<span class="st">"livros"</span>]:
+            <span class="fn">print</span>(<span class="st">f"Título: {livro['titulo']} ({livro['ano']})"</span>)
+            <span class="fn">print</span>(<span class="st">f"Autor: {livro['autor']}"</span>)
+            <span class="fn">print</span>(<span class="st">f"Sinopse: {livro['sinopse']}"</span>)
+            <span class="fn">print</span>(<span class="st">f"Digital: {livro['disponivel_digitalmente']}"</span>)
+            <span class="fn">print</span>(<span class="st">"---"</span>)
+<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+    <span class="fn">print</span>(<span class="st">"JSON inválido. Resposta bruta:"</span>)
+    <span class="fn">print</span>(<span class="vr">texto</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 035 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 040 - memória persistente</span>
+    <h3>Chatbot que lembra a conversa entre sessões <span class="ex-diff diff-1">iniciante</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>040_Exercicio.py</code> com o código de memória persistente visto na aula</li>
+      <li>Execute, faça algumas perguntas e encerre digitando "sair"</li>
+      <li>Abra o arquivo <code>memoria.json</code> gerado e observe como o histórico foi salvo</li>
+      <li>Execute novamente e veja que o chatbot retoma a conversa exatamente de onde parou</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 040_Exercicio.py da aula</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+          </div>
+<div class="cblock" style="margin:0">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">040_Exercicio.py</div>
+  </div>
+  <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> json
+<span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
+
+<span class="kw">def</span> <span class="fn">carregar_memoria</span>():
+    <span class="kw">if</span> os.path.<span class="fn">exists</span>(<span class="vr">ARQUIVO_MEMORIA</span>):
+        <span class="kw">try</span>:
+            <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
+                <span class="kw">return</span> json.<span class="fn">load</span>(<span class="vr">f</span>)
+        <span class="kw">except</span> (json.<span class="fn">JSONDecodeError</span>, <span class="fn">ValueError</span>):
+            <span class="kw">pass</span>
+    <span class="kw">return</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
+
+<span class="kw">def</span> <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>):
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
+        json.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="kw">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
+
+<span class="vr">mensagens</span> <span class="op">=</span> <span class="fn">carregar_memoria</span>()
+
+<span class="fn">print</span>(<span class="st">"Chatbot com memória iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+        <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
+        <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
+    )
+
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)
+    <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>)</pre>
+</div>        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 036 - aluno faz sozinho -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 041 - JSON com tema livre</span>
+    <h3>Estruture dados de um tema que você escolher <span class="ex-diff diff-2">intermediário</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>041_Exercicio.py</code> com um tema completamente à sua escolha: séries, jogos, receitas, músicas, qualquer coisa</li>
+      <li>Defina uma estrutura JSON com pelo menos 5 campos por item e pelo menos 1 campo que pode ser <code>null</code></li>
+      <li>Escreva o prompt com a estrutura exata, deixando claro que o GPT deve retornar apenas JSON válido e usar <code>null</code> quando não tiver certeza</li>
+      <li>Use <code>json.loads()</code> para ler o resultado e exiba os dados de forma organizada no terminal</li>
+      <li>Trate o <code>JSONDecodeError</code> mostrando a resposta bruta se o JSON não for válido</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// exemplo com séries brasileiras</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">041_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> json
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 séries brasileiras populares.
+Responda APENAS em JSON válido, sem nenhum texto fora do JSON.
+Use exatamente esta estrutura:
+{
+  "series": [
+    {
+      "titulo": "string",
+      "genero": "string",
+      "ano_estreia": número,
+      "plataforma": "string",
+      "sinopse": "string com 1 frase",
+      "avaliacao_imdb": número ou null
+    }
+  ]
+}
+Use null quando não tiver certeza do valor. Sem texto fora do JSON."""</span>
+
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+)
+
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
+
+<span class="kw">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
+    <span class="kw">for</span> <span class="vr">serie</span> <span class="kw">in</span> <span class="vr">dados</span>[<span class="st">"series"</span>]:
+        <span class="fn">print</span>(<span class="st">f"Série: {serie['titulo']} ({serie['ano_estreia']})"</span>)
+        <span class="fn">print</span>(<span class="st">f"Gênero: {serie['genero']} | Plataforma: {serie['plataforma']}"</span>)
+        <span class="fn">print</span>(<span class="st">f"Sinopse: {serie['sinopse']}"</span>)
+        <span class="fn">print</span>(<span class="st">f"IMDB: {serie['avaliacao_imdb'] or 'sem avaliação'}"</span>)
+        <span class="fn">print</span>(<span class="st">"---"</span>)
+<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+    <span class="fn">print</span>(<span class="st">"JSON inválido. Resposta bruta:"</span>)
+    <span class="fn">print</span>(<span class="vr">texto</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 037 - aluno faz sozinho -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 042 - memória com contexto preservado</span>
+    <h3>Bot com memória resumida para um tema específico <span class="ex-diff diff-3">avançado</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>042_Exercicio.py</code> com um chatbot de atendimento de um restaurante fictício chamado Sabor & Arte</li>
+      <li>Use o system prompt com Contexto + Tarefa + Formato + Restrições, o bot responde sobre cardápio, reservas e horários</li>
+      <li>Implemente a memória resumida com limite de 8 mensagens e preservando as últimas 4</li>
+      <li>No início da conversa, pergunte o nome do cliente e armazene em uma variável Python separada. Use esse nome no system prompt para personalizar</li>
+      <li>Ao digitar "sair", exiba o resumo da sessão com tokens e custo</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// restaurante Sabor & Arte com memória resumida e nome do cliente</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">042_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">8</span>
+<span class="vr">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">4</span>
+
+<span class="vr">nome_cliente</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Sabor & Arte: Olá! Qual é o seu nome? "</span>).<span class="fn">strip</span>()
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: (
+            <span class="st">f"Você é o assistente virtual do restaurante Sabor &amp; Arte. "</span>
+            <span class="st">f"O cliente se chama {nome_cliente}. Use o nome dele ocasionalmente para personalizar. "</span>
+            <span class="st">"Responda apenas sobre cardápio, reservas e horários. "</span>
+            <span class="st">"Use linguagem acolhedora. Responda em no máximo 3 frases. "</span>
+            <span class="st">"Para assuntos fora do escopo, redirecione gentilmente."</span>
+        )
+    }
+]
+
+<span class="vr">total_entrada</span> <span class="op">=</span> <span class="nm">0</span>
+<span class="vr">total_saida</span>   <span class="op">=</span> <span class="nm">0</span>
+
+<span class="kw">def</span> <span class="fn">resumir_conversa</span>(<span class="vr">mensagens_antigas</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">mensagens_antigas</span>])
+    <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span>[
+            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase."</span>},
+            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>}
+        ],
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">50</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+    )
+    <span class="kw">return</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+
+<span class="fn">print</span>(<span class="st">f"\nSabor &amp; Arte: Que bom ter você aqui, {nome_cliente}! Como posso ajudar?"</span>)
+<span class="fn">print</span>(<span class="st">"(Digite 'sair' para encerrar)\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"\n-- Resumo da sessão --"</span>)
+        <span class="fn">print</span>(<span class="st">f"Tokens de entrada : {total_entrada}"</span>)
+        <span class="fn">print</span>(<span class="st">f"Tokens de saída   : {total_saida}"</span>)
+        <span class="fn">print</span>(<span class="st">f"Total             : {total_entrada + total_saida}"</span>)
+        <span class="vr">custo</span> <span class="op">=</span> (<span class="vr">total_entrada</span> <span class="op">*</span> <span class="nm">0.00000015</span>) <span class="op">+</span> (<span class="vr">total_saida</span> <span class="op">*</span> <span class="nm">0.0000006</span>)
+        <span class="fn">print</span>(<span class="st">f"Custo estimado    : U${custo:.6f}"</span>)
+        <span class="fn">print</span>(<span class="st">"----------------------"</span>)
+        <span class="fn">print</span>(<span class="st">f"Sabor &amp; Arte: Até logo, {nome_cliente}! Volte sempre!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="vr">LIMITE_MENSAGENS</span>:
+        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>]
+        <span class="kw">if</span> <span class="vr">antigas</span>:
+            <span class="vr">resumo</span> <span class="op">=</span> <span class="fn">resumir_conversa</span>(<span class="vr">antigas</span>)
+            <span class="vr">mensagens</span> <span class="op">=</span> [
+                <span class="vr">mensagens</span>[<span class="nm">0</span>],
+                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">f"Resumo anterior: {resumo}"</span>}
+            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>:]
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+        <span class="vr">total_entrada</span> <span class="op">+=</span> <span class="vr">resposta</span>.<span class="vr">usage</span>.<span class="vr">prompt_tokens</span>
+        <span class="vr">total_saida</span>   <span class="op">+=</span> <span class="vr">resposta</span>.<span class="vr">usage</span>.<span class="vr">completion_tokens</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="fn">print</span>(<span class="st">f"Erro: {e}"</span>)
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Não consegui processar. Tente novamente."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">f"Sabor &amp; Arte: {texto}\n"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="downloads">
+    <span class="downloads-title">// arquivos desta aula</span>
+    <div class="dl-grid">
+
+      <a class="dl-item" href="arquivos/036_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">036_Exercicio.py</div>
+          <div class="dl-desc">GPT retornando JSON estruturado com filmes de comédia brasileira</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/037_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">037_Exercicio.py</div>
+          <div class="dl-desc">Chatbot com memória resumida - histórico comprimido automaticamente quando o limite é atingido</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/038_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">038_Exercicio.py</div>
+          <div class="dl-desc">Chatbot com memória persistente - histórico salvo em arquivo JSON entre sessões</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/039_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">039_Exercicio.py</div>
+          <div class="dl-desc">Exercício: bot do restaurante Sabor & Arte com memória resumida e nome do cliente</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/040_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">040_Exercicio.py</div>
+          <div class="dl-desc">Exercício 40 - chatbot com memória persistente, retomando a conversa entre sessões</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/041_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">041_Exercicio.py</div>
+          <div class="dl-desc">Exercício 41 - JSON com tema livre, estrutura e campos definidos pelo aluno</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/042_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">042_Exercicio.py</div>
+          <div class="dl-desc">Exercício 42 - bot do restaurante Sabor &amp; Arte com memória resumida e nome do cliente</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+
+    </div>
+  </div>
+
+  <div class="ready">
+    <span class="re">🎉</span>
+    <h2>Pronto para a Aula 6!</h2>
+    <p>Vamos seguir aprendendo! Já passamos da metade... Nos vemos lá!</p>
+  </div>
+
+  <div class="nav-bottom">
+    <a class="nav-link" href="revisao.php">← Revisão</a>
+    <a class="nav-link next" href="aula6.php">Aula 6 →</a>
+  </div>
+
+</div>
+
+<p style="font-size: 14px;">
+<!--contador-->
+<?php include 'contador.php'; ?>
+<!------------------------------------------>
+</p>
+
+<footer>
+  <span>Chatbots com Python · aula 5</span>
+  <span><a href="AulaChatbot.html">← índice</a></span>
+</footer>
+
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>
