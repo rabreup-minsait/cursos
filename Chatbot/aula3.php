@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 3 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f8f7f5;
+  --surface:   #ffffff;
+  --border:    #e2ddd8;
+  --text:      #1e1916;
+  --text2:     #3d3630;
+  --text3:     #7a726a;
+  --accent:    #1f5fa6;
+  --accent-lt: #e8f0fb;
+  --green:     #0d6e50;
+  --green-lt:  #e4f3ed;
+  --gold:      #a06820;
+  --gold-lt:   #fdf2e0;
+  --red:       #a83030;
+  --red-lt:    #fceeed;
+  --board:     #182e1e;
+  --shadow-sm: 0 1px 4px rgba(30,25,22,.09);
+  --shadow:    0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text2); font-family:'Nunito',system-ui,sans-serif; line-height:1.85; }
+
+/* ── SCREENSHOT DE INSTALAÇÃO ── */
+.install-step {
+  margin: 24px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.install-step-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: .82rem; font-weight: 800; color: var(--text2);
+}
+.install-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fira Code', monospace; font-size: 11px;
+  flex-shrink: 0;
+}
+.install-step img {
+  width: 100%; display: block;
+  border-radius: 0;
+}
+.install-step-desc {
+  padding: 10px 16px;
+  font-size: .85rem; color: var(--text2); line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+/* ── LOUSA - compacta, como uma anotação no quadro ── */
+.lousa {
+  background: var(--board);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 22px auto;
+  max-width: 480px;          /* não ocupa a coluna toda */
+  box-shadow: var(--shadow-sm);
+}
+.lousa-title {
+  font-family: 'Nunito', sans-serif; font-weight: 800;
+  font-size: .7rem; text-transform:uppercase; letter-spacing:.1em;
+  color: #6aaa78; margin-bottom: 10px;
+}
+.lousa-row {
+  display: flex; gap: 9px; align-items: flex-start;
+  margin-bottom: 7px; font-size: .86rem;
+  color: #c8e4cc; line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+}
+.lousa-row:last-child { margin-bottom: 0; }
+.lousa-row .bul { color: #5ad68a; flex-shrink: 0; margin-top: 2px; }
+.lousa strong { color: #e8f5e8; font-weight: 700; }
+.lousa code {
+  background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.18);
+  color: #a8e8c0; font-size: .8em;
+}
+
+
+.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:48px; position:sticky; top:0; z-index:50; }
+.tb-logo { display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.85rem; color:var(--text); }
+.tb-logo-icon { width:24px; height:24px; background:var(--accent); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+.tb-nav { display:flex; align-items:center; gap:4px; }
+.tb-btn { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:var(--text3); text-decoration:none; padding:5px 10px; border:1px solid var(--border); border-radius:5px; background:var(--bg); transition:all .15s; }
+.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tb-btn.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tb-btn.next:hover { background:#1a4f8a; }
+.tb-lesson { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); letter-spacing:.06em; padding:0 12px; }
+
+.prog { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:100; width:0; transition:width .1s; }
+.wrap { max-width:680px; margin:0 auto; padding:44px 28px 90px; }
+
+.cover { margin-bottom:52px; }
+.cover-tag { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.cover h1 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.5vw,2.3rem); font-weight:700; line-height:1.2; color:var(--text); margin-bottom:16px; }
+.cover h1 em { color:var(--accent); font-style:italic; }
+.cover p { font-size:1rem; color:var(--text2); line-height:1.85; }
+
+p { font-size:.97rem; color:var(--text2); margin-bottom:20px; line-height:1.85; }
+p:last-child { margin-bottom:0; }
+strong { color:var(--text); font-weight:700; }
+code { font-family:'Fira Code',monospace; font-size:.82em; background:var(--accent-lt); border:1px solid rgba(31,95,166,.16); border-radius:4px; padding:1px 6px; color:var(--accent); }
+
+.lousa { background:var(--board); border-radius:6px; padding:14px 18px; margin:22px auto; max-width:480px; box-shadow:var(--shadow-sm); }
+.lousa-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#6aaa78; margin-bottom:10px; }
+.lousa-row { display:flex; gap:9px; align-items:flex-start; margin-bottom:7px; font-size:.86rem; color:#c8e4cc; line-height:1.6; font-family:'Nunito',sans-serif; }
+.lousa-row:last-child { margin-bottom:0; }
+.lousa-row .bul { color:#5ad68a; flex-shrink:0; margin-top:2px; }
+.lousa strong { color:#e8f5e8; font-weight:700; }
+.lousa code { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.18); color:#a8e8c0; font-size:.8em; }
+
+.bubble { display:flex; gap:10px; align-items:flex-start; margin:28px 0 8px; }
+.bubble-avatar { flex-shrink:0; width:32px; height:32px; background:#f0a500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:2px; box-shadow:0 2px 6px rgba(240,165,0,.3); }
+.bubble-body { background:#fffbf0; border:1.5px solid #f0c040; border-radius:4px 14px 14px 14px; padding:11px 15px; font-size:.9rem; color:#4a3800; font-weight:600; box-shadow:0 2px 8px rgba(240,165,0,.15); line-height:1.65; max-width:500px; }
+
+.dica { border-left:3px solid var(--accent); background:var(--accent-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#1a3a6a; line-height:1.75; }
+.dica strong { color:#1a3a6a; font-weight:800; }
+.atencao { border-left:3px solid var(--gold); background:var(--gold-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#5a3808; line-height:1.75; }
+.atencao strong { color:#5a3808; font-weight:800; }
+.aviso { border-left:3px solid var(--red); background:var(--red-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#6a1515; line-height:1.75; }
+.aviso strong { color:#6a1515; font-weight:800; }
+
+.cblock { background:#f5f3f0; border:1px solid #ddd8d0; border-radius:8px; margin:20px 0; overflow:hidden; box-shadow:var(--shadow-sm); }
+.cblock-head { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface); border-bottom:1px solid #ddd8d0; }
+.cdots { display:flex; gap:5px; }
+.cdots span { width:9px; height:9px; border-radius:50%; }
+.c1{background:#ff6058;} .c2{background:#ffbd2e;} .c3{background:#28ca42;}
+.cfname { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); }
+.cblock pre { padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px; line-height:1.8; overflow-x:auto; color:#2a2420; white-space:pre; }
+.kw{color:#6d28d9;} .fn{color:#1d4ed8;} .st{color:#166534;}
+.nm{color:#b45309;} .cm{color:#888078;font-style:italic;}
+.vr{color:#b91c1c;} .op{color:#0d6e50;} .bi{color:#a06820;}
+
+.code-ann { margin:16px 0 24px; border-collapse:collapse; width:100%; }
+.code-ann tr { border-bottom:1px solid var(--border); }
+.code-ann tr:last-child { border-bottom:none; }
+.code-ann td { padding:8px 10px; font-size:.85rem; vertical-align:top; line-height:1.65; }
+.code-ann td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; white-space:nowrap; color:var(--accent); background:var(--accent-lt); border-radius:4px; width:1%; padding:8px 12px; }
+.code-ann td:last-child { color:var(--text2); }
+.code-ann td strong { color:var(--text); }
+
+.break { background:var(--gold-lt); border:1px solid rgba(160,104,32,.2); border-radius:8px; padding:18px 22px; text-align:center; margin:44px 0; }
+.break .be { font-size:1.8rem; display:block; margin-bottom:6px; }
+.break h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1rem; font-style:normal; margin-bottom:4px; }
+.break p { font-size:.83rem; color:#7a5010; margin:0; }
+
+.exercise { background:var(--surface); border:1.5px solid var(--accent); border-radius:8px; padding:20px 22px; margin:32px 0; box-shadow:var(--shadow-sm); }
+.ex-tag { font-family:'Fira Code',monospace; font-size:9.5px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:block; }
+.exercise h3 { font-family:'Playfair Display',serif; color:var(--text); font-size:1.05rem; margin-bottom:12px; }
+.exercise ol { padding-left:18px; font-size:.88rem; line-height:2.1; color:var(--text2); }
+.ex-diff { font-family:'Fira Code',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
+.diff-1 { background:var(--green-lt); color:var(--green); }
+.diff-2 { background:var(--gold-lt); color:var(--gold); }
+.diff-3 { background:var(--red-lt); color:var(--red); }
+.ex-ans { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.ex-ans-body { display:none; }
+.ex-ans-body.visible { display:block; }
+.btn-ans { display:inline-flex; align-items:center; gap:6px; font-family:'Fira Code',monospace; font-size:.75rem; font-weight:600; color:var(--green); background:var(--green-lt); border:1.5px solid rgba(13,110,80,.25); border-radius:5px; padding:6px 14px; cursor:pointer; transition:all .15s; margin-top:4px; letter-spacing:.03em; }
+.btn-ans:hover { background:#d0ece3; border-color:rgba(13,110,80,.5); }
+
+.downloads { margin:48px 0 32px; }
+.downloads-title { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.dl-grid { display:flex; flex-direction:column; gap:7px; }
+.dl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px 14px; text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:border-color .15s,box-shadow .15s; }
+.dl-item:hover { border-color:var(--accent); box-shadow:var(--shadow); }
+.dl-icon { font-size:1.1rem; flex-shrink:0; }
+.dl-info { flex:1; }
+.dl-name { font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); font-weight:500; }
+.dl-desc { font-size:.75rem; color:var(--text3); margin-top:1px; }
+.dl-badge { font-family:'Fira Code',monospace; font-size:9px; background:var(--accent-lt); color:var(--accent); border-radius:4px; padding:2px 8px; flex-shrink:0; }
+
+.ready { background:var(--green-lt); border:1.5px solid rgba(13,110,80,.3); border-radius:8px; padding:26px; text-align:center; margin:48px 0; }
+.ready .re { font-size:2rem; display:block; margin-bottom:10px; }
+.ready h2 { font-family:'Playfair Display',serif; color:var(--green); font-size:1.25rem; margin:0 0 8px; }
+.ready p { font-size:.88rem; color:#0a4535; margin:0; }
+
+.nav-bottom { display:flex; justify-content:space-between; margin-top:52px; padding-top:20px; border-top:1px solid var(--border); }
+.nav-link { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--text3); text-decoration:none; padding:7px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); transition:all .15s; }
+.nav-link:hover { border-color:var(--accent); color:var(--accent); }
+.nav-link.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.nav-link.next:hover { background:#1a4f8a; }
+
+footer { border-top:1px solid var(--border); padding:14px 28px; display:flex; justify-content:space-between; font-family:'Fira Code',monospace; font-size:10px; color:var(--text3); background:var(--surface); }
+footer a { color:inherit; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div id="prog" class="prog"></div>
+
+<header class="topbar">
+  <a class="tb-logo" href="../index.html">
+    <div class="tb-logo-icon">🐍</div>
+    Chatbots com Python
+  </a>
+  <div class="tb-nav">
+    <a class="tb-btn" href="../index.html">⊞ índice</a>
+    <span class="tb-lesson">aula 03 · integração OpenAI</span>
+    <a class="tb-btn" href="aula2.php">←</a>
+    <a class="tb-btn next" href="aula4.php">→</a>
+  </div>
+</header>
+
+
+<div class="wrap">
+
+  <div class="cover">
+    <span class="cover-tag">aula 03</span>
+    <h1>Chegou a hora: <em>inteligência artificial</em></h1>
+    <p>Nas duas primeiras aulas você construiu um chatbot com regras, você definiu exatamente o que ele podia responder. Isso tem valor: é rápido, previsível e não custa nada. Mas tem um limite claro: o bot só sabe o que você ensinou. </p>
+    <p>A partir de agora, o processamento deixa de ser só código no python e passa a envolver a Inteligência Artificial. Mas tem um detalhe importante: essa inteligência não roda dentro do seu computador. Você ainda controla o comportamento, mas quem responde é o GPT.</p>
+    <p>Assim como no exemplo da Alexa que vimos, onde ela busca informações externas, o GPT também está fora do seu código, rodando em servidores da OpenAI. Isso significa que, para o seu programa conversar com o GPT, ele precisa enviar uma mensagem pela internet e esperar uma resposta. Esse processo tem um nome: requisição. </p>
+    <p>Toda vez que você envia uma mensagem para o GPT, ele precisa ler o texto, entender e gerar uma resposta. Para fazer isso, ele não trabalha com palavras completas, mas sim com pequenos pedaços de texto chamados tokens. Um token pode ser uma palavra, parte de uma palavra ou até um símbolo. Por exemplo: "Olá" → pode ser 1 token, frases maiores → viram vários tokens.</p>
+    <p><strong>Regra simples para você guardar:</strong><br>
+    👉 1 token ≈ 3 a 4 caracteres (em média)</p>
+
+    <p><strong>Cada requisição que o seu chatbot faz usa tokens:</strong><br>
+    -> tokens da sua pergunta<br>
+    -> tokens da resposta do GPT<br>
+    Como esse processamento acontece fora do seu computador, nos servidores da OpenAI, ele tem custo.</p>
+
+    <p>Para o seu programa conseguir fazer essa requisição pela internet, existe uma “porta de entrada” oficial da OpenAI, essa porta é chamada de <strong>API</strong>.</p>
+
+ <div class="lousa">
+    <div class="lousa-title">API nada mais é do que um jeito padronizado de um sistema conversar com outro</div>
+    <div class="lousa-title">&nbsp; &nbsp; &nbsp; No nosso caso:</div>
+    <div class="lousa-row"><span class="bul">&nbsp; &nbsp; &nbsp; ◆</span><span><strong>seu código em Python envia a pergunta</strong></span></div>
+    <div class="lousa-row"><span class="bul">&nbsp; &nbsp; &nbsp; ◆</span><span><strong>a API entrega essa pergunta para o GPT</strong> </span></div>
+    <div class="lousa-row"><span class="bul">&nbsp; &nbsp; &nbsp; ◆</span><span><strong>o GPT responde</strong> </span></div>
+    <div class="lousa-row"><span class="bul">&nbsp; &nbsp; &nbsp; ◆</span><span><strong>a API devolve a resposta para o seu código</strong> </span></div>
+  </div>
+  </div>
+
+ <div> 
+   <p>E aqui entra um ponto essencial: a OpenAI precisa saber quem está fazendo essa requisição.     É por isso que existe a chave de API. A chave funciona como uma identificação única sua. 
+
+<div class="lousa">
+    <div class="lousa-title">É a chave de API que:</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>autoriza o uso do GPT</strong> </span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>registra o consumo de tokens</strong> </span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>controla os custos da sua aplicação</strong> </span></div>
+     <div class="lousa-row"><span><i>Sem essa chave, o seu programa simplesmente não consegue acessar o GPT.</i> </span></div>
+ </div>
+
+<iframe src="aula3b.html" width="750" height="700" style="border:1px solid #ccc;">
+        Seu navegador não suporta iframes.
+    </iframe>
+</div>
+
+
+<div>
+  <p>Agora, para prosseguirmos, você precisa de uma chave de API, e isso terá um custo, infelizmente para seguir com os testes, precisaremos disso. É essa chave que autoriza o seu programa a usar o GPT, pense nela como uma senha de acesso ao serviço da OpenAI. Cada chamada que o seu chatbot faz consome tokens, e tokens custam dinheiro. Por isso a chave precisa ser sua, e precisa ficar protegida.</p>
+  <p>Para criar sua chave acesse <strong>platform.openai.com</strong>, faça login.</p>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Adquirir Créditos - Logar</div>
+    <img src="img/051.png" alt="Sequência para Adquirir Créditos 1">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Adquirir Créditos - Add credits</div>
+    <img src="img/052.png" alt="Sequência para Adquirir Créditos 2">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">3</div> Adquirir Créditos - Incluir Dados do Cartão</div>
+    <img src="img/053.png" alt="Sequência para Adquirir Créditos 3">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">4</div> Adquirir Créditos - Escolher valor</div>
+    <img src="img/054.png" alt="Sequência para Adquirir Créditos 4">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">5</div> Adquirir Créditos - Confirmar Pagamento</div>
+    <img src="img/055.png" alt="Sequência para Adquirir Créditos 5">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">6</div> Adquirir Créditos - Créditos Adquiridos</div>
+    <img src="img/056.png" alt="Sequência para Adquirir Créditos 6">
+  </div>
+
+
+<div>
+<p>Com os créditos adquiridos, vamos criar nossa chave, na página <code>https://platform.openai.com/home</code>, vamos clicar em <strong>API Keys</strong> e clique em <strong>Create new secret key</strong>.
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Criar Chave API - APIKeys</div>
+    <img src="img/057.png" alt="Criar Chave API 1">
+  </div>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Criar Chave API - API Keys - Create new Secret Key</div>
+    <img src="img/058.png" alt="Criar Chave API 2">
+  </div>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">3</div> Criar Chave API - Nomear a Chave</div>
+    <img src="img/059.png" alt="Criar Chave API 3">
+  </div>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">4</div> Criar Chave API - Copiar a Chave</div>
+    <img src="img/060.png" alt="Criar Chave API 4">
+  </div>
+
+<p> Nesse momento é importante salvar a chave em algum lugar onde ninguém vá acessar, mas que você não vá esquecer. Caso você esqueça essa chave, precisará apagá-la e criar outra, pois o site não fornecerá ela novamente.</p>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">5</div> Criar Chave API - Salvar em Algum Lugar</div>
+    <img src="img/061.png" alt="Criar Chave API 5">
+  </div>
+
+<p> Não esqueça, a chave só aparece uma vez. Guarde em algum lugar seguro antes de fechar a tela.</p>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">6</div> Criar Chave API - Fechar a Janela da Chave</div>
+    <img src="img/062.png" alt="Criar Chave API 6">
+  </div>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">7</div> Criar Chave API - Chave Criada</div>
+    <img src="img/063.png" alt="Criar Chave API 7">
+  </div>
+<br>
+
+  <div class="atencao">
+    <strong>Nunca coloque sua chave diretamente no código.</strong> Se você subir esse arquivo para o GitHub ou compartilhar com alguém, a chave fica exposta e qualquer pessoa pode usá-la no seu custo. A forma correta é guardá-la num arquivo separado chamado <code>.env</code>, e é exatamente isso que vamos fazer.
+  </div>
+
+  <p>Crie um arquivo chamado <code>.env</code> na mesma pasta do seu projeto Python. Dentro dele, uma única linha:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">.env</div>
+    </div>
+    <pre><span class="vr">OPENAI_API_KEY</span><span class="op">=</span><span class="st">sua-chave-aqui</span></pre>
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Salvar Arquivo .env </div>
+    <img src="img/064.png" alt="Salvar Arquivo .env 1">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div>  Arquivo .env </div>
+    <img src="img/065.png" alt="Salvar Arquivo .env 2">
+  </div>
+
+
+  <div>
+  <p>Agora instale as bibliotecas necessárias. Abra o terminal do VSCode, menu <strong>Terminal → New Terminal</strong>, e rode:</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">terminal</div>
+    </div>
+    <pre>pip install openai python-dotenv</pre>
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div>  Instalação do OpenAI no Python - New Terminal</div>
+    <img src="img/066.png" alt="Instalação do OpenAI no Python 1">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div>  Instalação do OpenAI no Python - Código</div>
+    <img src="img/067.png" alt="Instalação do OpenAI no Python 2">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">3</div>  Instalação do OpenAI no Python - Instalado</div>
+    <img src="img/068.png" alt="Instalação do OpenAI no Python 3">
+  </div>
+  </div>
+  </div>
+  </div>
+
+  <p>Com isso instalado, o Python consegue se conectar à API da OpenAI e ler o arquivo <code>.env</code> para pegar a chave sem que você precise escrevê-la no código. Vamos ao primeiro chatbot com IA?</p>
+
+  <div class="cblock">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">020_Exercicio.py</div>
+  </div>
+  <pre><span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4o-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>}]
+    )
+
+    <span class="fn">print</span>(<span class="st">f"Chatbot: {</span><span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span><span class="st">}"</span>)</pre>
+</div>
+
+  <table class="code-ann">
+    <tr>
+      <td>import os</td>
+      <td><strong>Biblioteca padrão do Python para acessar o sistema operacional.</strong> Aqui usamos para ler variáveis de ambiente, informações guardadas fora do código, como a chave da API.</td>
+    </tr>
+    <tr>
+      <td>from dotenv import load_dotenv</td>
+      <td><strong>Carrega o arquivo <code>.env</code> na memória.</strong> Depois de chamar <code>load_dotenv()</code>, tudo que estava no <code>.env</code> fica disponível como variável de ambiente para o Python ler com <code>os.getenv()</code>.</td>
+    </tr>
+    <tr>
+      <td>client = OpenAI(...)</td>
+      <td><strong>Cria a conexão com a API da OpenAI.</strong> O <code>client</code> é o objeto que representa essa conexão, é através dele que todas as chamadas ao GPT são feitas. A <code>api_key</code> é lida do <code>.env</code>, nunca escrita diretamente aqui.</td>
+    </tr>
+    <tr>
+      <td>os.getenv("OPENAI_API_KEY")</td>
+      <td><strong>Lê a chave do arquivo <code>.env</code>.</strong> O nome entre aspas precisa ser exatamente igual ao que você escreveu no <code>.env</code>. Se não encontrar, retorna <code>None</code>, e a conexão falha.</td>
+    </tr>
+    <tr>
+      <td>client.chat.completions.create(...)</td>
+      <td><strong>Faz a chamada para o GPT.</strong> Você passa o modelo que quer usar e a lista de mensagens. O GPT processa e devolve uma resposta. É aqui que o token é consumido.</td>
+    </tr>
+    <tr>
+      <td>model="gpt-4o-mini"</td>
+      <td><strong>Define qual modelo do GPT será usado.</strong> O <code>gpt-4o-mini</code> é rápido, barato e suficiente para aprendizado e projetos iniciais. Mas a família de modelos da OpenAI é mais ampla do que parece, e vale entender a lógica por trás disso.</td>
+    </tr>
+    <tr>
+      <td>messages=[{"role": "user", ...}]</td>
+      <td><strong>A lista de mensagens enviada ao GPT.</strong> Cada mensagem tem um <code>role</code>, quem fala, e um <code>content</code>, o que foi dito. Por ora só estamos enviando a pergunta do usuário, sem contexto de conversa anterior.</td>
+    </tr>
+    <tr>
+      <td>resposta.choices[0].message.content</td>
+      <td><strong>Extrai o texto da resposta.</strong> A API retorna um objeto estruturado, o texto em si está dentro de <code>choices[0].message.content</code>. O <code>[0]</code> pega a primeira (e única) opção de resposta gerada.</td>
+    </tr>
+    <tr>
+      <td>if not pergunta: continue</td>
+      <td><strong>Ignora entradas vazias.</strong> Se o usuário apertar Enter sem digitar nada, o <code>strip()</code> retorna uma string vazia, que é "falsa" em Python. O <code>continue</code> pula para a próxima iteração sem chamar a API.</td>
+    </tr>
+  </table>
+
+  <p>Uma coisa que vale entender agora é a lógica por trás dos modelos disponíveis. A OpenAI organiza os modelos em famílias, e a escolha certa depende do equilíbrio entre qualidade, velocidade e custo que o seu projeto precisa.</p>
+
+  <p>A família <strong>GPT-4.1</strong> é uma ótima escolha para chatbots. O <code>gpt-4.1</code> é forte em seguir instruções e usar ferramentas externas. O <code>gpt-4.1-mini</code> é a versão mais rápida e mais barata, mantendo boa qualidade, e é o que nós usaremos nos exercícios daqui para frente. Existe também o <code>gpt-4.1-nano</code>, pensado para tarefas simples em alto volume.</p>
+
+  <p>A família mais recente é a <strong>GPT-5.4</strong>, lançada em 2026 e atual linha principal da OpenAI. O <code>gpt-5.4</code> é o modelo flagship, com raciocínio avançado e janela de contexto de 1 milhão de tokens. O <code>gpt-5.4-mini</code> traz boa parte dessas capacidades num formato mais rápido e econômico. Para um chatbot de atendimento ou assistente direto, tanto a família 4.1 quanto o gpt-5.4-mini resolvem muito bem.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">Escolhendo o modelo certo</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>gpt-4.1-mini</strong> - nosso modelo de aula: rápido, barato, ótimo para aprendizado e projetos iniciais</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>gpt-4.1</strong> - mais inteligente, melhor para instrução complexa e uso de ferramentas externas</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>gpt-5.4-mini / gpt-5.4</strong> - família mais recente da OpenAI, lançada em 2026, com maior capacidade para trabalho profissional</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>gpt-4o-mini</strong> - ainda disponível na API, mas a linha 4.1 é a evolução recomendada para projetos novos</span></div>
+  </div>
+
+  <p>Execute e teste. Você vai perceber que o bot responde qualquer coisa, perguntas de matemática, receitas, histórias. Ele é o GPT sem restrição nenhuma. Mas tem um problema: pergunte algo que depende do que você disse antes. Algo como "qual foi minha última pergunta?", ele não vai saber. Cada mensagem é enviada do zero, sem histórico.</p>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div>Execute</div>
+    <img src="img/069.png" alt="Execute Exercício 21">
+  </div>
+
+ <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div>Teste</div>
+    <img src="img/070.png" alt="Teste Exercício 21">
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Por que ele não lembra? O GPT não tem memória?</div>
+  </div>
+
+  <p>O GPT em si não guarda nada entre chamadas, cada requisição é independente. A memória precisa ser construída pelo seu código: você vai acumulando as mensagens numa lista e enviando o histórico completo a cada chamada. É exatamente isso que vamos fazer agora.</p>
+
+  <p>Faremos 2 mudanças significativas agora, criar a lista da suposta "memória" do chat e a segunda mudança importante é o <strong>system prompt</strong>, uma mensagem especial que você manda antes de qualquer pergunta do usuário, com instruções de comportamento para o GPT. É ali que você define quem ele é, o que pode responder e como deve se comunicar. Sem isso, o bot é genérico demais para servir num contexto real.</p>
+
+<div class="cblock">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">021_Exercicio.py</div>
+  </div>
+  <pre><span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"Você é um assistente claro, direto e didático. Responda sempre em português."</span>
+    }
+]
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4o-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>
+    )
+    <span class="vr">resposta_texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">resposta_texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">resposta_texto</span>)</pre>
+</div>
+
+
+  <table class="code-ann">
+    <tr>
+      <td>mensagens = [...]</td>
+      <td><strong>A lista que guarda todo o histórico da conversa.</strong> Começa com o system prompt e vai crescendo a cada troca. Toda vez que o GPT é chamado, recebe a lista completa, por isso ele "lembra" o que foi dito antes.</td>
+    </tr>
+    <tr>
+      <td>"role": "system"</td>
+      <td><strong>O system prompt, as instruções de comportamento.</strong> Essa mensagem nunca aparece para o usuário, mas o GPT a lê antes de qualquer coisa. É aqui que você define o tom, o escopo e as limitações do bot. Quanto mais detalhado, mais controlado o comportamento.</td>
+    </tr>
+    <tr>
+      <td>"role": "user"</td>
+      <td><strong>Mensagem do usuário.</strong> Cada pergunta digitada é adicionada à lista com esse role antes de enviar para a API.</td>
+    </tr>
+    <tr>
+      <td>"role": "assistant"</td>
+      <td><strong>Resposta do GPT.</strong> Depois de receber a resposta, ela também é adicionada à lista, assim o GPT sabe o que ele mesmo disse antes e pode manter consistência na conversa.</td>
+    </tr>
+    <tr>
+      <td>mensagens.append({...})</td>
+      <td><strong>Adiciona cada mensagem ao histórico.</strong> O padrão é sempre: append da pergunta do usuário → chamada à API → append da resposta do bot. Essa sequência garante que o contexto fique sempre atualizado.</td>
+    </tr>
+  </table>
+
+  <div class="dica">
+    O system prompt é a ferramenta mais poderosa que você tem para controlar o GPT. Um bot de suporte de uma loja de ferramentas, por exemplo, deve ter no system prompt algo como: <em>"Você é o assistente virtual da Ferragens Silva. Responda apenas perguntas sobre produtos, preços e disponibilidade. Se a pergunta não tiver relação com ferragens, informe educadamente que não pode ajudar com esse assunto."</em> Sem isso, o GPT responde tudo, e cada resposta fora do escopo é token desperdiçado.
+  </div>
+
+  <p>Teste agora a memória: pergunte o seu nome, depois em uma mensagem seguinte pergunte "você lembra como eu me chamo?". Diferente da versão anterior, o bot vai lembrar, porque a resposta foi salva no histórico e enviada junto na próxima chamada.</p>
+
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Teste do Exercício 21</div>
+    <img src="img/071.png" alt="Teste do Exercício 21">
+  </div>
+
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Se a lista vai crescendo infinitamente, não vai ficar caro?</div>
+  </div>
+
+  <p>Exatamente, você identificou um problema real. Cada chamada envia o histórico completo, e quanto maior o histórico, mais tokens são consumidos. Em produção isso é gerenciado: limita-se o número de mensagens anteriores enviadas, faz-se resumo automático do histórico ou usa-se técnicas de memória seletiva. Isso é conteúdo das aulas seguintes, por enquanto o importante é entender o mecanismo.</p>
+
+
+  <!-- BREAK -->
+  <div class="break">
+    <span class="be">☕</span>
+    <h3>Pausa rápida para um café!</h3>
+    <p>Você acabou de conectar seu código na inteligência artificial. Levanta, respira, depois a gente pratica.</p>
+  </div>
+
+  <p>Agora é a sua vez. Os exercícios abaixo partem do que você acabou de ver. Se der erro na conexão, verifique primeiro se o arquivo <code>.env</code> está na mesma pasta do código e se a chave foi copiada corretamente.</p>
+
+  <!-- EXERCÍCIO 1 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 022, primeira conexão</span>
+    <h3>Conecte seu chatbot ao GPT <span class="ex-diff diff-1">iniciante</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>.env</code> com sua chave de API</li>
+      <li>Instale as bibliotecas necessárias no terminal: <code>pip install openai python-dotenv</code></li>
+      <li>Crie o <code>022_Exercicio.py</code> baseado no <code>020_Exercicio.py</code></li>
+      <li>Execute com o botão Run e faça pelo menos 3 perguntas diferentes</li>
+      <li>Observe que o bot responde qualquer coisa, ainda sem restrição de escopo</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 020_Exercicio.py</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">022_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4o-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>}]
+    )
+
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 2 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 023, system prompt e memória</span>
+    <h3>Adicione identidade e memória ao seu bot <span class="ex-diff diff-2">intermediário</span></h3>
+    <ol>
+      <li>Crie o <code>023_Exercicio.py</code> baseado no <code>021_Exercicio.py</code></li>
+      <li>Escreva um system prompt para um tema à sua escolha, suporte, loja, assistente pessoal</li>
+      <li>Certifique-se de que o histórico é acumulado corretamente a cada troca</li>
+      <li>Teste a memória: diga seu nome, depois em outra mensagem pergunte se o bot lembra</li>
+      <li>Teste o escopo: faça uma pergunta fora do tema definido no system prompt e veja a resposta</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 021_Exercicio.py</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">023_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"Você é um assistente claro, direto e didático. Responda sempre em português."</span>
+    }
+]
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4o-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>
+    )
+
+    <span class="vr">resposta_texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">resposta_texto</span>})
+
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">resposta_texto</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 3 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 024, chatbot temático completo</span>
+    <h3>Crie um chatbot com tema, escopo e memória definidos <span class="ex-diff diff-3">avançado</span></h3>
+    <ol>
+      <li>Escolha um tema específico: loja, clínica, suporte, escola, qualquer um</li>
+      <li>Escreva um system prompt detalhado: quem é o bot, o que pode responder, o que deve recusar, qual o tom</li>
+      <li>Teste pelo menos 5 perguntas dentro do escopo</li>
+      <li>Teste pelo menos 2 perguntas fora do escopo, o bot deve recusar educadamente</li>
+      <li>Verifique que a memória funciona durante a conversa</li>
+    </ol>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// exemplo com tema de suporte técnico</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">024_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> os
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"""Você é o assistente virtual de suporte técnico da TechFix.
+Responda apenas perguntas sobre problemas de computador, internet,
+impressora e celular. Se a pergunta não tiver relação com suporte
+técnico, diga educadamente que só pode ajudar com esse assunto.
+Use linguagem simples, sem termos técnicos difíceis.
+Responda sempre em português."""</span>
+    }
+]
+
+<span class="fn">print</span>(<span class="st">"TechFix: Olá! Como posso ajudar com seu problema técnico?"</span>)
+<span class="fn">print</span>(<span class="st">"(Digite 'sair' para encerrar)\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"TechFix: Obrigado pelo contato! Até mais 👋"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4o-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>
+    )
+
+    <span class="vr">resposta_texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">resposta_texto</span>})
+
+    <span class="fn">print</span>(<span class="st">f"TechFix: {</span><span class="vr">resposta_texto</span><span class="st">}\n"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="downloads">
+    <span class="downloads-title">// arquivos desta aula</span>
+    <div class="dl-grid">
+
+      <a class="dl-item" href="arquivos/020_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">020_Exercicio.py</div>
+          <div class="dl-desc">Primeira conexão com a API, GPT sem system prompt e sem memória</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/021_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">021_Exercicio.py</div>
+          <div class="dl-desc">System prompt e memória da conversa com histórico acumulado</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/022_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">022_Exercicio.py</div>
+          <div class="dl-desc">Exercício: primeira conexão com a API, sem system prompt e sem memória</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/023_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">023_Exercicio.py</div>
+          <div class="dl-desc">Exercício: system prompt e memória da conversa</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/024_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">024_Exercicio.py</div>
+          <div class="dl-desc">Exercício: chatbot temático completo com escopo e memória definidos</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="ready">
+    <span class="re">🎉</span>
+    <h2>Pronto para a Aula 4!</h2>
+    <p>Vamos seguir com nosso aprendizado... Nos vemos lá!</p>
+  </div>
+
+  <div class="nav-bottom">
+    <a class="nav-link" href="aula2.php">← Aula 2</a>
+    <a class="nav-link next" href="aula4.php">Aula 4 →</a>
+  </div>
+
+</div>
+
+
+<p style="font-size: 14px;">
+<!--contador-->
+<?php include 'contador.php'; ?>
+<!------------------------------------------>
+</p>
+
+
+
+<footer>
+  <span>Chatbots com Python · aula 3</span>
+  <span><a href="../index.html">← índice</a></span>
+</footer>
+
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>
