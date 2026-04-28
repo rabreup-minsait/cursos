@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/Chatbot/AulaChatbot.html"
+    }
+  ]
+}
