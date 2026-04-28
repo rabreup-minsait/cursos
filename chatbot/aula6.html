@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 6 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f8f7f5;
+  --surface:   #ffffff;
+  --border:    #e2ddd8;
+  --text:      #1e1916;
+  --text2:     #3d3630;
+  --text3:     #7a726a;
+  --accent:    #1f5fa6;
+  --accent-lt: #e8f0fb;
+  --green:     #0d6e50;
+  --green-lt:  #e4f3ed;
+  --gold:      #a06820;
+  --gold-lt:   #fdf2e0;
+  --red:       #a83030;
+  --red-lt:    #fceeed;
+  --board:     #182e1e;
+  --shadow-sm: 0 1px 4px rgba(30,25,22,.09);
+  --shadow:    0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text2); font-family:'Nunito',system-ui,sans-serif; line-height:1.85; }
+.install-step { margin:24px 0; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; box-shadow:var(--shadow-sm); }
+.install-step-head { display:flex; align-items:center; gap:10px; padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--border); font-size:.82rem; font-weight:800; color:var(--text2); }
+.install-num { width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:11px; flex-shrink:0; }
+.install-step img { width:100%; display:block; }
+.lousa { background:var(--board); border-radius:6px; padding:14px 18px; margin:22px auto; max-width:480px; box-shadow:var(--shadow-sm); }
+.lousa-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#6aaa78; margin-bottom:10px; }
+.lousa-row { display:flex; gap:9px; align-items:flex-start; margin-bottom:7px; font-size:.86rem; color:#c8e4cc; line-height:1.6; font-family:'Nunito',sans-serif; }
+.lousa-row:last-child { margin-bottom:0; }
+.lousa-row .bul { color:#5ad68a; flex-shrink:0; margin-top:2px; }
+.lousa strong { color:#e8f5e8; font-weight:700; }
+.lousa code { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.18); color:#a8e8c0; font-size:.8em; }
+.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:48px; position:sticky; top:0; z-index:50; }
+.tb-logo { display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.85rem; color:var(--text); }
+.tb-logo-icon { width:24px; height:24px; background:var(--accent); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+.tb-nav { display:flex; align-items:center; gap:4px; }
+.tb-btn { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:var(--text3); text-decoration:none; padding:5px 10px; border:1px solid var(--border); border-radius:5px; background:var(--bg); transition:all .15s; }
+.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tb-btn.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tb-btn.next:hover { background:#1a4f8a; }
+.tb-lesson { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); letter-spacing:.06em; padding:0 12px; }
+.prog { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:100; width:0; transition:width .1s; }
+.wrap { max-width:680px; margin:0 auto; padding:44px 28px 90px; }
+.cover { margin-bottom:52px; }
+.cover-tag { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.cover h1 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.5vw,2.3rem); font-weight:700; line-height:1.2; color:var(--text); margin-bottom:16px; }
+.cover h1 em { color:var(--accent); font-style:italic; }
+.cover p { font-size:1rem; color:var(--text2); line-height:1.85; }
+p { font-size:.97rem; color:var(--text2); margin-bottom:20px; line-height:1.85; }
+p:last-child { margin-bottom:0; }
+strong { color:var(--text); font-weight:700; }
+code { font-family:'Fira Code',monospace; font-size:.82em; background:var(--accent-lt); border:1px solid rgba(31,95,166,.16); border-radius:4px; padding:1px 6px; color:var(--accent); }
+.bubble { display:flex; gap:10px; align-items:flex-start; margin:28px 0 8px; }
+.bubble-avatar { flex-shrink:0; width:32px; height:32px; background:#f0a500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:2px; box-shadow:0 2px 6px rgba(240,165,0,.3); }
+.bubble-body { background:#fffbf0; border:1.5px solid #f0c040; border-radius:4px 14px 14px 14px; padding:11px 15px; font-size:.9rem; color:#4a3800; font-weight:600; box-shadow:0 2px 8px rgba(240,165,0,.15); line-height:1.65; max-width:500px; }
+.dica { border-left:3px solid var(--accent); background:var(--accent-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#1a3a6a; line-height:1.75; }
+.dica strong { color:#1a3a6a; font-weight:800; }
+.atencao { border-left:3px solid var(--gold); background:var(--gold-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#5a3808; line-height:1.75; }
+.atencao strong { color:#5a3808; font-weight:800; }
+.aviso { border-left:3px solid var(--red); background:var(--red-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#6a1515; line-height:1.75; }
+.aviso strong { color:#6a1515; font-weight:800; }
+.cblock { background:#f5f3f0; border:1px solid #ddd8d0; border-radius:8px; margin:20px 0; overflow:hidden; box-shadow:var(--shadow-sm); }
+.cblock-head { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface); border-bottom:1px solid #ddd8d0; }
+.cdots { display:flex; gap:5px; }
+.cdots span { width:9px; height:9px; border-radius:50%; }
+.c1{background:#ff6058;} .c2{background:#ffbd2e;} .c3{background:#28ca42;}
+.cfname { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); }
+.cblock pre { padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px; line-height:1.8; overflow-x:auto; color:#2a2420; white-space:pre; }
+.kw{color:#6d28d9;} .fn{color:#1d4ed8;} .st{color:#166534;}
+.nm{color:#b45309;} .cm{color:#888078;font-style:italic;}
+.vr{color:#b91c1c;} .op{color:#0d6e50;} .bi{color:#a06820;}
+.code-ann { margin:16px 0 24px; border-collapse:collapse; width:100%; }
+.code-ann tr { border-bottom:1px solid var(--border); }
+.code-ann tr:last-child { border-bottom:none; }
+.code-ann td { padding:8px 10px; font-size:.85rem; vertical-align:top; line-height:1.65; }
+.code-ann td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; white-space:nowrap; color:var(--accent); background:var(--accent-lt); border-radius:4px; width:1%; padding:8px 12px; }
+.code-ann td:last-child { color:var(--text2); }
+.code-ann td strong { color:var(--text); }
+.break { background:var(--gold-lt); border:1px solid rgba(160,104,32,.2); border-radius:8px; padding:18px 22px; text-align:center; margin:44px 0; }
+.break .be { font-size:1.8rem; display:block; margin-bottom:6px; }
+.break h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1rem; font-style:normal; margin-bottom:4px; }
+.break p { font-size:.83rem; color:#7a5010; margin:0; }
+.exercise { background:var(--surface); border:1.5px solid var(--accent); border-radius:8px; padding:20px 22px; margin:32px 0; box-shadow:var(--shadow-sm); }
+.ex-tag { font-family:'Fira Code',monospace; font-size:9.5px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:block; }
+.exercise h3 { font-family:'Playfair Display',serif; color:var(--text); font-size:1.05rem; margin-bottom:12px; }
+.exercise ol { padding-left:18px; font-size:.88rem; line-height:2.1; color:var(--text2); }
+.ex-diff { font-family:'Fira Code',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
+.diff-1 { background:var(--green-lt); color:var(--green); }
+.diff-2 { background:var(--gold-lt); color:var(--gold); }
+.diff-3 { background:var(--red-lt); color:var(--red); }
+.ex-ans { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.ex-ans-body { display:none; }
+.ex-ans-body.visible { display:block; }
+.btn-ans { display:inline-flex; align-items:center; gap:6px; font-family:'Fira Code',monospace; font-size:.75rem; font-weight:600; color:var(--green); background:var(--green-lt); border:1.5px solid rgba(13,110,80,.25); border-radius:5px; padding:6px 14px; cursor:pointer; transition:all .15s; margin-top:4px; letter-spacing:.03em; }
+.btn-ans:hover { background:#d0ece3; border-color:rgba(13,110,80,.5); }
+.downloads { margin:48px 0 32px; }
+.downloads-title { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.dl-grid { display:flex; flex-direction:column; gap:7px; }
+.dl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px 14px; text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:border-color .15s,box-shadow .15s; }
+.dl-item:hover { border-color:var(--accent); box-shadow:var(--shadow); }
+.dl-icon { font-size:1.1rem; flex-shrink:0; }
+.dl-info { flex:1; }
+.dl-name { font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); font-weight:500; }
+.dl-desc { font-size:.75rem; color:var(--text3); margin-top:1px; }
+.dl-badge { font-family:'Fira Code',monospace; font-size:9px; background:var(--accent-lt); color:var(--accent); border-radius:4px; padding:2px 8px; flex-shrink:0; }
+.ready { background:var(--green-lt); border:1.5px solid rgba(13,110,80,.3); border-radius:8px; padding:26px; text-align:center; margin:48px 0; }
+.ready .re { font-size:2rem; display:block; margin-bottom:10px; }
+.ready h2 { font-family:'Playfair Display',serif; color:var(--green); font-size:1.25rem; margin:0 0 8px; }
+.ready p { font-size:.88rem; color:#0a4535; margin:0; }
+.nav-bottom { display:flex; justify-content:space-between; margin-top:52px; padding-top:20px; border-top:1px solid var(--border); }
+.nav-link { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--text3); text-decoration:none; padding:7px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); transition:all .15s; }
+.nav-link:hover { border-color:var(--accent); color:var(--accent); }
+.nav-link.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.nav-link.next:hover { background:#1a4f8a; }
+footer { border-top:1px solid var(--border); padding:14px 28px; display:flex; justify-content:space-between; font-family:'Fira Code',monospace; font-size:10px; color:var(--text3); background:var(--surface); }
+footer a { color:inherit; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div id="prog" class="prog"></div>
+
+<header class="topbar">
+  <a class="tb-logo" href="../index.html">
+    <div class="tb-logo-icon">🐍</div>
+    Chatbots com Python
+  </a>
+  <div class="tb-nav">
+    <a class="tb-btn" href="../index.html">⊞ índice</a>
+    <span class="tb-lesson">aula 06 · memória pelo código</span>
+    <a class="tb-btn" href="aula5.html">←</a>
+    <a class="tb-btn next" href="aula7.html">→</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="cover">
+    <span class="cover-tag">aula 06</span>
+    <h1>Quem controla a memória<br><em>é o código</em></h1>
+    <p>Na aula passada, nós guardamos o histórico inteiro em arquivo. Isso é útil, mas um arquivo guarda tudo sem distinção. Nem toda informação precisa passar pela IA.</p>
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Mas a IA não guarda as informações automaticamente durante a conversa? Ela não lembra do que eu disse?</div>
+  </div>
+
+  <p>A IA não lembra de nada por conta própria. Cada chamada à API começa do zero. O que parece "memória" é o histórico que o nosso código monta e reenvia a cada mensagem. Nós controlamos esse histórico, e isso significa que também controlamos o que a IA sabe.</p>
+
+  <p>Em vez de deixar a IA descobrir coisas importantes no meio do histórico, podemos guardar essas informações em variáveis Python e injetá-las no contexto na hora certa. O chatbot continua conversando normalmente, mas o código decide o que a IA precisa saber.</p>
+
+  <p>Vamos começar com a informação mais básica que um chatbot pode ter sobre o usuário: o nome. A ideia é simples. Quando o usuário digitar uma frase como "meu nome é Ana", o código detecta esse padrão, extrai o nome e guarda numa variável. A partir daí, toda vez que a IA for chamada, o nome já está no system prompt, garantido.</p>
+
+  <p>Para detectar o padrão e extrair o nome, nós usamos um método do Python chamado <code>split()</code>. Ele quebra uma string em pedaços, usando um texto como ponto de corte, e devolve uma lista com os fragmentos. Por exemplo, se aplicarmos <code>split()</code> na frase "meu nome é Ana" usando o texto <code>"meu nome é"</code> como divisor, o resultado é uma lista com dois itens: o que veio antes do divisor e o que veio depois. O que veio antes fica em <code>[0]</code> e o que veio depois em <code>[1]</code>.</p>
+
+  <p>Mas há um detalhe interessante: o índice <code>[-1]</code> em Python sempre pega o último item de uma lista, independente do tamanho dela. Usando <code>[-1]</code> em vez de <code>[1]</code>, nós pegamos o que veio depois do divisor mesmo que a frase seja mais complexa. E o <code>.strip()</code> no final remove espaços que possam ter sobrado nas bordas. O resultado é exatamente o nome digitado pelo usuário, limpo e pronto para usar.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">split() na prática</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><code>"meu nome é Ana".split("meu nome é")</code> → <code>["", " Ana"]</code></span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><code>[-1]</code> pega o último item da lista: <code>" Ana"</code></span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><code>.strip()</code> remove os espaços das bordas: <code>"Ana"</code></span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>resultado final: a variável <code>nome</code> guarda <code>"Ana"</code></span></div>
+  </div>
+
+  <p>Com o nome em mãos, o próximo passo é injetá-lo no system prompt. Fazemos isso atualizando <code>mensagens[0]["content"]</code> dentro do loop. Isso funciona porque <code>mensagens[0]</code> é o system prompt, e como é uma referência a um dicionário numa lista, podemos sobrescrevê-lo sempre que quisermos. A cada nova mensagem, a IA receberá o system prompt atualizado com o nome mais recente.</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">043_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="cm"># variável controlada pelo código, fora do loop</span>
+<span class="vr">nome</span> <span class="op">=</span> <span class="kw">None</span>
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    }
+]
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar.\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pergunta_norm</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>()
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="cm"># detecta nome na frase</span>
+    <span class="kw">if</span> <span class="st">"meu nome é"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="kw">if not</span> <span class="vr">nome</span>:
+            <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta_norm</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Prazer, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="cm"># injeta o nome no system prompt antes de chamar a IA</span>
+    <span class="kw">if</span> <span class="vr">nome</span>:
+        <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> (
+            <span class="st">f"Você é um assistente direto e objetivo. "</span>
+            <span class="st">f"O nome do usuário é {nome}. Use o nome dele com moderação. "</span>
+            <span class="st">f"Responda de forma curta e clara."</span>
+        )
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.3</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>, <span class="st">"\n"</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>nome = None</td>
+      <td><strong>Variável definida fora do loop, antes de tudo começar.</strong> O <code>None</code> significa "ainda não temos essa informação". Quando o usuário disser o nome, essa variável será preenchida e vai permanecer assim mesmo que o loop execute mais 100 vezes.</td>
+    </tr>
+    <tr>
+      <td>"meu nome é" in pergunta_norm</td>
+      <td><strong>Verifica se a frase normalizada contém o padrão que queremos detectar.</strong> O operador <code>in</code> retorna <code>True</code> se o texto do lado esquerdo existe dentro do texto do lado direito. Usamos <code>pergunta_norm</code> para a comparação, garantindo que "MEU NOME É", "Meu Nome É" e "meu nome é" sejam todos detectados.</td>
+    </tr>
+    <tr>
+      <td>pergunta vs pergunta_norm</td>
+      <td><strong>Duas versões do mesmo input com usos diferentes.</strong> <code>pergunta</code> guarda o texto original do usuário, com maiúsculas e acentos, e é o que vai para o histórico da IA e para o <code>split()</code> que extrai o nome. <code>pergunta_norm</code> é a versão em minúsculas, usada apenas para as comparações de padrão. Manter as duas garante que a IA receba o texto como o usuário digitou.</td>
+    </tr>
+    <tr>
+      <td>.split("meu nome é")[-1]</td>
+      <td><strong>Quebra a frase no ponto de corte e pega o que veio depois.</strong> O <code>split()</code> devolve uma lista. O <code>[-1]</code> é o índice negativo que sempre pega o último item da lista, que é exatamente o trecho depois do divisor.</td>
+    </tr>
+    <tr>
+      <td>.strip().title()</td>
+      <td><strong>Remove espaços e capitaliza o nome.</strong> O <code>.strip()</code> tira espaços das bordas. O <code>.title()</code> coloca a primeira letra de cada palavra em maiúscula, então "ana paula" vira "Ana Paula", como um nome deve aparecer.</td>
+    </tr>
+    <tr>
+      <td>continue (após detectar nome)</td>
+      <td><strong>Pula o restante do loop e vai para a próxima iteração.</strong> Quando o usuário está apenas dizendo o nome, não faz sentido chamar a IA para responder. O <code>continue</code> volta direto para o <code>input()</code>, aguardando a próxima mensagem.</td>
+    </tr>
+    <tr>
+      <td>mensagens[0]["content"] = ...</td>
+      <td><strong>Atualiza o system prompt com o nome.</strong> <code>mensagens[0]</code> é o dicionário do system prompt. Ao reatribuir o campo <code>"content"</code>, nós reescrevemos as instruções que a IA vai receber nessa chamada. Fazemos isso só se <code>nome</code> não for <code>None</code>, ou seja, só depois que o usuário se apresentou.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Exercício 043 - nome detectado e injetado no system prompt</div>
+    <img src="img/088.png" alt="Chatbot detectando nome e respondendo de forma personalizada">
+  </div>
+
+  <p>Repara que o nome nunca vai para o histórico como uma mensagem de usuário. Ele existe apenas na variável Python e é injetado no system prompt. Isso significa que o código tem controle total: se a injeção for removida, a IA simplesmente deixa de saber que o nome existe.</p>
+
+  <p>Isso tem uma consequência prática importante relacionada à LGPD, a Lei Geral de Proteção de Dados. Quando injetamos informações no prompt e enviamos para a API da OpenAI, esses dados saem do nosso servidor e vão para um terceiro. Para o nome, isso normalmente é aceitável. Para dados sensíveis como CPF, dados bancários, endereço ou informações de saúde, pode ser uma violação. A regra prática é direta: dados que identificam ou expõem o usuário ficam no código, nunca no prompt.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">o que vai para a IA e o que fica no código</div>
+    <div class="lousa-row"><span class="bul">✓</span><span><strong>pode injetar:</strong> nome, preferências gerais, tema do atendimento</span></div>
+    <div class="lousa-row"><span class="bul">✗</span><span><strong>nunca injetar:</strong> CPF, RG, endereço, dados bancários, senha, informações de saúde</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>dados sensíveis ficam no código, podem ser usados para formatar a resposta final sem passar pela IA</span></div>
+  </div>
+
+  <p>O mesmo padrão de detecção que usamos para o nome funciona para gostos. A diferença é que gostos formam uma lista, não uma string única. Cada vez que o usuário menciona um gosto, queremos adicionar à lista. Mas com um cuidado importante: o mesmo gosto não deve aparecer mais de uma vez.</p>
+
+  <p>O operador <code>in</code> que usamos antes com strings também funciona com listas. Quando escrevemos <code>gosto in gostos</code>, o Python percorre cada item da lista verificando se algum é igual a <code>gosto</code>. Se já existir, retorna <code>True</code>. Se não existir, retorna <code>False</code>. Com esse cheque simples, antes de adicionar um gosto à lista, nós garantimos que ele ainda não está lá.</p>
+
+  <p>E aqui entra a <code>normalizar()</code> que revisamos juntos. Sem ela, "pizza" e "Pizza" seriam tratados como gostos diferentes, o que causaria duplicidade. Com ela, ambos viram <code>"pizza"</code> antes da comparação, e o cheque funciona corretamente.</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">044_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> unicodedata
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
+    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="kw">return</span> <span class="vr">texto</span>
+
+<span class="vr">nome</span> <span class="op">=</span> <span class="kw">None</span>
+<span class="vr">gostos</span> <span class="op">=</span> []  <span class="cm"># lista de gostos controlada pelo código</span>
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {
+        <span class="st">"role"</span>: <span class="st">"system"</span>,
+        <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    }
+]
+
+<span class="kw">def</span> <span class="fn">atualizar_system</span>():
+    <span class="cm">"""Reconstrói o system prompt com as informações atuais."""</span>
+    <span class="vr">partes</span> <span class="op">=</span> [<span class="st">"Você é um assistente direto e objetivo."</span>]
+    <span class="kw">if</span> <span class="vr">nome</span>:
+        <span class="vr">partes</span>.<span class="fn">append</span>(<span class="st">f"O nome do usuário é {nome}. Use o nome com moderação."</span>)
+    <span class="kw">if</span> <span class="vr">gostos</span>:
+        <span class="vr">lista_gostos</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">partes</span>.<span class="fn">append</span>(<span class="st">f"O usuário gosta de: {lista_gostos}."</span>)
+    <span class="vr">partes</span>.<span class="fn">append</span>(<span class="st">"Responda de forma curta e clara."</span>)
+    <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="st">" "</span>.<span class="fn">join</span>(<span class="vr">partes</span>)
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar.\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pergunta_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">pergunta</span>)
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="cm"># detecta nome</span>
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Prazer, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="cm"># detecta gosto e evita duplicidade</span>
+    <span class="kw">if</span> <span class="st">"eu gosto de"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">gosto_bruto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>().<span class="fn">split</span>(<span class="st">"eu gosto de"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>()
+        <span class="vr">gosto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">gosto_bruto</span>)
+        <span class="kw">if</span> <span class="vr">gosto_norm</span> <span class="kw">not in</span> [<span class="fn">normalizar</span>(<span class="vr">g</span>) <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> <span class="vr">gostos</span>]:
+            <span class="vr">gostos</span>.<span class="fn">append</span>(<span class="vr">gosto_bruto</span>)
+            <span class="fn">atualizar_system</span>()
+            <span class="fn">print</span>(<span class="st">f"Bot: Anotado! Você gosta de {gosto_bruto}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"Bot: Já sei que você gosta de {gosto_bruto}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.3</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>, <span class="st">"\n"</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>gostos = []</td>
+      <td><strong>Lista vazia que vai acumulando preferências.</strong> Assim como <code>nome</code>, ela vive fora do loop e persiste durante toda a sessão. A cada gosto detectado, um item é adicionado, sem repetição.</td>
+    </tr>
+    <tr>
+      <td>def atualizar_system()</td>
+      <td><strong>Função que reconstrói o system prompt sempre que o perfil muda.</strong> Em vez de duplicar a lógica de injeção em vários lugares, centralizamos aqui. A função lê <code>nome</code> e <code>gostos</code> e monta uma string completa, atualizando <code>mensagens[0]["content"]</code>.</td>
+    </tr>
+    <tr>
+      <td>pergunta_norm</td>
+      <td><strong>Versão normalizada do input, usada só para comparação.</strong> Nós guardamos a versão original em <code>pergunta</code> e a normalizada em <code>pergunta_norm</code>. Quando detectamos "meu nome e" (sem acento), o split é feito na <code>pergunta</code> original para preservar as maiúsculas do nome.</td>
+    </tr>
+    <tr>
+      <td>gosto_norm not in [normalizar(g) for g in gostos]</td>
+      <td><strong>Compara o novo gosto com todos os existentes, normalizados.</strong> O trecho <code>[normalizar(g) for g in gostos]</code> cria uma lista temporária com todos os gostos já normalizados. Se o novo gosto normalizado não estiver nessa lista, ele é adicionado. Isso evita que "Pizza" e "pizza" sejam tratados como gostos diferentes.</td>
+    </tr>
+    <tr>
+      <td>gostos.append(gosto_bruto)</td>
+      <td><strong>Adiciona a versão original, não a normalizada.</strong> Guardamos <code>gosto_bruto</code> (com acentos e capitalização original) para que a IA receba uma escrita natural. A normalização é usada só para comparação.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Exercício 044 - gostos sendo detectados sem duplicidade</div>
+    <img src="img/089.png" alt="Terminal mostrando gostos sendo detectados e deduplicados">
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">E se o usuário disser "gosto de pizzas" no plural? Ou "adoro pizza"? O código vai detectar?</div>
+  </div>
+
+  <p>Não vai. O código atual só detecta o padrão exato "eu gosto de". Variações como plural, sinônimos ou outras formas de expressar preferência passam despercebidas. Isso é uma limitação real e há formas de contorná-la, como usar a própria IA para analisar a frase e identificar se há uma preferência implícita. Mas isso adiciona complexidade e custo por chamada extra. Por ora, o padrão fixo resolve a maior parte dos casos práticos.</p>
+
+  <div class="break">
+    <span class="be">☕</span>
+    <h3>Pausa para o café!</h3>
+    <p>Levanta, respira, e quando voltar nós fazemos o chatbot responder de forma diferente dependendo do que sabe sobre o usuário.</p>
+  </div>
+
+  <p>Até agora o system prompt é sempre do mesmo jeito, só que com mais ou menos informação. Mas podemos ir além: o chatbot pode responder de formas completamente diferentes dependendo do que sabe sobre o usuário. Pensa assim: se a IA sabe o nome e os gostos, ela pode fazer referência a ambos. Se sabe só o nome, usa isso. Se sabe só os gostos, personaliza por aí. Se não sabe nada, responde de forma genérica.</p>
+
+  <p>Isso se chama resposta contextual, e a estrutura para implementar é um <code>if/elif/else</code> que verifica as combinações possíveis antes de montar o system prompt.</p>
+
+  <p>Neste mesmo exercício, vamos adicionar também uma função chamada <code>limpar_memoria()</code>, que zera tudo: nome, gostos e histórico. Para que uma função consiga modificar variáveis que foram definidas fora dela, precisamos usar a palavra-chave <code>global</code>. Ela diz ao Python: "essas variáveis não são locais, são as mesmas que existem fora desta função." Sem o <code>global</code>, o Python criaria cópias locais que sumiriam ao fim da função, sem alterar nada.</p>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">045_Exercicio.py</div>
+    </div>
+    <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> unicodedata
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
+    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="kw">return</span> <span class="vr">texto</span>
+
+<span class="vr">nome</span> <span class="op">=</span> <span class="kw">None</span>
+<span class="vr">gostos</span> <span class="op">=</span> []
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>}
+]
+
+<span class="kw">def</span> <span class="fn">atualizar_system</span>():
+    <span class="cm"># resposta contextual: 4 cenários</span>
+    <span class="kw">if</span> <span class="vr">nome</span> <span class="kw">and</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> (
+            <span class="st">f"Você é um assistente direto. O usuário se chama {nome} e gosta de: {lista}. "</span>
+            <span class="st">f"Use essas informações para personalizar as respostas quando fizer sentido. "</span>
+            <span class="st">f"Use o nome com moderação."</span>
+        )
+    <span class="kw">elif</span> <span class="vr">nome</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> (
+            <span class="st">f"Você é um assistente direto. O usuário se chama {nome}. "</span>
+            <span class="st">f"Use o nome com moderação."</span>
+        )
+    <span class="kw">elif</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário gosta de: {lista}."</span>
+    <span class="kw">else</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">contexto</span>
+
+<span class="kw">def</span> <span class="fn">limpar_memoria</span>():
+    <span class="kw">global</span> <span class="vr">nome</span>, <span class="vr">gostos</span>, <span class="vr">mensagens</span>
+    <span class="vr">nome</span> <span class="op">=</span> <span class="kw">None</span>
+    <span class="vr">gostos</span> <span class="op">=</span> []
+    <span class="vr">mensagens</span> <span class="op">=</span> [
+        {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>}
+    ]
+    <span class="fn">print</span>(<span class="st">"Bot: Memória limpa! Podemos começar de novo."</span>)
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'limpar' para zerar a memória ou 'sair' para encerrar.\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pergunta_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">pergunta</span>)
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"limpar"</span>:
+        <span class="fn">limpar_memoria</span>()
+        <span class="kw">continue</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Prazer, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"eu gosto de"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">gosto_bruto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>().<span class="fn">split</span>(<span class="st">"eu gosto de"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>()
+        <span class="vr">gosto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">gosto_bruto</span>)
+        <span class="kw">if</span> <span class="vr">gosto_norm</span> <span class="kw">not in</span> [<span class="fn">normalizar</span>(<span class="vr">g</span>) <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> <span class="vr">gostos</span>]:
+            <span class="vr">gostos</span>.<span class="fn">append</span>(<span class="vr">gosto_bruto</span>)
+            <span class="fn">atualizar_system</span>()
+            <span class="fn">print</span>(<span class="st">f"Bot: Anotado! Você gosta de {gosto_bruto}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"Bot: Já sei que você gosta de {gosto_bruto}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.3</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>, <span class="st">"\n"</span>)</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>if nome and gostos:</td>
+      <td><strong>Primeiro cenário: sabemos o nome e os gostos.</strong> O <code>and</code> retorna <code>True</code> só quando os dois lados são verdadeiros. Uma lista não vazia é considerada verdadeira em Python, então <code>gostos</code> sozinho já funciona como condição.</td>
+    </tr>
+    <tr>
+      <td>elif nome:</td>
+      <td><strong>Segundo cenário: só sabemos o nome.</strong> O <code>elif</code> só é avaliado se o <code>if</code> anterior foi <code>False</code>. Chegando aqui, sabemos que ou <code>gostos</code> está vazio ou <code>nome</code> é <code>None</code>. Como o <code>if</code> acima exigiu os dois, e este só exige <code>nome</code>, o único caso que chega aqui é: tem nome, mas não tem gostos.</td>
+    </tr>
+    <tr>
+      <td>elif gostos:</td>
+      <td><strong>Terceiro cenário: só sabemos os gostos.</strong> Se chegou aqui, <code>nome</code> é <code>None</code>.</td>
+    </tr>
+    <tr>
+      <td>else:</td>
+      <td><strong>Quarto cenário: não sabemos nada.</strong> O chatbot responde de forma completamente genérica, sem nenhuma personalização.</td>
+    </tr>
+    <tr>
+      <td>global nome, gostos, mensagens</td>
+      <td><strong>Avisa ao Python que essas variáveis são as do escopo externo.</strong> Sem essa linha, qualquer <code>nome = None</code> dentro da função criaria uma variável local nova, sem afetar a variável externa. Com <code>global</code>, a função literalmente modifica as variáveis originais.</td>
+    </tr>
+    <tr>
+      <td>mensagens = [{...}]</td>
+      <td><strong>Recria a lista do zero dentro de limpar_memoria().</strong> Isso descarta todo o histórico de conversa. O chatbot começa como se nunca tivesse sido usado, só com o system prompt inicial.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Exercício 045 - Respostas contextuais e memória sendo limpa</div>
+    <img src="img/090.png" alt="Chatbot respondendo diferente em cada cenário e memória sendo zerada">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Exercício 045 - Cenários em ação</div>
+    <img src="img/091.png" alt="Cenários de resposta contextual demonstrados no terminal">
+  </div>
+
+  <p>Antes de partirmos para os exercícios, tem um assunto que não pode ficar de fora quando falamos em IA para sistemas reais: a tendência da IA de inventar respostas.</p>
+
+  <p>Isso já apareceu brevemente na aula 5, quando falamos sobre usar <code>null</code> em vez de dados fictícios. Mas vale aprofundar, porque o comportamento vai além de campos de JSON. A IA foi treinada para ser agradável. Ela foi otimizada para gerar respostas que o usuário considere satisfatórias, e isso cria um problema sutil: quando ela não tem informação suficiente, em vez de admitir, ela deduz. E deduz com muita confiança.</p>
+
+  <p>Uma vez pedi ao chatbot uma receita parecida com a do bolo de mandioca da minha avó. A IA imediatamente respondeu com uma receita "úmida, macia, com gostinho de coco", sem saber absolutamente nada sobre como aquele bolo era de verdade. Quando a pessoa foi corrigindo, dizendo que era seco, sem coco, pesado, a IA concordou e ajustou. Quando ela disse que tinha gosto de blueberry, a IA aceitou e inventou uma justificativa química. Em nenhum momento disse "não sei como era o bolo da sua avó". Ela simplesmente preencheu os espaços em branco com probabilidade.</p>
+
+  <div class="atencao">
+    <strong>A IA não sabe o que não sabe.</strong> Ela foi treinada para proporcionar uma experiência agradável, o que significa que ela evita contrariar e raramente admite ignorância. Para sistemas que dependem de dados precisos, isso é um risco sério. A mitigação mais direta é instrução explícita no prompt: <em>"se você não tiver certeza sobre uma informação, diga claramente que não sabe. Não invente dados."</em> Isso reduz, mas não elimina o problema.
+  </div>
+
+  <p>E há uma implicação prática importante para quem constrói chatbots: nunca exibir erros de código diretamente ao usuário. Uma mensagem de erro do Python pode revelar detalhes da estrutura do sistema, nomes de variáveis, caminhos de arquivo. O <code>try/except</code> não é só para o código não travar. É para que o usuário final veja uma mensagem amigável, e não uma stack trace completa.</p>
+
+  <p>Agora é a sua vez.</p>
+
+  <!-- EXERCÍCIO 046 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 046 - novo campo no perfil</span>
+    <h3>Construa um chatbot com perfil de três campos <span class="ex-diff diff-1">iniciante</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>046_Exercicio.py</code> do zero</li>
+      <li>O chatbot precisa detectar e guardar nome, gostos e cidade do usuário em variáveis Python</li>
+      <li>Detecte nome com o padrão <code>"meu nome é"</code>, gostos com <code>"eu gosto de"</code> e cidade com <code>"moro em"</code>, todos usando <code>split()</code></li>
+      <li>Use <code>normalizar()</code> com NFD para as comparações e para evitar duplicidade de gostos</li>
+      <li>A função <code>atualizar_system()</code> deve montar o system prompt com o que o código sabe, incluindo cidade quando disponível</li>
+      <li>Implemente <code>limpar_memoria()</code> com <code>global</code> como primeira linha para zerar tudo</li>
+    </ol>
+    <p style="font-size:.85rem;color:var(--text3);margin:10px 0 0;font-style:italic;">💡 Dica: os exercícios 043 a 045 cobrem cada uma dessas peças separadamente, é uma boa referência enquanto você escreve.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// arquivo completo - partes novas em relação ao 045 estão marcadas com NOVO</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">046_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> unicodedata
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
+    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="kw">return</span> <span class="vr">texto</span>
+
+<span class="vr">nome</span>   <span class="op">=</span> <span class="kw">None</span>
+<span class="vr">gostos</span> <span class="op">=</span> []
+<span class="vr">cidade</span> <span class="op">=</span> <span class="kw">None</span>  <span class="cm"># NOVO</span>
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>}
+]
+
+<span class="kw">def</span> <span class="fn">atualizar_system</span>():
+    <span class="kw">if</span> <span class="vr">nome</span> <span class="kw">and</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário se chama {nome}"</span>
+        <span class="kw">if</span> <span class="vr">cidade</span>:  <span class="cm"># NOVO</span>
+            <span class="vr">contexto</span> <span class="op">+=</span> <span class="st">f" e mora em {cidade}"</span>
+        <span class="vr">contexto</span> <span class="op">+=</span> <span class="st">f" e gosta de: {lista}. Use essas informações com moderação."</span>
+    <span class="kw">elif</span> <span class="vr">nome</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário se chama {nome}"</span>
+        <span class="kw">if</span> <span class="vr">cidade</span>:  <span class="cm"># NOVO</span>
+            <span class="vr">contexto</span> <span class="op">+=</span> <span class="st">f" e mora em {cidade}"</span>
+        <span class="vr">contexto</span> <span class="op">+=</span> <span class="st">". Use o nome com moderação."</span>
+    <span class="kw">elif</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário gosta de: {lista}."</span>
+    <span class="kw">else</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">contexto</span>
+
+<span class="kw">def</span> <span class="fn">limpar_memoria</span>():
+    <span class="kw">global</span> <span class="vr">nome</span>, <span class="vr">gostos</span>, <span class="vr">mensagens</span>, <span class="vr">cidade</span>  <span class="cm"># NOVO: cidade incluída</span>
+    <span class="vr">nome</span>   <span class="op">=</span> <span class="kw">None</span>
+    <span class="vr">gostos</span> <span class="op">=</span> []
+    <span class="vr">cidade</span> <span class="op">=</span> <span class="kw">None</span>  <span class="cm"># NOVO</span>
+    <span class="vr">mensagens</span> <span class="op">=</span> [
+        {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>}
+    ]
+    <span class="fn">print</span>(<span class="st">"Bot: Memória limpa! Podemos começar de novo."</span>)
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'limpar' para zerar a memória ou 'sair' para encerrar.\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pergunta_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">pergunta</span>)
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"limpar"</span>:
+        <span class="fn">limpar_memoria</span>()
+        <span class="kw">continue</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Prazer, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"moro em"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:  <span class="cm"># NOVO</span>
+        <span class="vr">cidade</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>().<span class="fn">split</span>(<span class="st">"moro em"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Entendido! Você mora em {cidade}."</span>)
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"eu gosto de"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">gosto_bruto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>().<span class="fn">split</span>(<span class="st">"eu gosto de"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>()
+        <span class="vr">gosto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">gosto_bruto</span>)
+        <span class="kw">if</span> <span class="vr">gosto_norm</span> <span class="kw">not in</span> [<span class="fn">normalizar</span>(<span class="vr">g</span>) <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> <span class="vr">gostos</span>]:
+            <span class="vr">gostos</span>.<span class="fn">append</span>(<span class="vr">gosto_bruto</span>)
+            <span class="fn">atualizar_system</span>()
+            <span class="fn">print</span>(<span class="st">f"Bot: Anotado! Você gosta de {gosto_bruto}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"Bot: Já sei que você gosta de {gosto_bruto}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.3</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>, <span class="st">"\n"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 047 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 047 - IA detecta gostos</span>
+    <h3>Chatbot que usa o GPT para identificar preferências em frases variadas <span class="ex-diff diff-2">intermediário</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>047_Exercicio.py</code> do zero com um chatbot que detecta nome e gostos</li>
+      <li>Para o nome, use o padrão fixo <code>"meu nome é"</code> com <code>split()</code> como nos exercícios anteriores</li>
+      <li>Para os gostos, escreva uma função <code>extrair_gosto_via_ia(frase)</code> que faz uma chamada separada à API com o prompt: <em>"Analise a frase e responda APENAS com a preferência positiva identificada, ou com a palavra NENHUMA se não houver. Não inclua nenhum outro texto."</em></li>
+      <li>Se o retorno não for "NENHUMA", trate como gosto e aplique a deduplicação com <code>normalizar()</code></li>
+      <li>Teste com frases variadas como "adoro sushi", "pizza é minha comida favorita" e "não gosto de brócolis" para ver como o sistema se comporta</li>
+    </ol>
+    <p style="font-size:.85rem;color:var(--text3);margin:10px 0 0;font-style:italic;">💡 Dica: o exercício 044 tem a estrutura de detecção e deduplicação de gostos que você vai precisar aqui.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// arquivo completo</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">047_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> unicodedata
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
+    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="kw">return</span> <span class="vr">texto</span>
+
+<span class="kw">def</span> <span class="fn">extrair_gosto_via_ia</span>(<span class="vr">frase</span>):
+    <span class="st">"""Usa o GPT para identificar se há uma preferência positiva na frase."""</span>
+    <span class="kw">try</span>:
+        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span>[
+                {
+                    <span class="st">"role"</span>: <span class="st">"system"</span>,
+                    <span class="st">"content"</span>: (
+                        <span class="st">"Analise a frase do usuário e responda APENAS com "</span>
+                        <span class="st">"a preferência positiva identificada (ex: sushi, pizza) "</span>
+                        <span class="st">"ou com a palavra NENHUMA se não houver preferência positiva. "</span>
+                        <span class="st">"Não inclua nenhum outro texto."</span>
+                    )
+                },
+                {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">frase</span>}
+            ],
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">20</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.1</span>
+        )
+        <span class="vr">resultado</span> <span class="op">=</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>.<span class="fn">strip</span>()
+        <span class="kw">return</span> <span class="kw">None</span> <span class="kw">if</span> <span class="vr">resultado</span>.<span class="fn">upper</span>() <span class="op">==</span> <span class="st">"NENHUMA"</span> <span class="kw">else</span> <span class="vr">resultado</span>.<span class="fn">lower</span>()
+    <span class="kw">except</span>:
+        <span class="kw">return</span> <span class="kw">None</span>
+
+<span class="vr">nome</span>   <span class="op">=</span> <span class="kw">None</span>
+<span class="vr">gostos</span> <span class="op">=</span> []
+
+<span class="vr">mensagens</span> <span class="op">=</span> [
+    {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>}
+]
+
+<span class="kw">def</span> <span class="fn">atualizar_system</span>():
+    <span class="kw">if</span> <span class="vr">nome</span> <span class="kw">and</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> (
+            <span class="st">f"Você é um assistente direto. O usuário se chama {nome} "</span>
+            <span class="st">f"e gosta de: {lista}. Use essas informações com moderação."</span>
+        )
+    <span class="kw">elif</span> <span class="vr">nome</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário se chama {nome}. Use o nome com moderação."</span>
+    <span class="kw">elif</span> <span class="vr">gostos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">gostos</span>)
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">f"Você é um assistente direto. O usuário gosta de: {lista}."</span>
+    <span class="kw">else</span>:
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+    <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">contexto</span>
+
+<span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar.\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pergunta_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">pergunta</span>)
+
+    <span class="kw">if</span> <span class="vr">pergunta_norm</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">pergunta_norm</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Bot: Prazer, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="cm"># usa a IA para detectar se há um gosto na frase</span>
+    <span class="vr">gosto_detectado</span> <span class="op">=</span> <span class="fn">extrair_gosto_via_ia</span>(<span class="vr">pergunta</span>)
+    <span class="kw">if</span> <span class="vr">gosto_detectado</span>:
+        <span class="vr">gosto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">gosto_detectado</span>)
+        <span class="kw">if</span> <span class="vr">gosto_norm</span> <span class="kw">not in</span> [<span class="fn">normalizar</span>(<span class="vr">g</span>) <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> <span class="vr">gostos</span>]:
+            <span class="vr">gostos</span>.<span class="fn">append</span>(<span class="vr">gosto_detectado</span>)
+            <span class="fn">atualizar_system</span>()
+            <span class="fn">print</span>(<span class="st">f"Bot: Anotado que você gosta de {gosto_detectado}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"Bot: Já sei que você gosta de {gosto_detectado}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.3</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>, <span class="st">"\n"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXERCÍCIO 048 -->
+  <div class="exercise">
+    <span class="ex-tag">⚡ exercício 048 - chatbot completo</span>
+    <h3>Tudo junto: um chatbot real de ponta a ponta <span class="ex-diff diff-3">avançado</span></h3>
+    <ol>
+      <li>Crie o arquivo <code>048_Exercicio.py</code> do zero com um chatbot para um tema à sua escolha</li>
+      <li>Detecte pelo menos nome e um campo extra do usuário, guarde em variáveis Python e injete dinamicamente no system prompt com <code>atualizar_system()</code></li>
+      <li>Monte respostas contextuais: o system prompt deve variar dependendo do que o código sabe sobre o usuário</li>
+      <li>Use <code>normalizar()</code> com NFD para comparações e deduplicação</li>
+      <li>Quando o histórico passar de 10 mensagens, resuma as mais antigas com uma chamada à API antes de descartar</li>
+      <li>Escreva o system prompt com os quatro elementos: Contexto, Tarefa, Formato e Restrições</li>
+      <li>Use <code>try/except</code> na chamada à API, exibindo mensagem amigável em caso de erro</li>
+      <li>Ao digitar "sair", exiba tokens usados e custo estimado da sessão</li>
+      <li>Implemente <code>limpar_memoria()</code> com <code>global</code> como primeira linha para resetar tudo</li>
+    </ol>
+    <p style="font-size:.85rem;color:var(--text3);margin:10px 0 0;font-style:italic;">💡 Dica: cada um desses itens foi trabalhado nos exercícios anteriores. Escreva do zero, consultando o que já fez como referência quando precisar.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// exemplo: assistente de livraria personalizado</span>
+        <div class="cblock" style="margin:0">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">048_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> unicodedata
+<span class="kw">import</span> httpx
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> os
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
+    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="kw">return</span> <span class="vr">texto</span>
+
+<span class="cm"># perfil controlado pelo código</span>
+<span class="vr">nome</span>    <span class="op">=</span> <span class="kw">None</span>
+<span class="vr">generos</span> <span class="op">=</span> []   <span class="cm"># gêneros literários preferidos</span>
+
+<span class="vr">LIMITE_MSG</span>   <span class="op">=</span> <span class="nm">10</span>
+<span class="vr">ULTIMAS_MSG</span>  <span class="op">=</span> <span class="nm">5</span>
+<span class="vr">total_entrada</span> <span class="op">=</span> <span class="nm">0</span>
+<span class="vr">total_saida</span>   <span class="op">=</span> <span class="nm">0</span>
+
+<span class="kw">def</span> <span class="fn">atualizar_system</span>():
+    <span class="cm"># CONTEXTO</span>
+    <span class="vr">base</span> <span class="op">=</span> <span class="st">"Você é a assistente virtual da Livraria Páginas, especializada em recomendar livros."</span>
+    <span class="cm"># TAREFA</span>
+    <span class="kw">if</span> <span class="vr">nome</span> <span class="kw">and</span> <span class="vr">generos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">generos</span>)
+        <span class="vr">perfil</span> <span class="op">=</span> <span class="st">f"Atenda {nome} pelo nome. O cliente prefere: {lista}. Personalize as sugestões."</span>
+    <span class="kw">elif</span> <span class="vr">nome</span>:
+        <span class="vr">perfil</span> <span class="op">=</span> <span class="st">f"Atenda {nome} pelo nome com moderação."</span>
+    <span class="kw">elif</span> <span class="vr">generos</span>:
+        <span class="vr">lista</span> <span class="op">=</span> <span class="st">", "</span>.<span class="fn">join</span>(<span class="vr">generos</span>)
+        <span class="vr">perfil</span> <span class="op">=</span> <span class="st">f"O cliente prefere: {lista}. Use isso nas sugestões."</span>
+    <span class="kw">else</span>:
+        <span class="vr">perfil</span> <span class="op">=</span> <span class="st">"Atenda o cliente de forma acolhedora."</span>
+    <span class="cm"># FORMATO + RESTRIÇÕES</span>
+    <span class="vr">regras</span> <span class="op">=</span> (
+        <span class="st">"Responda em no máximo 3 frases. "</span>
+        <span class="st">"Fale apenas sobre livros, autores e a livraria. "</span>
+        <span class="st">"Se não souber algo, diga claramente que não sabe. "</span>
+        <span class="st">"Nunca invente títulos, autores ou preços."</span>
+    )
+    <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="st">" "</span>.<span class="fn">join</span>([<span class="vr">base</span>, <span class="vr">perfil</span>, <span class="vr">regras</span>])
+
+<span class="kw">def</span> <span class="fn">resumir_conversa</span>(<span class="vr">msgs_antigas</span>):
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">msgs_antigas</span>])
+    <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="vr">messages</span><span class="op">=</span>[
+            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Resuma a conversa abaixo em 1 frase curta."</span>},
+            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>}
+        ],
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">50</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+    )
+    <span class="kw">return</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+
+<span class="kw">def</span> <span class="fn">limpar_memoria</span>():
+    <span class="kw">global</span> <span class="vr">nome</span>, <span class="vr">generos</span>, <span class="vr">mensagens</span>, <span class="vr">total_entrada</span>, <span class="vr">total_saida</span>
+    <span class="vr">nome</span> <span class="op">=</span> <span class="kw">None</span>
+    <span class="vr">generos</span> <span class="op">=</span> []
+    <span class="vr">total_entrada</span> <span class="op">=</span> <span class="nm">0</span>
+    <span class="vr">total_saida</span>   <span class="op">=</span> <span class="nm">0</span>
+    <span class="vr">mensagens</span> <span class="op">=</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">""</span>}]
+    <span class="fn">atualizar_system</span>()
+    <span class="fn">print</span>(<span class="st">"Livraria Páginas: Sessão reiniciada! Como posso ajudar?"</span>)
+
+<span class="vr">mensagens</span> <span class="op">=</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">""</span>}]
+<span class="fn">atualizar_system</span>()
+
+<span class="fn">print</span>(<span class="st">"Livraria Páginas: Olá! Seja bem-vindo. Como posso ajudar?"</span>)
+<span class="fn">print</span>(<span class="st">"(Digite 'limpar' para nova sessão ou 'sair' para encerrar)\n"</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
+    <span class="vr">pn</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">pergunta</span>)
+
+    <span class="kw">if</span> <span class="vr">pn</span> <span class="op">==</span> <span class="st">"sair"</span>:
+        <span class="fn">print</span>(<span class="st">"\n-- Resumo da sessão --"</span>)
+        <span class="fn">print</span>(<span class="st">f"Tokens de entrada : {total_entrada}"</span>)
+        <span class="fn">print</span>(<span class="st">f"Tokens de saída   : {total_saida}"</span>)
+        <span class="fn">print</span>(<span class="st">f"Total             : {total_entrada + total_saida}"</span>)
+        <span class="vr">custo</span> <span class="op">=</span> (<span class="vr">total_entrada</span> <span class="op">*</span> <span class="nm">0.00000015</span>) <span class="op">+</span> (<span class="vr">total_saida</span> <span class="op">*</span> <span class="nm">0.0000006</span>)
+        <span class="fn">print</span>(<span class="st">f"Custo estimado    : U${custo:.6f}"</span>)
+        <span class="fn">print</span>(<span class="st">"Livraria Páginas: Até a próxima leitura!"</span>)
+        <span class="kw">break</span>
+
+    <span class="kw">if</span> <span class="vr">pn</span> <span class="op">==</span> <span class="st">"limpar"</span>:
+        <span class="fn">limpar_memoria</span>()
+        <span class="kw">continue</span>
+
+    <span class="kw">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">pn</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">split</span>(<span class="st">"meu nome é"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="fn">atualizar_system</span>()
+        <span class="fn">print</span>(<span class="st">f"Livraria Páginas: Que bom te ver, {nome}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="kw">if</span> <span class="st">"eu gosto de"</span> <span class="kw">in</span> <span class="vr">pn</span> <span class="kw">or</span> <span class="st">"prefiro"</span> <span class="kw">in</span> <span class="vr">pn</span>:
+        <span class="vr">divisor</span> <span class="op">=</span> <span class="st">"eu gosto de"</span> <span class="kw">if</span> <span class="st">"eu gosto de"</span> <span class="kw">in</span> <span class="vr">pn</span> <span class="kw">else</span> <span class="st">"prefiro"</span>
+        <span class="vr">genero</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>().<span class="fn">split</span>(<span class="vr">divisor</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>()
+        <span class="vr">gnorm</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">genero</span>)
+        <span class="kw">if</span> <span class="vr">gnorm</span> <span class="kw">not in</span> [<span class="fn">normalizar</span>(<span class="vr">g</span>) <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> <span class="vr">generos</span>]:
+            <span class="vr">generos</span>.<span class="fn">append</span>(<span class="vr">genero</span>)
+            <span class="fn">atualizar_system</span>()
+            <span class="fn">print</span>(<span class="st">f"Livraria Páginas: Ótimo! Tenho ótimas sugestões de {genero}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"Livraria Páginas: Já sei que você curte {genero}!"</span>)
+        <span class="kw">continue</span>
+
+    <span class="cm"># memória resumida</span>
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="vr">LIMITE_MSG</span>:
+        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="vr">ULTIMAS_MSG</span>]
+        <span class="kw">if</span> <span class="vr">antigas</span>:
+            <span class="vr">resumo</span> <span class="op">=</span> <span class="fn">resumir_conversa</span>(<span class="vr">antigas</span>)
+            <span class="vr">mensagens</span> <span class="op">=</span> [
+                <span class="vr">mensagens</span>[<span class="nm">0</span>],
+                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">f"Resumo anterior: {resumo}"</span>}
+            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="vr">ULTIMAS_MSG</span>:]
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resp</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+        <span class="vr">total_entrada</span> <span class="op">+=</span> <span class="vr">resp</span>.<span class="vr">usage</span>.<span class="vr">prompt_tokens</span>
+        <span class="vr">total_saida</span>   <span class="op">+=</span> <span class="vr">resp</span>.<span class="vr">usage</span>.<span class="vr">completion_tokens</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Não consegui processar. Tente novamente."</span>
+
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="fn">print</span>(<span class="st">f"Livraria Páginas: {texto}\n"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="downloads">
+    <span class="downloads-title">// arquivos desta aula</span>
+    <div class="dl-grid">
+
+      <a class="dl-item" href="arquivos/043_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">043_Exercicio.py</div>
+          <div class="dl-desc">Chatbot com detecção de nome por split() e injeção dinâmica no system prompt</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/044_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">044_Exercicio.py</div>
+          <div class="dl-desc">Perfil com nome e gostos, deduplicação com normalizar() e atualização automática do system prompt</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/045_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">045_Exercicio.py</div>
+          <div class="dl-desc">Respostas contextuais para quatro cenários de perfil e função limpar_memoria() com global</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/046_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">046_Exercicio.py</div>
+          <div class="dl-desc">Exercício 46 - campo cidade adicionado ao perfil com detecção e injeção</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/047_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">047_Exercicio.py</div>
+          <div class="dl-desc">Exercício 47 - detecção de gostos via chamada à IA para lidar com variações e sinônimos</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/048_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">048_Exercicio.py</div>
+          <div class="dl-desc">Exercício 48 - chatbot completo com perfil, respostas contextuais, memória resumida, normalizar e custo</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="ready">
+    <span class="re">🎉</span>
+    <h2>Pronto para a Aula 7!</h2>
+    <p>Nos vemos lá!</p>
+  </div>
+
+  <div class="nav-bottom">
+    <a class="nav-link" href="aula5.html">← Aula 5</a>
+    <a class="nav-link next" href="aula7.html">Aula 7 →</a>
+  </div>
+
+</div>
+
+<p style="font-size: 14px;">
+<!--contador-->
+<?html include 'contador.html'; ?>
+<!------------------------------------------>
+</p>
+
+<footer>
+  <span>Chatbots com Python · aula 6</span>
+  <span><a href="../index.html">← índice</a></span>
+</footer>
+
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>
