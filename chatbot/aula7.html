@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 7 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f8f7f5;
+  --surface:   #ffffff;
+  --border:    #e2ddd8;
+  --text:      #1e1916;
+  --text2:     #3d3630;
+  --text3:     #7a726a;
+  --accent:    #1f5fa6;
+  --accent-lt: #e8f0fb;
+  --green:     #0d6e50;
+  --green-lt:  #e4f3ed;
+  --gold:      #a06820;
+  --gold-lt:   #fdf2e0;
+  --red:       #a83030;
+  --red-lt:    #fceeed;
+  --board:     #182e1e;
+  --shadow-sm: 0 1px 4px rgba(30,25,22,.09);
+  --shadow:    0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text2); font-family:'Nunito',system-ui,sans-serif; line-height:1.85; }
+.install-step { margin:24px 0; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; box-shadow:var(--shadow-sm); }
+.install-step-head { display:flex; align-items:center; gap:10px; padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--border); font-size:.82rem; font-weight:800; color:var(--text2); }
+.install-num { width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fira Code',monospace; font-size:11px; flex-shrink:0; }
+.install-step img { width:100%; display:block; }
+.lousa { background:var(--board); border-radius:6px; padding:14px 18px; margin:22px auto; max-width:480px; box-shadow:var(--shadow-sm); }
+.lousa-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#6aaa78; margin-bottom:10px; }
+.lousa-row { display:flex; gap:9px; align-items:flex-start; margin-bottom:7px; font-size:.86rem; color:#c8e4cc; line-height:1.6; font-family:'Nunito',sans-serif; }
+.lousa-row:last-child { margin-bottom:0; }
+.lousa-row .bul { color:#5ad68a; flex-shrink:0; margin-top:2px; }
+.lousa strong { color:#e8f5e8; font-weight:700; }
+.lousa code { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.18); color:#a8e8c0; font-size:.8em; }
+.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:48px; position:sticky; top:0; z-index:50; }
+.tb-logo { display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.85rem; color:var(--text); }
+.tb-logo-icon { width:24px; height:24px; background:var(--accent); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+.tb-nav { display:flex; align-items:center; gap:4px; }
+.tb-btn { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:var(--text3); text-decoration:none; padding:5px 10px; border:1px solid var(--border); border-radius:5px; background:var(--bg); transition:all .15s; }
+.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tb-btn.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.tb-btn.next:hover { background:#1a4f8a; }
+.tb-lesson { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); letter-spacing:.06em; padding:0 12px; }
+.prog { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:100; width:0; transition:width .1s; }
+.wrap { max-width:680px; margin:0 auto; padding:44px 28px 90px; }
+.cover { margin-bottom:52px; }
+.cover-tag { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.cover h1 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.5vw,2.3rem); font-weight:700; line-height:1.2; color:var(--text); margin-bottom:16px; }
+.cover h1 em { color:var(--accent); font-style:italic; }
+.cover p { font-size:1rem; color:var(--text2); line-height:1.85; }
+p { font-size:.97rem; color:var(--text2); margin-bottom:20px; line-height:1.85; }
+p:last-child { margin-bottom:0; }
+strong { color:var(--text); font-weight:700; }
+code { font-family:'Fira Code',monospace; font-size:.82em; background:var(--accent-lt); border:1px solid rgba(31,95,166,.16); border-radius:4px; padding:1px 6px; color:var(--accent); }
+.bubble { display:flex; gap:10px; align-items:flex-start; margin:28px 0 8px; }
+.bubble-avatar { flex-shrink:0; width:32px; height:32px; background:#f0a500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:2px; box-shadow:0 2px 6px rgba(240,165,0,.3); }
+.bubble-body { background:#fffbf0; border:1.5px solid #f0c040; border-radius:4px 14px 14px 14px; padding:11px 15px; font-size:.9rem; color:#4a3800; font-weight:600; box-shadow:0 2px 8px rgba(240,165,0,.15); line-height:1.65; max-width:500px; }
+.dica { border-left:3px solid var(--accent); background:var(--accent-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#1a3a6a; line-height:1.75; }
+.dica strong { color:#1a3a6a; font-weight:800; }
+.atencao { border-left:3px solid var(--gold); background:var(--gold-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#5a3808; line-height:1.75; }
+.atencao strong { color:#5a3808; font-weight:800; }
+.aviso { border-left:3px solid var(--red); background:var(--red-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#6a1515; line-height:1.75; }
+.aviso strong { color:#6a1515; font-weight:800; }
+.cblock { background:#f5f3f0; border:1px solid #ddd8d0; border-radius:8px; margin:20px 0; overflow:hidden; box-shadow:var(--shadow-sm); }
+.cblock-head { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface); border-bottom:1px solid #ddd8d0; }
+.cdots { display:flex; gap:5px; }
+.cdots span { width:9px; height:9px; border-radius:50%; }
+.c1{background:#ff6058;} .c2{background:#ffbd2e;} .c3{background:#28ca42;}
+.cfname { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); }
+.cblock pre { padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px; line-height:1.8; overflow-x:auto; color:#2a2420; white-space:pre; }
+.kw{color:#6d28d9;} .fn{color:#1d4ed8;} .st{color:#166534;}
+.nm{color:#b45309;} .cm{color:#888078;font-style:italic;}
+.vr{color:#b91c1c;} .op{color:#0d6e50;} .bi{color:#a06820;}
+.code-ann { margin:16px 0 24px; border-collapse:collapse; width:100%; }
+.code-ann tr { border-bottom:1px solid var(--border); }
+.code-ann tr:last-child { border-bottom:none; }
+.code-ann td { padding:8px 10px; font-size:.85rem; vertical-align:top; line-height:1.65; }
+.code-ann td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; white-space:nowrap; color:var(--accent); background:var(--accent-lt); border-radius:4px; width:1%; padding:8px 12px; }
+.code-ann td:last-child { color:var(--text2); }
+.code-ann td strong { color:var(--text); }
+.break { background:var(--gold-lt); border:1px solid rgba(160,104,32,.2); border-radius:8px; padding:18px 22px; text-align:center; margin:44px 0; }
+.break .be { font-size:1.8rem; display:block; margin-bottom:6px; }
+.break h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1rem; font-style:normal; margin-bottom:4px; }
+.break p { font-size:.83rem; color:#7a5010; margin:0; }
+.exercise { background:var(--surface); border:1.5px solid var(--accent); border-radius:8px; padding:20px 22px; margin:32px 0; box-shadow:var(--shadow-sm); }
+.ex-tag { font-family:'Fira Code',monospace; font-size:9.5px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:block; }
+.exercise h3 { font-family:'Playfair Display',serif; color:var(--text); font-size:1.05rem; margin-bottom:12px; }
+.exercise ol { padding-left:18px; font-size:.88rem; line-height:2.1; color:var(--text2); }
+.ex-diff { font-family:'Fira Code',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
+.diff-1 { background:var(--green-lt); color:var(--green); }
+.diff-2 { background:var(--gold-lt); color:var(--gold); }
+.diff-3 { background:var(--red-lt); color:var(--red); }
+.ex-ans { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.ex-ans-body { display:none; }
+.ex-ans-body.visible { display:block; }
+.btn-ans { display:inline-flex; align-items:center; gap:6px; font-family:'Fira Code',monospace; font-size:.75rem; font-weight:600; color:var(--green); background:var(--green-lt); border:1.5px solid rgba(13,110,80,.25); border-radius:5px; padding:6px 14px; cursor:pointer; transition:all .15s; margin-top:4px; letter-spacing:.03em; }
+.btn-ans:hover { background:#d0ece3; border-color:rgba(13,110,80,.5); }
+.downloads { margin:48px 0 32px; }
+.downloads-title { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
+.dl-grid { display:flex; flex-direction:column; gap:7px; }
+.dl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px 14px; text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:border-color .15s,box-shadow .15s; }
+.dl-item:hover { border-color:var(--accent); box-shadow:var(--shadow); }
+.dl-icon { font-size:1.1rem; flex-shrink:0; }
+.dl-info { flex:1; }
+.dl-name { font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); font-weight:500; }
+.dl-desc { font-size:.75rem; color:var(--text3); margin-top:1px; }
+.dl-badge { font-family:'Fira Code',monospace; font-size:9px; background:var(--accent-lt); color:var(--accent); border-radius:4px; padding:2px 8px; flex-shrink:0; }
+.ready { background:var(--green-lt); border:1.5px solid rgba(13,110,80,.3); border-radius:8px; padding:26px; text-align:center; margin:48px 0; }
+.ready .re { font-size:2rem; display:block; margin-bottom:10px; }
+.ready h2 { font-family:'Playfair Display',serif; color:var(--green); font-size:1.25rem; margin:0 0 8px; }
+.ready p { font-size:.88rem; color:#0a4535; margin:0; }
+.nav-bottom { display:flex; justify-content:space-between; margin-top:52px; padding-top:20px; border-top:1px solid var(--border); }
+.nav-link { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--text3); text-decoration:none; padding:7px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); transition:all .15s; }
+.nav-link:hover { border-color:var(--accent); color:var(--accent); }
+.nav-link.next { background:var(--accent); color:#fff; border-color:var(--accent); }
+.nav-link.next:hover { background:#1a4f8a; }
+footer { border-top:1px solid var(--border); padding:14px 28px; display:flex; justify-content:space-between; font-family:'Fira Code',monospace; font-size:10px; color:var(--text3); background:var(--surface); }
+footer a { color:inherit; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div id="prog" class="prog"></div>
+
+<header class="topbar">
+  <a class="tb-logo" href="../index.html">
+    <div class="tb-logo-icon">🐍</div>
+    Chatbots com Python
+  </a>
+  <div class="tb-nav">
+    <a class="tb-btn" href="../index.html">⊞ índice</a>
+    <span class="tb-lesson">aula 07 · do terminal ao sistema real</span>
+    <a class="tb-btn" href="aula6.html">←</a>
+    <a class="tb-btn next" href="aula8.html">→</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="cover">
+    <span class="cover-tag">aula 07</span>
+    <h1>Do terminal <em>ao sistema real</em></h1>
+    <p>O chatbot que construímos funciona muito bem. Mas ele vive dentro de um terminal, no computador de quem rodou o código. Para que outras pessoas possam usá-lo, em qualquer dispositivo e de qualquer lugar, é preciso transformá-lo em uma API web.</p>
+
+  <p>Imagine que você criou uma receita deliciosa, mas enquanto ela existe só na sua cabeça, você precisa cozinhá-la e só poderá servir em casa. Para que outras pessoas possam provar esse prato, você precisa abrir um restaurante. A API é o restaurante. Qualquer pessoa pode fazer um pedido, sem precisar entrar na cozinha e sem precisar saber como o prato é feito. Então, nós vamos construir esse restaurante. Ele vai funcionar aqui no seu computador (localmente), por enquanto só você acessa. Quando colocarmos o servidor na internet, aí a porta se abre para o mundo.</p>
+
+  <p>Na prática, isso significa que se o nosso chatbot fosse colocado em um servidor da internet, ele pararia de rodar direto no terminal e rodaria em um servidor que fica 'escutando' pedidos, como o navegador, um aplicativo de celular, uma página HTML, qualquer um desses que pode enviar uma mensagem para o servidor e receber uma resposta. O código Python continua sendo o mesmo, mas agora ele atende a todos, não só a quem tem o Python instalado.</p>
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      Fluxo da Requisição
+    </div>
+    <img src="img/092.png" alt="Fluxo de Requisição">
+  </div>
+
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">Mas esse servidor, onde ele fica? Precisa de um computador ligado o tempo todo?</div>
+  </div>
+
+  <p>No começo, o servidor vai rodar aqui mesmo, no seu computador. Isso é o suficiente para desenvolver, testar e entender como tudo funciona. Depois, quando o projeto estiver pronto para ser entregue, é possível colocá-lo numa plataforma na nuvem. Por enquanto, o foco é fazer o servidor funcionar localmente.</p>
+
+  <p>Antes de escrever qualquer código, é preciso instalar o FastAPI e o uvicorn. O uvicorn é o servidor que vai colocar a API no ar. Nós instalamos os dois juntos com um único comando no terminal do VSCode, o mesmo terminal que usamos para rodar os outros códigos.</p>
+
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">terminal</div>
+    </div>
+    <pre>pip install fastapi uvicorn</pre>
+  </div>
+
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+	 Instalação fastapi uvicorn
+    </div>
+    <img src="img/094.png" alt="Instalação fastapi uvicorn">
+  </div>
+
+<p>Veja que apareceu “Successfully installed...”, isso indica que a instalação foi concluída.</p>
+
+  <p>Pronto! Agora podemos criar a nossa primeira API. O arquivo de uma API FastAPI tem uma estrutura diferente de um script comum,  em vez de um loop esperando o usuário digitar, definimos funções que o servidor chama automaticamente quando uma requisição chega. </p>
+
+  <p>Para criar esse servidor, nós vamos usar uma biblioteca Python chamada <strong>FastAPI</strong>. FastAPI tem três características que fazem dela uma ótima escolha aqui. A primeira é que ela é simples de usar, o código fica limpo e legível. A segunda é que ela gera automaticamente uma página de testes, sem precisar instalar nada extra. E finalmente a terceira é que ela é rápida, tanto para desenvolver quanto para rodar.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">o que é FastAPI</div>
+    <div class="lousa-row"><span class="bul">◆</span><span>um <strong>framework web</strong> para criar APIs com Python</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>você define <strong>rotas</strong> e o que cada um faz</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>o <strong>uvicorn</strong> é o servidor que coloca a API no ar</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>FastAPI </strong>gera automaticamente o endereço <code>/docs</code> para testar</span></div>
+<div class="lousa-row"><span><i>*** <code>/docs</code> é uma página de documentação interativa que o FastAPI gera automaticamente, sem você precisar fazer nada. ***</i></span></div>
+  </div>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">O que é "framework web"? E o que são rotas nesse contexto?</div>
+  </div>
+
+  <p>Um framework é um conjunto de ferramentas e regras já prontas que agilizam o desenvolvimento. Em vez de escrever do zero tudo o que envolve receber uma requisição HTTP, interpretar os dados e devolver uma resposta, você usa uma base que já resolve essas partes. O FastAPI é isso, uma base construída especificamente para criar APIs com Python, com boas práticas embutidas.</p>
+
+  <p>Já as rotas, que podemos chamar de endereços, são os caminhos dentro da sua API, cada um associado a uma ação. Funciona como o cardápio de um restaurante: cada item tem um nome e descreve o que você recebe ao pedi-lo. No FastAPI, <code>@app.get("/")</code> registra o endereço <code>/</code> para buscar informação, e <code>@app.post("/chat")</code> registra o endereço <code>/chat</code> para enviar mensagens. Quando uma requisição chega nesse endereço, a função que segue na programação logo abaixo da linha <code>@app.get("/")</code> é chamada automaticamente.</p>
+
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      Fluxo Interno da Requisição
+    </div>
+    <img src="img/093.png" alt="Fluxo Interno da Requisição">
+  </div>
+<br>
+
+  <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">O que é HTTP?
+  </div>
+</div>
+
+  <p><b>HTTP</b>  é o protocolo padrão da web, ou seja, o conjunto de regras que define como computadores trocam informações na internet</p>
+<br>
+
+  <p>Agora que entendemos esses conceitos, vamos seguir. Com o FastAPI instalado, o próximo passo é criar o arquivo Python da API. A primeira linha é sempre importar o FastAPI. Em seguida, criamos o <code>app</code>, que é a própria API. Pensa nele como o restaurante já aberto: antes de colocar qualquer comida (rota) no cardápio, o restaurante precisa existir.</p>
+
+  
+  <div class="exercise">
+    <span class="ex-tag">// exercício 049</span>
+    <h3>Primeira API e abertura do /docs</h3>
+    <ol>
+      <li>Crie o arquivo <code>049_Exercicio.py</code> com o código abaixo e execute clicando em Run Python File.
+        <div class="cblock" style="margin:10px 0 4px">
+          <div class="cblock-head"><div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div><div class="cfname">049_Exercicio.py</div></div>
+          <pre>from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
+
+@app.get(&quot;/&quot;)
+def raiz():
+    return {&quot;mensagem&quot;: &quot;API funcionando!&quot;}
+
+if __name__ == &quot;__main__&quot;:
+    uvicorn.run(&quot;049_Exercicio:app&quot;, host=&quot;0.0.0.0&quot;, port=8000, reload=True)</pre>
+        </div>
+      </li>
+      <li>Abra o navegador em <code>http://127.0.0.1:8000/docs</code>.</li>
+      <li>Confirme se a página do FastAPI abriu corretamente.</li>
+      <li>Por enquanto, a ideia é só colocar a API no ar e visualizar o <code>/docs</code>.</li>
+    </ol>
+  </div>
+
+<table class="code-ann">
+    <tr>
+      <td>FastAPI()</td>
+      <td><strong>Cria a aplicação.</strong> É o objeto central que vai receber todos os endereços registrados. Por padrão, chama-se <code>app</code>.</td>
+    </tr>
+    <tr>
+      <td>@app.get("/")</td>
+      <td><strong>Define um endereço da API.</strong> O <code>@</code> é um decorador, que é uma forma de "etiquetar" uma função. Aqui, estamos dizendo que a função <code>raiz</code> responde a requisições do tipo GET no endereço <code>"/"</code>, que é a raiz da API.</td>
+    </tr>
+    <tr>
+      <td>return {...}</td>
+      <td><strong>A resposta.</strong> O FastAPI converte automaticamente o dicionário Python em JSON, que é o formato padrão de resposta de APIs.</td>
+    </tr>
+    <tr>
+      <td>uvicorn.run(...)</td>
+      <td><strong>Coloca a API no ar.</strong> O primeiro argumento é o nome do arquivo e o objeto da aplicação, separados por dois-pontos. <code>reload=True</code> faz o servidor reiniciar sozinho quando detecta mudanças no código.</td>
+    </tr>
+  </table>
+
+<div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      049_Exercicio
+    </div>
+    <img src="img/095.png" alt="049_Exercicio">
+  </div>
+
+  <p>Para rodar, usamos o terminal do VSCode, na mesma pasta do arquivo, com o comando <code>python 049_Exercicio.py</code>. Quando o uvicorn iniciar, ele vai mostrar uma mensagem indicando que a API está disponível em <code>http://127.0.0.1:8000</code>. O <code>127.0.0.1</code> é sempre o endereço do próprio computador, e o <code>8000</code> é a porta que escolhemos.</p>
+
+  <p>Com a API rodando, nós abrimos o navegador e acessamos <code>http://127.0.0.1:8000/docs</code>. Essa página é gerada automaticamente pelo FastAPI e funciona como uma interface de testes, onde é possível ver todos os endereços disponíveis sem precisar de nenhuma ferramenta extra.</p>
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      049 - FAST API Swagger UI - Docs
+    </div>
+    <img src="img/096.png" alt="049_Exercicio">
+  </div>
+
+<div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">O que é GET? Tem outros tipos?</div>
+  </div>
+
+
+  <p>O <b>GET</b> é o método HTTP usado quando queremos <b>buscar</b> uma informação. É o mesmo método que o navegador usa quando você digita um endereço e aperta Enter, você está fazendo um GET. Mas quando queremos <b>enviar</b> dados para o servidor, usamos um método diferente, o <b>POST</b>. Para o nosso chatbot, faz mais sentido usar POST, porque o usuário está enviando uma mensagem para ser processada. O servidor precisa receber essa mensagem e devolver uma resposta.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">GET vs POST</div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>GET</strong>: buscar informação. "Me dá o cardápio." Sem corpo na requisição.</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span><strong>POST</strong>: enviar dado para ser processado. "Quero pedir uma pizza." Com corpo na requisição.</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>O chatbot usa <strong>POST</strong>: o usuário envia uma mensagem e recebe uma resposta.</span></div>
+    <div class="lousa-row"><span>*** <b>Endpoint</b> é um endereço específico que aceita requisições e devolve uma resposta. Podemos dizer que é o mesmo que rota.***</span></div>
+  </div>
+
+
+  <p>Agora vamos criar um novo arquivo com essa mesma estrutura e usar o <code>/docs</code> para testar a rota na prática.</p>
+
+<div class="exercise">
+    <span class="ex-tag">// exercício 050</span>
+    <h3>Primeiro endpoint e teste no /docs</h3>
+    <ol>
+      <li>Crie o arquivo <code>050_Exercicio.py</code> com o código abaixo.
+        <div class="cblock" style="margin:10px 0 4px">
+          <div class="cblock-head"><div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div><div class="cfname">050_Exercicio.py</div></div>
+          <pre>from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
+
+@app.get(&quot;/&quot;)
+def raiz():
+    return {&quot;mensagem&quot;: &quot;API funcionando!&quot;}
+
+if __name__ == &quot;__main__&quot;:
+    uvicorn.run(&quot;050_Exercicio:app&quot;, host=&quot;0.0.0.0&quot;, port=8000, reload=True)</pre>
+        </div>
+      </li>
+      <li>Abra o navegador em <code>http://127.0.0.1:8000/docs</code>.</li>
+      <li>Clique em <code>GET /</code>, depois em "Try it out" e em "Execute".</li>
+      <li>Observe o campo "Response body", ele mostra o JSON que a API devolveu.</li>
+      <li>Para encerrar o servidor, volte ao terminal e pressione <code>Ctrl+C</code>.</li>
+    </ol>
+  </div>
+
+<div class="install-step">
+    <div class="install-step-head"><div class="install-num">1</div> Localizando o "Try it out" no /docs</div>
+    <img src="img/097.png" alt="Página /docs com o botão Try it out indicado">
+  </div>
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">2</div> Clicando em Try it out</div>
+    <img src="img/098.png" alt="Campo de entrada ativado após clicar em Try it out">
+  </div>
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">3</div> Clicando em Execute</div>
+    <img src="img/099.png" alt="Botão Execute sendo clicado para enviar a requisição">
+  </div>
+  <div class="install-step">
+    <div class="install-step-head"><div class="install-num">4</div> Response body: API funcionando!</div>
+    <img src="img/100.png" alt="Response body exibindo o JSON com a mensagem API funcionando">
+  </div>
+
+  <p>A estrutura básica está pronta. Agora vamos conectar o chatbot a ela. O endpoint POST vai receber o texto do usuário, passar para a API da OpenAI e devolver a resposta. O formato de ida e volta entre o front-end e o back-end é o JSON, um formato de texto simples que organiza os dados em pares de chave (nome do campo) e valor (dado).</p>
+
+  <p>Para criar um endpoint POST que recebe uma mensagem, o FastAPI precisa saber o formato do dado que vai chegar. Fazemos isso criando uma classe que herda de <code>BaseModel</code>, do <code>Pydantic</code>. Pydantic é uma biblioteca que já vem junto com o FastAPI e serve para definir e validar formatos de dados.</p>
+
+  <p>Parece mais complexo do que é. Na prática, é criar uma classe com os campos que a requisição vai ter. No nosso caso, a mensagem do usuário tem só um campo, o texto. A classe <code>Mensagem</code> define exatamente isso, e o FastAPI cuida de receber o JSON e transformá-lo nessa classe automaticamente.</p>
+
+<div class="exercise">
+    <span class="ex-tag">// exercício 051</span>
+    <h3>Chatbot como endpoint POST</h3>
+    <ol>
+      <li>Crie o arquivo <code>051_Exercicio.py</code> com o código abaixo e execute clicando em Run Python File.
+        <div class="cblock" style="margin:10px 0 4px">
+          <div class="cblock-head"><div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div><div class="cfname">051_Exercicio.py</div></div>
+          <pre><span class="kw">import</span> warnings
+<span class="kw">import</span> urllib3
+<span class="kw">import</span> httpx
+<span class="kw">import</span> os
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> uvicorn
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
+    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+)
+
+<span class="kw">class</span> <span class="fn">Mensagem</span>(<span class="fn">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="bi">str</span>
+
+<span class="op">@</span><span class="vr">app</span>.<span class="fn">post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">msg</span>: <span class="fn">Mensagem</span>):
+    <span class="kw">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span>[
+                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo."</span>},
+                {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">msg</span>.<span class="vr">texto</span>}
+            ],
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">150</span>,
+            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+        )
+        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>}
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">"Não consegui processar. Tente novamente."</span>, <span class="st">"erro"</span>: <span class="bi">str</span>(<span class="vr">e</span>)}
+
+<span class="kw">if</span> __name__ <span class="op">==</span> <span class="st">"__main__"</span>:
+    uvicorn.<span class="fn">run</span>(<span class="st">"051_Exercicio:app"</span>, <span class="vr">host</span><span class="op">=</span><span class="st">"0.0.0.0"</span>, <span class="vr">port</span><span class="op">=</span><span class="nm">8000</span>, <span class="vr">reload</span><span class="op">=</span><span class="kw">True</span>)</pre>
+        </div>
+      </li>
+      <li>Acesse <code>http://127.0.0.1:8000/docs</code> e abra a rota <code>POST /chat</code>.</li>
+      <li>Clique em "Try it out" e no campo "Request body" coloque: <code>{"texto": "Qual é a capital do Brasil?"}</code></li>
+      <li>Execute e observe o campo "Response body". A chave <code>"resposta"</code> deve conter a resposta da IA.</li>
+      <li>Teste também com uma pergunta que cause erro deliberado: remova a chave do <code>.env</code> temporariamente e observe o que a API devolve. Depois restaure a chave.</li>
+    </ol>
+  </div>
+
+<table class="code-ann">
+    <tr>
+      <td>BaseModel</td>
+      <td><strong>Define o formato do dado esperado.</strong> A classe <code>Mensagem</code> diz que a requisição deve ter um campo chamado <code>texto</code> do tipo <code>str</code>. Se o dado chegar fora desse formato, o FastAPI já responde com um erro antes de entrar na função.</td>
+    </tr>
+    <tr>
+      <td>msg: Mensagem</td>
+      <td><strong>O parâmetro da função recebe o dado validado.</strong> O FastAPI lê o JSON da requisição, monta o objeto <code>Mensagem</code> e passa para a função automaticamente. Dentro da função, acessamos o texto digitado com <code>msg.texto</code>.</td>
+    </tr>
+    <tr>
+      <td>@app.post("/chat")</td>
+      <td><strong>Define o endereço POST.</strong> Toda vez que alguém enviar um POST para <code>/chat</code>, essa função é chamada com o dado recebido.</td>
+    </tr>
+    <tr>
+      <td>try / except</td>
+      <td><strong>Tratamento de erro.</strong> Se a chamada à OpenAI falhar por qualquer motivo, chave inválida, sem internet, timeout, a API não trava. Ela devolve uma resposta de erro no mesmo formato JSON, para que quem chamou saiba o que aconteceu.</td>
+    </tr>
+  </table>
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      051 - Rodando o Código
+    </div>
+    <img src="img/101.png" alt="051_Exercicio">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">2</span>
+     FAST API Swagger UI - Docs
+    </div>
+    <img src="img/100.png" alt="051_Exercicio">
+  </div>
+
+  <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">3</span>
+      Enviando Pergunta
+    </div>
+    <img src="img/102.png" alt="051_Exercicio">
+  </div>
+
+ <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">4</span>
+      Recebendo Resposta
+    </div>
+    <img src="img/103.png" alt="051_Exercicio">
+  </div>
+
+	<div><p>Vamos testar rodar o código sem a chave do .env.</p></div>
+
+ <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">5</span>
+      Teste código sem Chave API OpenAI
+    </div>
+    <img src="img/104.png" alt="051_Exercicio">
+  </div>
+
+
+  <!-- BREAK -->
+  <div class="break">
+    <span class="be">☕</span>
+    <h3>Pausa para o café</h3>
+    <p>Já temos um chatbot funcionando como API. Vamos descansar dois minutos antes de deixá-lo pronto para o mundo real.</p>
+  </div>
+
+  <p>O chatbot que acabamos de criar funciona, mas ainda tem um detalhe importante que precisa de atenção antes de mostrar para qualquer pessoa: a chave da API da OpenAI. No código atual, ela vem do arquivo <code>.env</code> via <code>os.getenv()</code>, e isso está correto para o back-end. O problema acontece quando o projeto vai para a internet, ou quando é necessário criar uma interface visual em HTML.</p>
+
+  <p>A separação entre back-end e front-end resolve esse problema de forma elegante. O <strong>back-end</strong> é o Python rodando no servidor, e ele guarda a chave com segurança no <code>.env</code>. O <strong>front-end</strong> é a página HTML que o usuário vê no navegador, e ela nunca precisa saber qual é a chave. O front-end só sabe o endereço da API, que é <code>http://127.0.0.1:8000/chat</code>, e envia as mensagens para lá.</p>
+
+  <div class="lousa">
+    <div class="lousa-title">por que a chave fica no back-end</div>
+    <div class="lousa-row"><span class="bul">◆</span><span>o front-end roda no navegador do usuário, qualquer pessoa pode ver o código-fonte</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>se a chave estiver no HTML ou no JavaScript, ela fica exposta para todos</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>o back-end roda no servidor, o código-fonte não é visível para o usuário</span></div>
+    <div class="lousa-row"><span class="bul">◆</span><span>a chave fica no <code>.env</code> do servidor. Front-end só vê a resposta final.</span></div>
+  </div>
+
+  <p>Para que a página HTML consiga falar com a API Python, é preciso liberar essa comunicação no servidor. Isso é feito com uma configuração chamada CORS, que em português seria algo como "compartilhamento de recursos entre origens diferentes". Quando o navegador tenta acessar uma API em um endereço diferente do que a página veio, ele primeiro pergunta ao servidor se isso é permitido. O CORS é a resposta do servidor para essa pergunta.</p>
+
+  <p>No FastAPI, adicionamos o CORS com um middleware, que é uma camada que intercepta todas as requisições antes de chegarem aos endpoints. Agora vamos montar o arquivo completo desta etapa, com CORS habilitado, tema configurável e tratamento de erros.</p>
+
+  <div class="exercise">
+    <span class="ex-tag">// exercício 052</span>
+    <h3>API com tema, CORS e tratamento de erros</h3>
+    <ol>
+      <li>Crie o arquivo <code>052_Exercicio.py</code> e escreva o código abaixo.
+        <div class="cblock" style="margin:10px 0 4px">
+          <div class="cblock-head"><div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div><div class="cfname">052_Exercicio.py</div></div>
+          <pre>import warnings
+import urllib3
+import httpx
+import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from openai import OpenAI
+from dotenv import load_dotenv
+import uvicorn
+
+warnings.filterwarnings(&quot;ignore&quot;)
+urllib3.disable_warnings()
+load_dotenv()
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[&quot;*&quot;],
+    allow_methods=[&quot;*&quot;],
+    allow_headers=[&quot;*&quot;],
+)
+
+client = OpenAI(
+    api_key=os.getenv(&quot;OPENAI_API_KEY&quot;),
+    http_client=httpx.Client(verify=False)
+)
+
+TEMA = (
+    &quot;Você é um assistente de suporte técnico de uma empresa de internet. &quot;
+    &quot;Responda sempre em português, de forma clara e acessível para qualquer pessoa. &quot;
+    &quot;Se a pergunta não for sobre suporte técnico de internet, diga educadamente que &quot;
+    &quot;não pode ajudar com esse assunto e ofereça ajuda no tema correto.&quot;
+)
+
+class Mensagem(BaseModel):
+    texto: str
+
+@app.post(&quot;/chat&quot;)
+def chat(msg: Mensagem):
+    try:
+        resposta = client.chat.completions.create(
+            model=&quot;gpt-4.1-mini&quot;,
+            messages=[
+                {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: TEMA},
+                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: msg.texto}
+            ],
+            max_tokens=200,
+            temperature=0.4
+        )
+        return {&quot;resposta&quot;: resposta.choices[0].message.content}
+    except Exception as e:
+        return {&quot;resposta&quot;: &quot;Serviço temporariamente indisponível.&quot;, &quot;erro&quot;: str(e)}
+
+if __name__ == &quot;__main__&quot;:
+    uvicorn.run(&quot;052_Exercicio:app&quot;, host=&quot;0.0.0.0&quot;, port=8000, reload=True)</pre>
+        </div>
+
+      </li>
+      <li>Rode o servidor.</li>
+      <li>Teste no <code>/docs</code> enviando uma pergunta dentro do tema de suporte técnico.</li>
+      <li>Teste enviando uma pergunta fora do tema, como "Qual é a receita de bolo?", e observe o comportamento.</li>
+      <li>Abra o arquivo <code>index.html</code> fornecido junto com esta aula no navegador e veja a resposta chegando do back-end.</li>
+    </ol>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>CORSMiddleware</td>
+      <td><strong>Libera a comunicação entre a página HTML e a API.</strong> Sem isso, o navegador bloquearia as requisições vindas do front-end por segurança. O <code>allow_origins=["*"]</code> aceita requisições de qualquer origem, o que é prático durante o desenvolvimento.</td>
+    </tr>
+    <tr>
+      <td>TEMA</td>
+      <td><strong>O system prompt vira uma constante com nome claro.</strong> Colocar o tema numa variável separada facilita muito a personalização. Para mudar o chatbot de suporte técnico para atendimento de restaurante, basta trocar o conteúdo dessa variável.</td>
+    </tr>
+  </table>
+
+
+
+ <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">1</span>
+      Teste de código no Docs
+    </div>
+    <img src="img/105.png" alt="052_Exercicio">
+  </div>
+<br>
+
+<a class="dl-item" href="arquivos/index_52.zip" download="index_52.zip">
+  <span class="dl-icon">🌐</span>
+  <div class="dl-info">
+    <div class="dl-name">index_52.zip</div>
+    <div class="dl-desc">Interface HTML do exercício 052</div>
+  </div>
+  <span class="dl-badge">↓ baixar</span>
+</a>
+<br>
+
+ <div class="install-step">
+    <div class="install-step-head">
+      <span class="install-num">2</span>
+      Teste Interface HTML
+    </div>
+    <img src="img/106.png" alt="052_Exercicio">
+  </div>
+
+   <div class="bubble">
+    <div class="bubble-avatar">🙋</div>
+    <div class="bubble-body">E se eu quiser que ele lembre das mensagens anteriores da conversa? Agora cada mensagem chega sozinha, sem histórico.</div>
+  </div>
+<br>
+
+  <p>Essa é uma ótima observação. Nesse modelo, cada chamada ao endpoint <code>/chat</code> é independente, o chatbot não tem memória entre as mensagens. Para adicionar histórico, seria preciso guardar a conversa no back-end vinculada a algum identificador de sessão, ou enviar o histórico no próprio corpo da requisição. Esse é um caminho natural para explorar depois que esse modelo básico estiver dominado.</p>
+
+  <div class="atencao">
+    <strong>Atenção ao texto do chatbot.</strong> O system prompt define o comportamento, mas a linguagem deve ser pensada para o público. Um chatbot de suporte de banco fala diferente de um assistente de uma loja de roupas. Evite jargões técnicos com usuários comuns e evite linguagem muito informal com usuários corporativos. O TEMA é onde isso se define.
+  </div>
+<br>
+
+  <p>Com o back-end rodando e a interface HTML aberta, o sistema funciona de ponta a ponta. O usuário digita no navegador, o JavaScript da página envia um POST para <code>http://127.0.0.1:8000/chat</code>, o Python processa, chama a OpenAI, e devolve o JSON com a resposta. O JavaScript lê esse JSON e exibe na tela. Em nenhum momento a chave da API aparece no navegador.</p>
+
+  <div class="dica">
+    <strong>Dica sobre erros comuns.</strong> Se ao rodar <code>python 052_Exercicio.py</code> aparecer a mensagem "Address already in use", significa que a porta 8000 já está ocupada por outro servidor que ficou rodando. Para resolver, encerre o terminal anterior ou mude o número da porta para <code>8001</code> no código.
+  </div>
+
+  <div class="atencao">
+    <strong>Algumas informações importantes antes de você começar a trabalhar por conta própria:</strong><br><br>
+    <strong>Perfil dentro da API não fica solto no arquivo.</strong> Ele precisa entrar no fluxo da requisição. Isso significa que a API recebe a mensagem, verifica se ali existe alguma informação importante, atualiza o perfil quando for necessário e só depois monta a resposta.<br><br>
+    <strong>A variável de perfil fica fora da função.</strong> Se você quiser guardar o nome do usuário para usar nas próximas mensagens, essa variável precisa ser criada fora de <code>chat(msg)</code>. Assim, ela continua existindo enquanto o servidor estiver rodando.<br><br>
+    <strong>Quando a função vai alterar essa variável, usamos <code>global</code>.</strong> Sem <code>global</code>, o Python entende que você está criando uma variável nova só dentro da função, e a informação some quando a execução termina.<br><br>
+    <strong><code>normalizar()</code> serve para comparar texto com mais segurança.</strong> Essa função transforma a frase em minúsculas e remove acentos. Assim, a API consegue reconhecer expressões como <code>Meu nome é Ana</code>, <code>meu nome e ana</code> ou <code>MEU NOME É ANA</code> sem depender de um jeito único de escrever.<br><br>
+    <strong>O system prompt dinâmico é montado a cada chamada.</strong> Em vez de deixar um texto fixo em <code>TEMA</code>, você pode criar uma função como <code>montar_system()</code>. Ela lê o perfil atual e devolve o prompt já atualizado. Desse jeito, se o nome do usuário tiver sido guardado, ele entra automaticamente no comportamento do chatbot na próxima resposta.
+  </div>
+
+  <div class="cblock">
+    <div class="cblock-head">
+      <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+      <div class="cfname">estrutura geral da ideia</div>
+    </div>
+    <pre>nome_usuario = None
+
+def normalizar(texto):
+    ...
+
+def montar_system():
+    ...
+
+@app.post("/chat")
+def chat(msg: Mensagem):
+    global nome_usuario
+
+    texto_norm = normalizar(msg.texto)
+
+    if "meu nome e" in texto_norm:
+        nome_usuario = ...
+        return {"resposta": ...}
+
+    resposta = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": montar_system()},
+            {"role": "user", "content": msg.texto}
+        ]
+    )</pre>
+  </div>
+
+  <table class="code-ann">
+    <tr>
+      <td>nome_usuario = None</td>
+      <td><strong>Guarda o perfil fora da função.</strong> Começa vazio e pode receber o nome do usuário depois.</td>
+    </tr>
+    <tr>
+      <td>global nome_usuario</td>
+      <td><strong>Permite alterar a variável de fora.</strong> É isso que faz o dado continuar disponível nas próximas chamadas.</td>
+    </tr>
+    <tr>
+      <td>normalizar(msg.texto)</td>
+      <td><strong>Prepara o texto para comparação.</strong> Ajuda a detectar a mesma intenção mesmo quando o usuário escreve com maiúsculas ou acentos diferentes.</td>
+    </tr>
+    <tr>
+      <td>if "meu nome e" in texto_norm</td>
+      <td><strong>Verifica se a mensagem traz uma informação de perfil.</strong> Quando isso acontece, a API atualiza o nome antes de chamar o modelo.</td>
+    </tr>
+    <tr>
+      <td>montar_system()</td>
+      <td><strong>Monta o prompt no momento da requisição.</strong> Assim, o chatbot responde com base no perfil mais atual.</td>
+    </tr>
+  </table>
+
+
+  <!-- EXERCÍCIOS SOLO -->
+
+  <p>Agora é a sua vez.</p>
+
+  <div class="exercise">
+    <span class="ex-tag">// exercício 053</span>
+    <h3>Novo endpoint de status <span class="ex-diff diff-1">fácil</span></h3>
+    <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie o arquivo <code>053_Exercicio.py</code> com um chatbot FastAPI completo. Além da rota <code>/chat</code>, adicione uma segunda rota GET chamada <code>/status</code> que devolve um JSON com o nome do seu chatbot e uma mensagem indicando que o serviço está ativo. Teste as duas rotas no <code>/docs</code>.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <div class="cblock" style="margin-top:14px;">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">053_Exercicio.py</div>
+          </div>
+          <pre><span class="kw">import</span> warnings, urllib3, httpx, os
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> uvicorn
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+urllib3.<span class="fn">disable_warnings</span>()
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
+
+<span class="vr">TEMA</span> <span class="op">=</span> (
+    <span class="st">"Você é um assistente de suporte técnico de uma empresa de internet. "</span>
+    <span class="st">"Responda sempre em português, de forma clara e acessível. "</span>
+    <span class="st">"Se a pergunta não for sobre suporte técnico, diga educadamente que não pode ajudar."</span>
+)
+
+<span class="dc">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>():
+    <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">"API funcionando!"</span>}
+
+<span class="dc">@app.get</span>(<span class="st">"/status"</span>)
+<span class="kw">def</span> <span class="fn">status</span>():
+    <span class="kw">return</span> {<span class="st">"nome"</span>: <span class="st">"Assistente de Suporte"</span>, <span class="st">"situacao"</span>: <span class="st">"ativo"</span>}
+
+<span class="kw">class</span> <span class="fn">Mensagem</span>(<span class="fn">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="bi">str</span>
+
+<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">msg</span>: <span class="fn">Mensagem</span>):
+    <span class="kw">try</span>:
+        <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">TEMA</span>}, {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">msg</span>.<span class="vr">texto</span>}],
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">200</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+        )
+        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resp</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>}
+    <span class="kw">except</span> <span class="fn">Exception</span>:
+        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">"Serviço temporariamente indisponível."</span>}
+
+<span class="kw">if</span> __name__ <span class="op">==</span> <span class="st">"__main__"</span>:
+    uvicorn.<span class="fn">run</span>(<span class="st">"053_Exercicio:app"</span>, <span class="vr">host</span><span class="op">=</span><span class="st">"0.0.0.0"</span>, <span class="vr">port</span><span class="op">=</span><span class="nm">8000</span>, <span class="vr">reload</span><span class="op">=</span><span class="kw">True</span>)</pre>
+        </div>
+        <p style="font-size:.85rem;color:var(--text2);margin-top:10px;">A rota <code>/status</code> fica registrada antes da classe <code>Mensagem</code>. Ao acessar <code>http://127.0.0.1:8000/status</code> ou testar pelo <code>/docs</code>, o JSON aparece com os dois campos.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <span class="ex-tag">// exercício 054</span>
+    <h3>Chatbot com tema diferente <span class="ex-diff diff-2">médio</span></h3>
+    <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie o arquivo <code>054_Exercicio.py</code>. Escolha um tema diferente para o chatbot, como atendimento de restaurante, assistente de livraria ou ajuda de academia. Reescreva a variável <code>TEMA</code> para o novo contexto. O system prompt deve definir claramente o que o chatbot faz, o que ele não responde e o tom de linguagem adequado para o público. Teste com perguntas dentro e fora do tema.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <div class="cblock" style="margin-top:14px;">
+          <div class="cblock-head"><div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div><div class="cfname">054_Exercicio.py</div></div>
+          <pre>import warnings
+import urllib3
+import httpx
+import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from openai import OpenAI
+from dotenv import load_dotenv
+import uvicorn
+
+warnings.filterwarnings(&quot;ignore&quot;)
+urllib3.disable_warnings()
+load_dotenv()
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[&quot;*&quot;],
+    allow_methods=[&quot;*&quot;],
+    allow_headers=[&quot;*&quot;],
+)
+
+client = OpenAI(
+    api_key=os.getenv(&quot;OPENAI_API_KEY&quot;),
+    http_client=httpx.Client(verify=False)
+)
+
+TEMA = (
+    &quot;Você é um assistente da Livraria Páginas Abertas. &quot;
+    &quot;Ajude os clientes a encontrar livros, informar disponibilidade e sugerir leituras. &quot;
+    &quot;Responda em português, com linguagem acolhedora e simples. &quot;
+    &quot;Se a pergunta não for sobre livros, leitura ou a livraria, diga gentilmente &quot;
+    &quot;que não pode ajudar com esse assunto.&quot;
+)
+
+@app.get(&quot;/&quot;)
+def raiz():
+    return {&quot;mensagem&quot;: &quot;API funcionando!&quot;}
+
+class Mensagem(BaseModel):
+    texto: str
+
+@app.post(&quot;/chat&quot;)
+def chat(msg: Mensagem):
+    try:
+        resp = client.chat.completions.create(
+            model=&quot;gpt-4.1-mini&quot;,
+            messages=[
+                {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: TEMA},
+                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: msg.texto}
+            ],
+            max_tokens=200,
+            temperature=0.4
+        )
+        return {&quot;resposta&quot;: resp.choices[0].message.content}
+    except Exception as e:
+        return {&quot;resposta&quot;: &quot;Serviço temporariamente indisponível.&quot;, &quot;erro&quot;: str(e)}
+
+if __name__ == &quot;__main__&quot;:
+    uvicorn.run(&quot;054_Exercicio:app&quot;, host=&quot;0.0.0.0&quot;, port=8000, reload=True)</pre>
+        </div>
+        <p style="font-size:.85rem;color:var(--text2);margin-top:10px;">Nesta solução, o arquivo já está completo. A parte mais importante é a variável <code>TEMA</code>, porque é ela que define o assunto, o limite do chatbot e o jeito de responder.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <span class="ex-tag">// exercício 055</span>
+    <h3>Sistema completo com perfil e API <span class="ex-diff diff-3">desafio</span></h3>
+    <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie um arquivo <code>055_Exercicio.py</code> que combine o que foi visto até aqui. A API deve ter um endpoint POST <code>/chat</code> que, além de responder à mensagem, também detecta quando o usuário informa o nome (com "meu nome é") e guarda esse dado em uma variável global. O system prompt deve ser reconstruído a cada chamada com o nome do usuário, quando disponível. O tema do chatbot é livre, mas deve estar claramente definido no system prompt. Construa o arquivo do zero.</p>
+    <div class="ex-ans">
+      <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+      <div class="ex-ans-body">
+        <div class="cblock" style="margin-top:14px;">
+          <div class="cblock-head">
+            <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+            <div class="cfname">055_Exercicio.py</div>
+          </div>
+          <pre>import warnings
+import urllib3
+import httpx
+import os
+import unicodedata
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from openai import OpenAI
+from dotenv import load_dotenv
+import uvicorn
+
+warnings.filterwarnings(&quot;ignore&quot;)
+urllib3.disable_warnings()
+load_dotenv()
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[&quot;*&quot;],
+    allow_methods=[&quot;*&quot;],
+    allow_headers=[&quot;*&quot;],
+)
+
+client = OpenAI(
+    api_key=os.getenv(&quot;OPENAI_API_KEY&quot;),
+    http_client=httpx.Client(verify=False)
+)
+
+nome_usuario = None
+
+def normalizar(texto):
+    texto = texto.lower()
+    texto = unicodedata.normalize(&quot;NFD&quot;, texto)
+    return &quot;&quot;.join(c for c in texto if unicodedata.category(c) != &quot;Mn&quot;)
+
+def montar_system():
+    base = (
+        &quot;Você é um assistente da Livraria Páginas Abertas. &quot;
+        &quot;Ajude com recomendações e informações sobre livros. &quot;
+        &quot;Seja caloroso e conciso.&quot;
+    )
+    if nome_usuario:
+        base += f&quot; O nome do cliente é {nome_usuario}. Use o nome com moderação.&quot;
+    return base
+
+class Mensagem(BaseModel):
+    texto: str
+
+@app.post(&quot;/chat&quot;)
+def chat(msg: Mensagem):
+    global nome_usuario
+    texto_original = msg.texto.strip()
+    texto_norm = normalizar(texto_original)
+
+    marcador = &quot;meu nome e&quot;
+    if marcador in texto_norm:
+        inicio = texto_norm.find(marcador) + len(marcador)
+        nome_usuario = texto_original[inicio:].strip(&quot; .,!?:;&quot;).title()
+        return {&quot;resposta&quot;: f&quot;Prazer, {nome_usuario}! Como posso ajudar?&quot;}
+
+    try:
+        resp = client.chat.completions.create(
+            model=&quot;gpt-4.1-mini&quot;,
+            messages=[
+                {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: montar_system()},
+                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: msg.texto}
+            ],
+            max_tokens=200,
+            temperature=0.4
+        )
+        return {&quot;resposta&quot;: resp.choices[0].message.content}
+    except Exception as e:
+        return {&quot;resposta&quot;: &quot;Serviço indisponível no momento.&quot;, &quot;erro&quot;: str(e)}
+
+if __name__ == &quot;__main__&quot;:
+    uvicorn.run(&quot;055_Exercicio:app&quot;, host=&quot;0.0.0.0&quot;, port=8000, reload=True)</pre>
+        </div>
+        <p style="font-size:.85rem;color:var(--text2);margin-top:10px;">A palavra-chave <code>global</code> dentro da função <code>chat</code> indica que a variável <code>nome_usuario</code> que queremos modificar é a que está fora da função, não uma nova variável local. Sem <code>global</code>, a atribuição criaria uma variável local que desaparece ao fim da chamada. A função <code>montar_system()</code> é chamada a cada requisição, garantindo que o system prompt sempre reflita o estado atual do perfil.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div class="downloads">
+    <span class="downloads-title">// arquivos desta aula</span>
+    <div class="dl-grid">
+
+      <a class="dl-item" href="arquivos/049_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">049_Exercicio.py</div>
+          <div class="dl-desc">Primeira API FastAPI com rota GET e abertura do /docs</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/050_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">050_Exercicio.py</div>
+          <div class="dl-desc">Estrutura básica da API com teste da rota pelo /docs</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/051_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">051_Exercicio.py</div>
+          <div class="dl-desc">Endpoint POST /chat integrando OpenAI com BaseModel e tratamento de erros</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/052_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">052_Exercicio.py</div>
+          <div class="dl-desc">API com CORS, tema personalizável e tratamento de erros</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/053_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">053_Exercicio.py</div>
+          <div class="dl-desc">Exercício 053, endpoint GET /status adicionado à API</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/054_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">054_Exercicio.py</div>
+          <div class="dl-desc">Exercício 054, chatbot da Livraria Páginas Abertas com tema personalizado</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+      <a class="dl-item" href="arquivos/055_Exercicio.py" target="_blank">
+        <span class="dl-icon">🐍</span>
+        <div class="dl-info">
+          <div class="dl-name">055_Exercicio.py</div>
+          <div class="dl-desc">Exercício 055, API com perfil, normalizar(), detecção de nome e system prompt dinâmico</div>
+        </div>
+        <span class="dl-badge">↗ visualizar</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="ready">
+    <span class="re">🎉</span>
+    <h2>Pronto para a Aula 8!</h2>
+    <p>Nos vemos lá!</p>
+  </div>
+
+  <div class="nav-bottom">
+    <a class="nav-link" href="aula6.html">← Aula 6</a>
+    <a class="nav-link next" href="aula8.html">Aula 8 →</a>
+  </div>
+
+</div>
+
+
+<footer>
+  <span>Chatbots com Python · aula 7</span>
+  <span><a href="../index.html">← índice</a></span>
+</footer>
+
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>
