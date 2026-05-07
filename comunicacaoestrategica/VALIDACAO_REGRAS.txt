@@ -1,0 +1,2 @@
+Validação automática simples. Itens encontrados:
+Nenhum item proibido encontrado.
