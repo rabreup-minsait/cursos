@@ -1,0 +1,479 @@
+<!DOCTYPE html> 
+<html lang="pt-BR"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>CE | Teste de Comunicação Estratégica</title> 
+    <link rel="stylesheet" href="style.css"> 
+
+    <style>
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        .quiz-option:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+        .quiz-option.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #14532d;
+            font-weight: bold;
+        }
+        .quiz-option.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+        .quiz-feedback {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .quiz-feedback.success {
+            display: block;
+            background: #dcfce7;
+            color: #14532d;
+            border: 1px solid #bbf7d0;
+        }
+        .quiz-feedback.error {
+            display: block;
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 1px solid #fecaca;
+        }
+        .score-badge {
+            background: #22c55e;
+            color: white;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+    </style>
+</head> 
+<body> 
+    <div class="prog" id="prog"></div> 
+    <header class="topbar">   
+        <a class="tb-logo" href="../Index.html"><span class="tb-logo-icon">CE</span><span class="long">Comunicação Estratégica para Lideres</span></a>   
+        <nav class="tb-nav" aria-label="Navegação da aula">     
+            <a class="tb-btn" href="../Index.html">Índice</a>     
+            <span class="tb-lesson">Teste</span>     
+            <span class="score-badge" id="score-display">Acertos: 0 / 30</span>
+        </nav> 
+    </header> 
+
+    <main class="wrap"> 
+        <section class="cover">   
+            <span class="cover-tag">CE Comunicação Estratégica para Lideres · Teste</span>   
+            <h1>Teste de <em>Liderança</em></h1>   
+            <p>Verifique seus conhecimentos sobre os conceitos, ferramentas e atitudes trabalhadas durante a nossa jornada.</p> 
+        </section> 
+
+        <section class="aula-flow"> 
+            <p>Chegou o momento de testarmos a compreensão dos pilares da liderança madura! Responda às 30 perguntas abaixo clicando na alternativa que você considera correta.</p> 
+            <p>Se você errar, não tem problema: uma dica vai aparecer e você pode tentar novamente. O contador no topo da tela vai registrar seus acertos. Boa sorte!</p> 
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 1</h2> 
+            <p>Qual é o principal problema de uma comunicação baseada em informações implícitas?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Na verdade, comunicações implícitas geram retrabalho e não reduzem o tempo.')">A) Reduz o tempo da reunião porque as pessoas assumem as informações sozinhas.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso mesmo! O implícito deixa espaço para adivinhação. Quanto mais importante for a entrega, menos espaço devemos deixar para adivinhações.')">B) Deixa margem para cada pessoa interpretar o combinado de um jeito, gerando adivinhação e ruído.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O implícito gera confusão e não tem relação direta com microgerenciamento.')">C) Transforma o líder automaticamente em um microgerenciador.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 2</h2> 
+            <p>No fluxo da comunicação, de quem é a principal responsabilidade pela clareza inicial?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto! A responsabilidade primária é de quem envia (emissor), pois foi essa pessoa que escolheu as palavras e o momento.')">A) De quem envia a mensagem (emissor).</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O receptor tem a responsabilidade de confirmar o entendimento, mas a clareza inicial deve partir do emissor.')">B) De quem recebe a mensagem (receptor), que deve adivinhar o contexto.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A ferramenta não tem responsabilidade. A clareza é uma responsabilidade humana.')">C) Da ferramenta tecnológica utilizada (canal).</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 3</h2> 
+            <p>Por que é essencial escolher o canal correto (vídeo, chat, e-mail) para se comunicar?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A velocidade não é o único fator. Assuntos delicados exigem o canal certo, não apenas o mais rápido.')">A) Para garantir que a pessoa responda em menos de cinco minutos.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A documentação é importante, mas usar documento para conversas difíceis não resolve o conflito.')">B) Porque toda comunicação de liderança deve obrigatoriamente ser documentada em texto longo.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Nós não escolhemos canal por costume. Escolhemos canal pelo risco e pela sensibilidade da mensagem.')">C) Para adequar o risco e a sensibilidade do assunto à riqueza do canal.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 4</h2> 
+            <p>Em momentos de muita pressão, o que significa agir com a virtude da "temperança"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Temperança não apaga o sentimento, ela impede que ele decida sozinho.')">A) Suprimir totalmente as emoções e não sentir raiva ou frustração.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Responder no impulso é o oposto da temperança.')">B) Responder imediatamente a todas as mensagens para demonstrar agilidade.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito! Temperança é equilíbrio. A pessoa sente a pressão, mas pausa o suficiente para escolher uma resposta melhor.')">C) Sentir a pressão, mas pausar o suficiente para não deixar o impulso tomar o volante da resposta.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 5</h2> 
+            <p>Na prática da liderança, como se manifesta a "humildade intelectual"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto! Humildade intelectual é admitir que não tem todos os dados e fazer boas perguntas antes de tomar uma decisão.')">A) Reconhecer que não tem todas as respostas e perguntar antes de concluir ou julgar.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Concordar sempre é omissão, não humildade intelectual.')">B) Concordar sempre com o cliente para evitar qualquer conflito.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso seria o oposto de humildade intelectual.')">C) Afirmar verdades absolutas para que o time não duvide de sua autoridade.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 6</h2> 
+            <p>O que demonstra falta da virtude da "presença" em reuniões online?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Fazer anotações muitas vezes ajuda a manter o foco.')">A) Fazer anotações no caderno enquanto o outro fala.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso mesmo! Dividir a atenção com e-mails, celular e planilhas destrói a escuta e gera ruído de comunicação.')">B) Estar na chamada, mas manter a atenção dividida com o chat, e-mail e celular.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Pedir para repetir por falha de conexão é algo técnico e natural, não falta de presença.')">C) Pedir para a pessoa repetir porque a conexão de internet falhou.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 7</h2> 
+            <p>Qual é a principal diferença entre "empatia" e "concordância" em uma conversa difícil?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato! Você pode entender perfeitamente o contexto do outro (empatia) e ainda assim sustentar a regra ou correção (não concordar).')">A) Empatia é entender o contexto e a emoção do outro; concordância é aceitar a opinião dele como correta.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'As duas não são a mesma coisa, a diferença é vital para o líder não ser permissivo demais.')">B) Na liderança, não há diferença, as duas coisas significam a mesma atitude.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Não existe essa regra de uso isolado.')">C) Empatia é usada com clientes; concordância é usada com a equipe.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 8</h2> 
+            <p>O que caracteriza a escuta "superficial" (o nível mais baixo de escuta)?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso descreve a escuta empática/ativa.')">A) Ouvir para entender o sentimento por trás das palavras.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso já seria a escuta atenta, focada no conteúdo.')">B) Anotar fielmente tudo o que a pessoa diz para criar uma ata.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto. Na escuta superficial, a pessoa não está prestando atenção real, apenas esperando sua vez de falar.')">C) Ouvir apenas para responder, já montando a defesa enquanto o outro ainda está falando.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 9</h2> 
+            <p>Qual é o objetivo de usar "perguntas poderosas" em vez de dar ordens imediatas?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Perguntas poderosas devem abrir o diálogo, não intimidar.')">A) Encurralar a pessoa para mostrar que o líder está no controle.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Perguntas abertas ajudam a pessoa a desenvolver o próprio raciocínio e autonomia.')">B) Ajudar a pessoa a pensar, enxergar o problema e desenvolver autonomia para achar a solução.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Se você só quer um sim ou não, você deve usar perguntas fechadas.')">C) Obter apenas um "sim" ou "não" de forma mais educada.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 10</h2> 
+            <p>Por que o líder precisa conhecer perfis comportamentais (como DISC ou Temperamentos)?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Perfis não devem ser usados como rótulos ou sentenças limitantes.')">A) Para criar rótulos fixos de quem é produtivo e quem é problemático.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto! Modelos ajudam o líder a adaptar e entregar a mensagem do jeito que a pessoa melhor compreende.')">B) Para adaptar a forma como a mensagem é entregue, de acordo com o que cada pessoa precisa para compreender melhor.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Esses modelos avaliam comportamento e preferências, não habilidades técnicas.')">C) Para avaliar as competências técnicas e decidir promoções de cargo.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 11</h2> 
+            <p>Qual a melhor forma de se comunicar sobre um novo projeto com uma pessoa de perfil "melancólico/analítico"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exatamente. Pessoas analíticas precisam de dados e tempo de qualidade para entender o processo sem improvisos excessivos.')">A) Trazendo dados, critérios claros e dando tempo para a pessoa processar e analisar riscos.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Pessoas analíticas tendem a detestar improviso e discursos sem base sólida.')">B) Usando improviso e focando na empolgação e brincadeiras para animá-la.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Pressão excessiva e falta de contexto costumam travar ou frustrar quem é analítico.')">C) Pressionando agressivamente por decisões rápidas, sem dar contexto.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 12</h2> 
+            <p>O que significa o conceito de "Defeito Dominante" nos perfis comportamentais?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Não é um erro técnico. É comportamental.')">A) A falha técnica que impede a pessoa de ser promovida.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Se fosse irreversível, o autoconhecimento não teria utilidade na liderança.')">B) Uma característica de personalidade irreversível que o RH precisa monitorar.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso aí! O líder identifica o excesso do comportamento sob pressão não para culpar, mas para apoiar no ajuste.')">C) O ponto que mais atrapalha a pessoa quando ela exagera a sua tendência natural sob pressão.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 13</h2> 
+            <p>Quais são os três pilares fundamentais da comunicação assertiva?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Imposição é característica de comunicação agressiva.')">A) Velocidade, imposição e controle.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito! Clareza evita adivinhação, respeito evita agressão e firmeza evita a omissão.')">B) Clareza, respeito e firmeza.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Passividade significa engolir o problema, fugindo da assertividade.')">C) Empatia, flexibilidade e passividade.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 14</h2> 
+            <p>Qual é o principal risco da "comunicação passiva" em um líder?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto. A pessoa não se posiciona, finge concordar, e o incômodo cresce sem ser resolvido.')">A) Deixar o problema crescer em silêncio por não estabelecer limites e não corrigir erros.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso seria o risco da comunicação agressiva.')">B) Gerar medo excessivo na equipe por falar alto demais.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A comunicação passiva geralmente é a que mais foge das regras por medo de cobrar.')">C) Parecer muito autoritário e inflexível nas regras.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 15</h2> 
+            <p>O que acontece quando a linguagem verbal (palavras) e a linguagem não verbal (tom, postura) entram em contradição?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O ser humano presta mais atenção à postura e ao tom de voz do que ao texto puro nessas horas.')">A) O receptor acredita apenas nas palavras educadas e ignora o resto.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato! Se você usar palavras boas de cara fechada e tom rude, o receptor vai interpretar a mensagem como se nada estivesse bem.')">B) O receptor tende a acreditar no clima da mensagem (expressão e tom) em vez da palavra isolada.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Contradições geram ruído extremo e desconfiança.')">C) A comunicação atinge o nível máximo de excelência porque usa os dois modos ao mesmo tempo.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 16</h2> 
+            <p>Na Comunicação Não Violenta (CNV), qual é a diferença entre "fato" e "julgamento"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A intenção da CNV é focar em fatos e EVITAR os julgamentos.')">A) A CNV recomenda usar sempre os dois misturados para garantir firmeza na cobrança.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito. Fato é aquilo que aconteceu concretamente. Julgamento ataca a pessoa. O fato mantém a ponte de comunicação aberta.')">B) O fato é observável e sem rótulos; o julgamento ataca a identidade e gera defensividade.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Essa distinção não faz sentido na metodologia da CNV.')">C) O fato é emitido pelo líder; o julgamento é emitido apenas pelo liderado.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 17</h2> 
+            <p>O que significa a etapa de "Necessidade" na estrutura da Comunicação Não Violenta?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato. Dizer o motivo por trás da cobrança revela a verdadeira necessidade.')">A) É mostrar qual valor ou importância (ex: previsibilidade, segurança) não foi atendido pela situação.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso seria comunicação abusiva e chantagem.')">B) É a ameaça implícita de que a pessoa pode perder o emprego se não resolver o problema.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O sentimento já foi tratado no passo anterior. A necessidade é a raiz lógica.')">C) É a parte em que o líder faz um desabafo longo sobre as suas próprias emoções.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 18</h2> 
+            <p>Qual é o benefício de transformar uma exigência vaga em um "pedido claro e acionável"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A intenção da liderança não é humilhar ninguém.')">A) O pedido acionável humilha a pessoa para que ela não erre novamente.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'É exatamente o contrário. Um pedido claro dá limite e organiza a rotina.')">B) Pedidos acionáveis tiram o limite do funcionário e geram caos.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Dizer exatamente o que deve ser feito permite que o funcionário saiba como executar sem adivinhações.')">C) O pedido acionável diz à pessoa exatamente que comportamento ela deve ter, tornando a execução possível.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 19</h2> 
+            <p>Para que serve a técnica do "Parking Lot" (Estacionamento de temas) em reuniões?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso aí! Essa técnica salva o foco da reunião sem desmerecer o assunto levantado pela equipe.')">A) Para registrar assuntos importantes que fogem do foco atual, garantindo que a pauta central não se perca.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Estacionamento não é um intervalo, é uma técnica de gestão de anotações.')">B) Para indicar o momento exato de pausar a reunião e tomar um café.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A técnica serve justamente para reconhecer o ponto, e não calar as pessoas de forma ríspida.')">C) Para mutar automaticamente o microfone de quem começa a fugir do assunto.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 20</h2> 
+            <p>O que torna um "Convite de Reunião" estratégico e útil?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso apenas gera ansiedade no time.')">A) Colocar apenas a palavra "Alinhamento" para manter mistério e garantir atenção.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto! Um bom convite prepara as pessoas e evita que os primeiros 20 minutos da reunião sejam gastos só com explicações.')">B) Explicar o objetivo do encontro, os assuntos (pauta), a saída esperada e a preparação necessária.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Documentos não substituem um texto claro de contexto no e-mail.')">C) Anexar planilhas pesadas sem explicar nada no corpo do texto.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 21</h2> 
+            <p>Em reuniões híbridas, qual é o maior risco comportamental que o facilitador deve evitar?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Pessoas remotas geralmente participam até menos se não forem estimuladas.')">A) Pessoas remotas invadindo a fala dos presentes repetidas vezes.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito! Se a reunião oficial acontece em paralelo com cochichos presenciais, quem está remoto perde o contexto.')">B) Decisões paralelas presenciais (conversas de corredor) que excluem quem está no ambiente virtual.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O uso da câmera depende da cultura de cada empresa, não é o risco mais grave do formato híbrido.')">C) O uso obrigatório de câmera ligada para quem está presencial na sala.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 22</h2> 
+            <p>Qual é a sequência recomendada para um Feedback Corretivo estruturado?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A técnica do sanduíche costuma tirar a credibilidade da conversa e gerar desconfiança nos elogios.')">A) Elogio inicial, cobrança dura, elogio final (Técnica do Sanduíche).</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato! A lógica aponta o evento sem acusações, explica por que isso é um problema, direciona o futuro e finaliza combinando acompanhamento.')">B) Contexto/Fato ocorrido, impacto gerado e combinado acionável com acompanhamento.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso não é feedback, é processo disciplinar punitivo.')">C) Julgamento da personalidade, ameaça e assinatura de documento de advertência.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 23</h2> 
+            <p>Por que o "Feedback Contínuo" ajuda mais na cultura de confiança do que apenas a avaliação anual?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Feedback não deve ser surpresa. O contínuo corrige a rota enquanto ainda dá tempo e reconhece boas entregas no momento certo.')">A) Porque evita grandes surpresas no fim do ano e permite ajustes rápidos em tempo real.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Liderança não usa feedback como terapia de desabafo.')">B) Porque permite ao líder descarregar sua frustração diariamente.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Feedback contínuo é uma ferramenta de liderança ágil, não um excesso de burocracia do RH.')">C) Porque exige que toda conversa passe pelo setor de RH, blindando a liderança.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 24</h2> 
+            <p>O que diferencia "cobrar competência técnica" de "cobrar comunicação" em um feedback?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Membros técnicos que não comunicam impedimentos geram grandes crises no projeto.')">A) Pessoas técnicas nunca precisam ser cobradas por comunicação, apenas por código.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Saber fazer a tarefa e saber reportar o status dela são habilidades bem diferentes.')">B) Não há diferença; quem falha na comunicação certamente falha no conhecimento técnico.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito! Não adianta treinar hard skill se o problema é só reportar status. O líder precisa ser assertivo no diagnóstico.')">C) Se a pessoa sabe fazer, mas não dá visibilidade, o problema é de rotina/comunicação. Se não sabe fazer, o problema é técnico e exige treinamento.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 25</h2> 
+            <p>Na mediação de um conflito sob tensão, como o líder deve usar a imparcialidade?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato. Imparcialidade é ser justo analisando a evidência, não deixando a simpatia por um membro ditar quem tem razão.')">A) Pesando fatos e combinados reais, sem deixar que afinidades pessoais ditem a decisão.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Dar razão ao mais antigo de forma cega destrói a cultura de justiça no time.')">B) Apoiando sempre o colaborador mais antigo para proteger a hierarquia.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Omissão agrava conflitos corporativos.')">C) Se afastando do problema e dizendo para eles resolverem sozinhos a qualquer custo.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 26</h2> 
+            <p>Qual é o passo de preparação mais vital antes de iniciar uma conversa difícil?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Conversas difíceis devem ser mantidas no privado para não gerar constrangimento público.')">A) Convidar testemunhas para que a reunião tenha maioria a favor do líder.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Correto! Ir apenas com opiniões faz o líder perder a razão no meio da conversa. É preciso se basear no que é observável.')">B) Levantar fatos concretos, evidências e os impactos observáveis, trocando impressões por dados.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso é comunicação agressiva e assédio moral.')">C) Escrever um e-mail com todas as punições possíveis caso a pessoa tente discordar.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 27</h2> 
+            <p>O que significa a máxima: "Usar a razão para corrigir e o coração para conter"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Preservar as relações é fundamental em longo prazo na liderança.')">A) Significa que em conflitos a relação humana não importa, o que vale é apenas a regra.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'A liderança precisa ser pragmática, não apenas passional.')">B) Significa que o líder deve decidir tudo usando apenas a sua intuição e emoção.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Tratar o erro com critérios objetivos, mas conduzir a fala com respeito e dignidade para que a confiança não se quebre.')">C) Significa que a correção se baseia em fatos técnicos (razão), mas a forma de falar deve preservar a dignidade e a relação profissional (coração).</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 28</h2> 
+            <p>Na liderança madura, o que é de fato exercer "Influência"?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Exato! É apoiar a pessoa a enxergar dados e impactos, construindo uma decisão fundamentada sem precisar gritar ou impor.')">A) A capacidade de construir confiança e ajudar a pessoa a enxergar as alternativas, gerando movimento sem depender só de cargo.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Isso é manipulação e desonestidade, não influência sustentável.')">B) A habilidade de ocultar cenários de risco para que um stakeholder aprove um projeto mais rápido.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O uso exclusivo da carteirada ou ameaça é autoritarismo, o oposto de influenciar.')">C) A emissão de ordens diretas que não abrem espaço para qualquer dúvida da equipe.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 29</h2> 
+            <p>A estrutura de comunicação executiva "Minto Pyramid Principle" sugere organizar a informação de que maneira?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Ao começar pelo contexto longo, o executivo perde a paciência ou se distrai.')">A) Começando pelo histórico do problema e deixando a grande resposta como surpresa no final.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Isso! Você dá a recomendação no início para ancorar a atenção, depois apresenta os pilares argumentativos e, na base, os dados de detalhe.')">B) Começando diretamente pela recomendação (o ponto principal), seguindo com os argumentos de apoio e detalhando os dados por último.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'O princípio de Minto trata de estrutura lógica, e depende pesadamente de dados sim.')">C) Focando apenas em storytelling emocional sem usar nenhum dado ou métrica.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <section class="reflexao"> 
+            <h2>Questão 30</h2> 
+            <p>O que diferencia "Delegação e Checkpoints" do temido "Micromanagement" (Microgerenciamento)?</p> 
+            <div class="options-container">
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Transferir a responsabilidade e sumir é abandono (delargar), não delegação.')">A) Delegar é passar a tarefa para a pessoa e nunca mais acompanhar o andamento.</button>
+                <button class="quiz-option" data-correct="false" onclick="checkAnswer(this, false, 'Vigiar os botões pressionados asfixia o colaborador e destrói o tempo do próprio líder.')">B) O Microgerenciamento é saudável, pois o líder vigia cada detalhe técnico o tempo todo.</button>
+                <button class="quiz-option" data-correct="true" onclick="checkAnswer(this, true, 'Perfeito! A delegação madura estabelece fronteiras de autonomia e monitora os riscos em reuniões de checkpoint, em vez de fiscalizar os cliques da pessoa o dia inteiro.')">C) A delegação moderna dá autonomia de "como fazer" e acompanha em checkpoints combinados. O microgerenciamento vigia e controla cada pequeno passo diariamente.</button>
+            </div>
+            <div class="quiz-feedback"></div>
+        </section> 
+
+        <nav class="nav-final" aria-label="Navegação final">   
+            <a class="tb-btn" href="../Index.html">Voltar ao índice</a>   
+            <a class="tb-btn disabled" href="#" aria-disabled="true">Próxima aula</a> 
+        </nav> 
+        
+        <footer class="footer">CE Comunicação Estratégica para Lideres</footer> 
+    </main> 
+
+    <script> 
+        window.addEventListener('scroll',function(){
+            var h=document.documentElement;
+            var sc=h.scrollTop;
+            var max=h.scrollHeight-h.clientHeight;
+            document.getElementById('prog').style.width=(sc/ max*100)+'%';
+        }); 
+
+        let score = 0;
+        const totalQuestions = 30;
+
+        function checkAnswer(button, isCorrect, feedbackText) {
+            const section = button.closest('.reflexao');
+            const allButtons = section.querySelectorAll('.quiz-option');
+            const feedbackDiv = section.querySelector('.quiz-feedback');
+
+            if (section.classList.contains('answered-correctly')) {
+                return;
+            }
+
+            allButtons.forEach(btn => btn.classList.remove('incorrect'));
+
+            if (!isCorrect) {
+                button.classList.add('incorrect');
+                feedbackDiv.classList.remove('success');
+                feedbackDiv.classList.add('error');
+                feedbackDiv.innerHTML = "❌ Incorreto. " + feedbackText + " (Tente novamente!)";
+            } else {
+                button.classList.add('correct');
+                feedbackDiv.classList.remove('error');
+                feedbackDiv.classList.add('success');
+                feedbackDiv.innerHTML = "✅ Correto! " + feedbackText;
+                
+                section.classList.add('answered-correctly');
+                
+                score++;
+                document.getElementById('score-display').innerText = "Acertos: " + score + " / " + totalQuestions;
+
+                allButtons.forEach(btn => btn.disabled = true);
+            }
+        }
+    </script> 
+</body> 
+</html>
