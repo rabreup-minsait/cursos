@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 10 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f7f5;--surface:#ffffff;--border:#e2ddd8;--text:#1e1916;--text2:#3d3630;--text3:#7a726a;--accent:#1f5fa6;--accent-lt:#e8f0fb;--green:#0d6e50;--green-lt:#e4f3ed;--gold:#a06820;--gold-lt:#fdf2e0;--red:#a83030;--red-lt:#fceeed;--board:#182e1e;--shadow-sm:0 1px 4px rgba(30,25,22,.09);--shadow:0 2px 4px rgba(30,25,22,.07),0 6px 18px rgba(30,25,22,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}html{font-size:16px;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text2);font-family:'Nunito',system-ui,sans-serif;line-height:1.85;}
+.prog{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:100;width:0;transition:width .1s;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:48px;position:sticky;top:0;z-index:50;}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:800;font-size:.85rem;color:var(--text);}
+.tb-logo-icon{width:24px;height:24px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.tb-nav{display:flex;align-items:center;gap:4px;}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700;color:var(--text3);text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);transition:all .15s;}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tb-lesson{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--text3);letter-spacing:.06em;padding:0 12px;}
+.wrap{max-width:680px;margin:0 auto;padding:44px 28px 90px;}
+.cover{margin-bottom:52px;}.cover-tag{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:block;}
+.cover h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.3rem);font-weight:700;line-height:1.2;color:var(--text);margin-bottom:16px;}
+.cover h1 em{color:var(--accent);font-style:italic;}.cover p{font-size:1rem;color:var(--text2);line-height:1.85;}
+p{font-size:.97rem;color:var(--text2);margin-bottom:20px;line-height:1.85;}p:last-child{margin-bottom:0;}
+strong{color:var(--text);font-weight:700;}
+code{font-family:'Fira Code',monospace;font-size:.82em;background:var(--accent-lt);border:1px solid rgba(31,95,166,.16);border-radius:4px;padding:1px 6px;color:var(--accent);}
+.lousa{background:var(--board);border-radius:6px;padding:14px 18px;margin:22px auto;max-width:480px;box-shadow:var(--shadow-sm);}
+.lousa-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#6aaa78;margin-bottom:10px;display:block;}
+.lousa-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;font-size:.86rem;color:#c8e4cc;line-height:1.6;}
+.lousa-row:last-child{margin-bottom:0;}.lousa-row .bul{color:#5ad68a;flex-shrink:0;margin-top:2px;}
+.lousa strong{color:#e8f5e8;font-weight:700;}.lousa code{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18);color:#a8e8c0;font-size:.8em;}
+.bubble{display:flex;gap:10px;align-items:flex-start;margin:28px 0 8px;}
+.bubble-avatar{flex-shrink:0;width:32px;height:32px;background:#f0a500;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:2px;box-shadow:0 2px 6px rgba(240,165,0,.3);}
+.bubble-body{background:#fffbf0;border:1.5px solid #f0c040;border-radius:4px 14px 14px 14px;padding:11px 15px;font-size:.9rem;color:#4a3800;font-weight:600;line-height:1.65;max-width:500px;}
+.dica{border-left:3px solid var(--accent);background:var(--accent-lt);border-radius:0 7px 7px 0;padding:12px 16px;margin:20px 0;font-size:.9rem;color:#1a3a6a;line-height:1.75;}
+.atencao{border-left:3px solid var(--gold);background:var(--gold-lt);border-radius:0 7px 7px 0;padding:12px 16px;margin:20px 0;font-size:.9rem;color:#5a3808;line-height:1.75;}
+.cblock{background:#f5f3f0;border:1px solid #ddd8d0;border-radius:8px;margin:20px 0;overflow:hidden;box-shadow:var(--shadow-sm);}
+.cblock-head{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:var(--surface);border-bottom:1px solid #ddd8d0;}
+.cdots{display:flex;gap:5px;}.cdots span{width:9px;height:9px;border-radius:50%;}
+.c1{background:#ff6058;}.c2{background:#ffbd2e;}.c3{background:#28ca42;}
+.cfname{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--text3);}
+.cblock pre{padding:16px 18px;font-family:'Fira Code',monospace;font-size:13px;line-height:1.8;overflow-x:auto;color:#2a2420;white-space:pre;}
+.kw{color:#6d28d9;}.fn{color:#1d4ed8;}.st{color:#166534;}.nm{color:#b45309;}.cm{color:#888078;font-style:italic;}
+.vr{color:#b91c1c;}.op{color:#0d6e50;}.bi{color:#a06820;}.dc{color:#0e7a5a;}
+.code-ann{margin:16px 0 24px;border-collapse:collapse;width:100%;}
+.code-ann tr{border-bottom:1px solid var(--border);}.code-ann tr:last-child{border-bottom:none;}
+.code-ann td{padding:8px 10px;font-size:.85rem;vertical-align:top;line-height:1.65;}
+.code-ann td:first-child{font-family:'Fira Code',monospace;font-size:.78rem;white-space:nowrap;color:var(--accent);background:var(--accent-lt);border-radius:4px;width:1%;padding:8px 12px;}
+.install-step{margin:24px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.install-step-head{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);font-size:.82rem;font-weight:800;color:var(--text2);}
+.install-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:11px;flex-shrink:0;}
+.install-step img{width:100%;display:block;}
+.break{background:var(--gold-lt);border:1px solid rgba(160,104,32,.2);border-radius:8px;padding:18px 22px;text-align:center;margin:44px 0;}
+.break .be{font-size:1.8rem;display:block;margin-bottom:6px;}
+.break h3{font-family:'Playfair Display',serif;color:var(--gold);font-size:1rem;margin-bottom:4px;}
+.break p{font-size:.83rem;color:#7a5010;margin:0;}
+.exercise{background:var(--surface);border:1.5px solid var(--accent);border-radius:8px;padding:20px 22px;margin:32px 0;box-shadow:var(--shadow-sm);}
+.ex-tag{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;display:block;}
+.exercise h3{font-family:'Playfair Display',serif;color:var(--text);font-size:1.05rem;margin-bottom:12px;}
+.exercise ol{padding-left:18px;font-size:.88rem;line-height:2.1;color:var(--text2);}
+.ex-diff{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-left:8px;}
+.diff-1{background:var(--green-lt);color:var(--green);}.diff-2{background:var(--gold-lt);color:var(--gold);}.diff-3{background:var(--red-lt);color:var(--red);}
+.ex-ans{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.ex-ans-body{display:none;}.ex-ans-body.visible{display:block;}
+.btn-ans{display:inline-flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:.75rem;font-weight:600;color:var(--green);background:var(--green-lt);border:1.5px solid rgba(13,110,80,.25);border-radius:5px;padding:6px 14px;cursor:pointer;transition:all .15s;margin-top:4px;}
+.btn-ans:hover{background:#d0ece3;}
+.downloads{margin:48px 0 32px;}.downloads-title{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:block;}
+.dl-grid{display:flex;flex-direction:column;gap:7px;}
+.dl-item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:10px 14px;text-decoration:none;color:inherit;box-shadow:var(--shadow-sm);transition:border-color .15s;}
+.dl-item:hover{border-color:var(--accent);}
+.dl-icon{font-size:1.1rem;flex-shrink:0;}.dl-info{flex:1;}
+.dl-name{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--accent);font-weight:500;}
+.dl-desc{font-size:.75rem;color:var(--text3);margin-top:1px;}
+.dl-badge{font-family:'Fira Code',monospace;font-size:9px;background:var(--accent-lt);color:var(--accent);border-radius:4px;padding:2px 8px;flex-shrink:0;}
+.ready{background:var(--green-lt);border:1.5px solid rgba(13,110,80,.3);border-radius:8px;padding:26px;text-align:center;margin:48px 0;}
+.ready .re{font-size:2rem;display:block;margin-bottom:10px;}
+.ready h2{font-family:'Playfair Display',serif;color:var(--green);font-size:1.25rem;margin:0 0 8px;}
+.ready p{font-size:.88rem;color:#0a4535;margin:0;}
+.nav-bottom{display:flex;justify-content:space-between;margin-top:52px;padding-top:20px;border-top:1px solid var(--border);}
+.nav-link{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:var(--text3);text-decoration:none;padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:var(--bg);transition:all .15s;}
+.nav-link:hover{border-color:var(--accent);color:var(--accent);}
+.nav-link.prev{background:var(--bg);}
+footer{border-top:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:10px;color:var(--text3);background:var(--surface);}
+footer a{color:inherit;text-decoration:none;}
+</style>
+</head>
+<body>
+<div id="prog" class="prog"></div>
+<header class="topbar">
+  <a class="tb-logo" href="AulaChatbot.html"><div class="tb-logo-icon">🐍</div>Chatbots com Python</a>
+  <div class="tb-nav">
+    <a class="tb-btn" href="AulaChatbot.html">⊞ índice</a>
+    <span class="tb-lesson">aula 10 · arquitetura profissional</span>
+    <a class="tb-btn" href="aula9.html">←</a>
+  </div>
+</header>
+<div class="wrap">
+
+<div class="cover">
+  <span class="cover-tag">aula 10 · aula final</span>
+  <h1>De código funcional <em>a sistema profissional</em></h1>
+
+
+<p>Agora entra outro recurso muito útil: o <strong>FAQ</strong>, uma lista de perguntas frequentes com respostas prontas. Se o usuário pergunta horário de atendimento, endereço ou política de troca, não faz sentido gastar IA. A resposta já existe e precisa ser sempre igual. Um dicionário com palavras-chave mapeadas para respostas prontas resolve isso na hora, sem tokens e sem espera.</p>
+
+<div class="bubble">
+  <div class="bubble-avatar">🙋</div>
+  <div class="bubble-body">Mas e se o dado do FAQ mudar, como atualizo sem alterar o código?</div>
+</div>
+
+<p>Essa é uma boa observação. Enquanto o FAQ está no código, qualquer mudança exige reiniciar o servidor. Em produção, o ideal é mover essas informações para um arquivo de configuração separado, uma planilha ou um banco de dados. O código lê esses dados ao iniciar, ou os busca a cada requisição. Para o nosso nível atual, o dicionário no código funciona bem e o padrão é o mesmo independente da fonte.</p>
+
+
+
+
+  <p>O chatbot que construímos ao longo do curso funciona. Mas funcionar não é o mesmo que ser profissional. Nesta última aula organizamos o que já existe com três práticas que fazem toda a diferença quando o sistema cresce: configuração centralizada, separação de responsabilidades e logs.</p>
+</div>
+
+<p>Pensa num sistema que funcionou perfeitamente durante semanas e de repente começa a dar respostas estranhas. Você não muda nada, mas algo está diferente. Sem logs, você vai caçar o problema no escuro. Sem configuração centralizada, você vai revisar vinte arquivos tentando lembrar onde ajustou a temperatura. Sem separação de responsabilidades, uma mudança em qualquer lugar pode quebrar outra coisa inesperadamente.</p>
+
+<p>Esses três hábitos não mudam o que o sistema faz. Mudam como ele é mantido, como você encontra problemas e como outra pessoa consegue entender o código que você escreveu.</p>
+
+<div class="lousa">
+  <div class="lousa-title">as três práticas desta aula</div>
+  <div class="lousa-row"><span class="bul">1</span><span><strong>Configuração centralizada</strong>: todos os parâmetros do sistema num único arquivo, fácil de ajustar sem tocar na lógica</span></div>
+  <div class="lousa-row"><span class="bul">2</span><span><strong>Separação de responsabilidades</strong>: cada função faz uma coisa só, e cada arquivo tem um papel claro</span></div>
+  <div class="lousa-row"><span class="bul">3</span><span><strong>Logs</strong>: registro de tudo que acontece no sistema, essencial para encontrar bugs e entender o comportamento em produção</span></div>
+</div>
+
+<p>Começa pela configuração centralizada. Em todos os exercícios do curso, os parâmetros ficavam espalhados pelo código. A temperatura aqui, o modelo ali, o limite do histórico em outro lugar. Quando você precisa ajustar algo, precisa varrer o arquivo inteiro. Em projetos com múltiplos arquivos, precisa varrer todos. A solução é criar um arquivo separado chamado <code>config.py</code> que reúne todos os parâmetros num único ponto.</p>
+
+<div class="bubble">
+  <div class="bubble-avatar">🙋</div>
+  <div class="bubble-body">Mas isso não é só mover variáveis de lugar? Qual a diferença na prática?</div>
+</div>
+
+<p>A diferença aparece quando o sistema cresce. Com configuração centralizada, você ajusta a temperatura de 0.3 para 0.4 em um lugar, e todos os módulos que usam esse parâmetro recebem a mudança automaticamente. Você consegue versionar a configuração separada do código, deixar comentários explicando por que cada valor foi escolhido, e entregar o sistema para outra pessoa com a segurança de que os parâmetros estão documentados num único lugar. Um bug de temperatura incorreta ou modelo errado é encontrado em segundos.</p>
+
+<div class="cblock">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">config.py</div>
+  </div>
+  <pre><span class="cm"># todos os parametros do sistema num unico lugar</span>
+<span class="cm"># altere aqui e o efeito propaga para o sistema inteiro</span>
+
+<span class="cm"># modelo e parametros da IA</span>
+<span class="vr">MODELO</span>        <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span>
+<span class="vr">TEMPERATURA</span>   <span class="op">=</span> <span class="nm">0.3</span>
+<span class="vr">TEMP_DADOS</span>    <span class="op">=</span> <span class="nm">0.1</span>   <span class="cm"># temperatura mais baixa para respostas com dados reais</span>
+<span class="vr">MAX_TOKENS</span>    <span class="op">=</span> <span class="nm">120</span>
+<span class="vr">LIMITE_HIST</span>   <span class="op">=</span> <span class="nm">10</span>    <span class="cm"># maximo de mensagens no historico por usuario</span>
+
+<span class="cm"># identidade do chatbot</span>
+<span class="vr">NOME_BOT</span>      <span class="op">=</span> <span class="st">"Assistente TechShop"</span>
+<span class="vr">SYSTEM_BASE</span>   <span class="op">=</span> (
+    <span class="st">"Voce e o assistente da TechShop, uma loja de tecnologia. "</span>
+    <span class="st">"Responda sempre em portugues, de forma clara e amigavel. "</span>
+    <span class="st">"Se nao tiver certeza de uma informacao, diga que nao sabe. Nunca invente."</span>
+)
+
+<span class="cm"># servidor</span>
+<span class="vr">HOST</span>          <span class="op">=</span> <span class="st">"0.0.0.0"</span>
+<span class="vr">PORTA</span>         <span class="op">=</span> <span class="nm">8000</span>
+
+<span class="cm"># logs</span>
+<span class="vr">LOG_ATIVO</span>     <span class="op">=</span> <span class="kw">True</span>
+<span class="vr">LOG_ARQUIVO</span>   <span class="op">=</span> <span class="st">"chatbot.log"</span></pre>
+</div>
+
+<div class="cblock">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">068_Exercicio.py (usando config.py)</div>
+  </div>
+  <pre><span class="kw">import</span> warnings, urllib3, unicodedata, httpx, os
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> config <span class="cm"># importa o arquivo de configuracao</span>
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>); urllib3.<span class="fn">disable_warnings</span>(); <span class="fn">load_dotenv</span>()
+
+<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
+
+<span class="vr">usuarios</span>: <span class="bi">dict</span> <span class="op">=</span> {}
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>.<span class="fn">lower</span>())
+    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+
+<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">dict</span>:
+    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">not in</span> <span class="vr">usuarios</span>:
+        <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {
+            <span class="st">"perfil"</span>: {<span class="st">"nome"</span>: <span class="kw">None</span>},
+            <span class="st">"mensagens"</span>: [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>}]
+        }
+    <span class="kw">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
+
+<span class="kw">class</span> <span class="fn">Pergunta</span>(<span class="fn">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="bi">str</span>
+    <span class="vr">user_id</span>: <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
+
+<span class="dc">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">f"{config.NOME_BOT} no ar!"</span>}
+
+<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="fn">Pergunta</span>):
+    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
+    <span class="vr">u</span> <span class="op">=</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>)
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="vr">u</span>[<span class="st">"mensagens"</span>]
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="vr">texto</span>.<span class="fn">strip</span>()
+    <span class="kw">if not</span> <span class="vr">texto</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">""</span>}
+
+    <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">t</span>:
+        <span class="vr">nome</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">split</span>(<span class="st">"meu nome e"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+        <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>] <span class="op">=</span> <span class="vr">nome</span>
+        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Prazer, {nome}!"</span>}
+
+    <span class="vr">ctx</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>
+    <span class="kw">if</span> <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {u['perfil']['nome']}."</span>
+    <span class="vr">msgs</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">ctx</span>
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+
+    <span class="kw">try</span>:
+        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MODELO</span>,           <span class="cm"># usa config</span>
+            <span class="vr">messages</span><span class="op">=</span><span class="vr">msgs</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MAX_TOKENS</span>,  <span class="cm"># usa config</span>
+            <span class="vr">temperature</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">TEMPERATURA</span>  <span class="cm"># usa config</span>
+        )
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="st">"Servico indisponivel."</span>
+
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">resposta</span>})
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">msgs</span>) <span class="op">></span> <span class="vr">config</span>.<span class="vr">LIMITE_HIST</span>:   <span class="cm"># usa config</span>
+        <span class="vr">msgs</span> <span class="op">=</span> [<span class="vr">msgs</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">msgs</span>[<span class="op">-</span>(<span class="vr">config</span>.<span class="vr">LIMITE_HIST</span> <span class="op">-</span> <span class="nm">1</span>):]
+    <span class="vr">u</span>[<span class="st">"mensagens"</span>] <span class="op">=</span> <span class="vr">msgs</span>
+    <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resposta</span>}</pre>
+</div>
+
+<table class="code-ann">
+  <tr><td>import config</td><td><strong>Importa o arquivo de configuração.</strong> Qualquer variável definida em <code>config.py</code> fica acessível com <code>config.NOME_VARIAVEL</code>. Os dois arquivos precisam estar na mesma pasta.</td></tr>
+  <tr><td>config.MODELO<br>config.TEMPERATURA<br>config.MAX_TOKENS</td><td><strong>Parâmetros lidos da configuração.</strong> Para mudar o modelo ou a temperatura, você edita <code>config.py</code> e o efeito se propaga para todo o sistema sem tocar na lógica.</td></tr>
+  <tr><td>config.LIMITE_HIST</td><td><strong>Limite do histórico via configuração.</strong> O cálculo <code>config.LIMITE_HIST - 1</code> preserva o system prompt e mantém as últimas mensagens dentro do limite definido.</td></tr>
+</table>
+
+<div class="exercise">
+  <span class="ex-tag">📋 exercício 068 - configuração centralizada</span>
+  <h3>Separe os parâmetros do sistema em um arquivo próprio</h3>
+  <ol>
+    <li>Crie o arquivo <code>config.py</code> com o conteúdo da seção acima</li>
+    <li>Crie o arquivo <code>068_Exercicio.py</code> com o código da seção acima e rode o servidor</li>
+    <li>Teste pelo <code>/docs</code> e confirme que o sistema funciona normalmente</li>
+    <li>Agora mude o valor de <code>TEMPERATURA</code> no <code>config.py</code> para <code>0.9</code> e reinicie o servidor</li>
+    <li>Envie a mesma mensagem duas vezes e observe se as respostas variam mais, reflexo da temperatura mais alta</li>
+    <li>Volte para <code>0.3</code> e altere <code>NOME_BOT</code>. Reinicie e veja a mudança refletida na rota <code>/</code></li>
+  </ol>
+</div>
+
+<div class="install-step">
+  <div class="install-step-head"><div class="install-num">▶</div> Exercício 068 - config.py e main.py na mesma pasta</div>
+  <img src="img/107.png" alt="Estrutura de arquivos mostrando config.py e 068_Exercicio.py na mesma pasta">
+</div>
+
+<p>Com a configuração separada, o próximo passo é falar de separação de responsabilidades. O conceito é simples: cada função deve fazer uma coisa só, e o nome dela deve deixar claro o que é essa coisa. Uma função chamada <code>chat()</code> que classifica, busca dados, chama a IA, atualiza o histórico e limita o tamanho está fazendo cinco coisas. Quando algo der errado, você vai precisar ler tudo para descobrir onde está o problema.</p>
+
+<p>A separação não precisa ser rígida desde o começo. O processo natural é: escreve tudo junto para funcionar, depois identifica as responsabilidades, depois extrai em funções. O critério para saber se uma função tem responsabilidade única é conseguir descrever o que ela faz sem usar "e". Se você precisar de "e", ela faz mais de uma coisa.</p>
+
+<div class="lousa">
+  <div class="lousa-title">separação de responsabilidades na prática</div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>normalizar(texto)</code> trata o texto para comparação</span></div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>classificar(texto)</code> identifica a intenção</span></div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>buscar_produto(texto)</code> consulta a base de dados</span></div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>montar_system(perfil, dados)</code> constrói o prompt</span></div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>chamar_ia(msgs, temperatura)</code> faz a chamada e retorna texto</span></div>
+  <div class="lousa-row"><span class="bul">◆</span><span><code>chat(pergunta)</code> orquestra tudo isso em sequência</span></div>
+</div>
+
+<p>Com funções assim organizadas, um bug na busca de produto não afeta a chamada à IA. Uma mudança no prompt não toca na classificação. E quando alguém ler o código pela primeira vez, cada parte fica imediatamente compreensível pelo nome da função.</p>
+
+<div class=cblock>
+  <div class=cblock-head>
+    <div class=cdots><span class=c1></span><span class=c2></span><span class=c3></span></div>
+    <div class=cfname>069_Exercicio.py</div>
+  </div>
+  <pre><span class="kw">import</span> warnings, urllib3, unicodedata, httpx, os
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> config
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>); urllib3.<span class="fn">disable_warnings</span>(); <span class="fn">load_dotenv</span>()
+<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
+
+<span class="vr">PRODUTOS</span> <span class="op">=</span> {
+    <span class="st">"notebook pro"</span>:    {<span class="st">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>},
+    <span class="st">"mouse sem fio"</span>:   {<span class="st">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>},
+    <span class="st">"teclado mecanico"</span>:{<span class="st">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="st">"estoque"</span>: <span class="st">"esgotado"</span>},
+}
+<span class="vr">usuarios</span>: <span class="bi">dict</span> <span class="op">=</span> {}
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>.<span class="fn">lower</span>())
+    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+
+<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"meu nome"</span>]): <span class="kw">return</span> <span class="st">"dados_usuario"</span>
+    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"preco"</span>, <span class="st">"estoque"</span>, <span class="st">"notebook"</span>, <span class="st">"mouse"</span>, <span class="st">"teclado"</span>]): <span class="kw">return</span> <span class="st">"produto"</span>
+    <span class="kw">return</span> <span class="st">"conversa"</span>
+
+<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+    <span class="vr">r</span> <span class="op">=</span> [<span class="st">f"{n.title()}: {d['preco']}, {d['estoque']}"</span>
+         <span class="kw">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">PRODUTOS</span>.<span class="fn">items</span>()
+         <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="fn">normalizar</span>(<span class="vr">n</span>).<span class="fn">split</span>())]
+    <span class="kw">return</span> <span class="st">"
+"</span>.<span class="fn">join</span>(<span class="vr">r</span>) <span class="kw">if</span> <span class="vr">r</span> <span class="kw">else</span> <span class="st">"Produto nao encontrado."</span>
+
+<span class="kw">def</span> <span class="fn">montar_system</span>(<span class="vr">perfil</span>: <span class="bi">dict</span>, <span class="vr">dados</span>: <span class="bi">str</span> <span class="op">=</span> <span class="st">""</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">ctx</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>
+    <span class="kw">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {perfil['nome']}"</span>
+    <span class="kw">if</span> <span class="vr">dados</span>: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f"
+Dados:
+{dados}
+Use apenas essas informacoes."</span>
+    <span class="kw">return</span> <span class="vr">ctx</span>
+
+<span class="kw">def</span> <span class="fn">chamar_ia</span>(<span class="vr">msgs</span>: <span class="bi">list</span>, <span class="vr">temp</span>: <span class="bi">float</span> <span class="op">=</span> <span class="kw">None</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="kw">if</span> <span class="vr">temp</span> <span class="kw">is</span> <span class="kw">None</span>: <span class="vr">temp</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">TEMPERATURA</span>
+    <span class="kw">try</span>:
+        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MODELO</span>, <span class="vr">messages</span><span class="op">=</span><span class="vr">msgs</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MAX_TOKENS</span>, <span class="vr">temperature</span><span class="op">=</span><span class="vr">temp</span>
+        )
+        <span class="kw">return</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw">except</span> <span class="fn">Exception</span>:
+        <span class="kw">return</span> <span class="st">"Servico indisponivel."</span>
+
+<span class="kw">def</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>: <span class="bi">list</span>, <span class="vr">role</span>: <span class="bi">str</span>, <span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">list</span>:
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="vr">role</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">msgs</span>) <span class="op">></span> <span class="vr">config</span>.<span class="vr">LIMITE_HIST</span>:
+        <span class="vr">msgs</span> <span class="op">=</span> [<span class="vr">msgs</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">msgs</span>[<span class="op">-</span>(<span class="vr">config</span>.<span class="vr">LIMITE_HIST</span> <span class="op">-</span> <span class="nm">1</span>):]
+    <span class="kw">return</span> <span class="vr">msgs</span>
+
+<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">dict</span>:
+    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">not in</span> <span class="vr">usuarios</span>:
+        <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {<span class="st">"perfil"</span>: {<span class="st">"nome"</span>: <span class="kw">None</span>},
+                          <span class="st">"mensagens"</span>: [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>}]}
+    <span class="kw">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
+
+<span class="kw">class</span> <span class="fn">Pergunta</span>(<span class="fn">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="bi">str</span>; <span class="vr">user_id</span>: <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
+
+<span class="dc">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">f"{config.NOME_BOT} no ar!"</span>}
+
+<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="fn">Pergunta</span>):
+    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
+    <span class="vr">u</span> <span class="op">=</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="vr">texto</span>.<span class="fn">strip</span>()
+    <span class="kw">if not</span> <span class="vr">texto</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">""</span>}
+
+    <span class="vr">cat</span> <span class="op">=</span> <span class="fn">classificar</span>(<span class="vr">texto</span>)
+    <span class="kw">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="st">"dados_usuario"</span>:
+        <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+        <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">t</span>:
+            <span class="vr">nome</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">split</span>(<span class="st">"meu nome e"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+            <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>] <span class="op">=</span> <span class="vr">nome</span>
+            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Prazer, {nome}!"</span>}
+
+    <span class="vr">dados</span> <span class="op">=</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>) <span class="kw">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="st">"produto"</span> <span class="kw">else</span> <span class="st">""</span>
+    <span class="vr">temp</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">TEMP_DADOS</span> <span class="kw">if</span> <span class="vr">dados</span> <span class="kw">else</span> <span class="vr">config</span>.<span class="vr">TEMPERATURA</span>
+
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="vr">u</span>[<span class="st">"mensagens"</span>]
+    <span class="vr">msgs</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="fn">montar_system</span>(<span class="vr">u</span>[<span class="st">"perfil"</span>], <span class="vr">dados</span>)
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>, <span class="st">"user"</span>, <span class="vr">texto</span>)
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="fn">chamar_ia</span>(<span class="vr">msgs</span>, <span class="vr">temp</span>)
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>, <span class="st">"assistant"</span>, <span class="vr">resposta</span>)
+    <span class="vr">u</span>[<span class="st">"mensagens"</span>] <span class="op">=</span> <span class="vr">msgs</span>
+    <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resposta</span>}</pre>
+</div>
+
+<table class="code-ann">
+  <tr><td>def chamar_ia(msgs, temp)</td><td><strong>Toda interação com a API num único lugar.</strong> Se o modelo mudar ou precisar de retry, faz aqui e o efeito se propaga para o sistema inteiro.</td></tr>
+  <tr><td>def atualizar_historico(msgs, role, texto)</td><td><strong>Adiciona mensagem e aplica o limite.</strong> Essa lógica estava duplicada para user e assistant. Com a função separada, fica em um lugar só.</td></tr>
+  <tr><td>def chat(): orquestrador</td><td><strong>A função principal virou um orquestrador.</strong> Ela chama as outras em sequência, mas não faz nada diretamente. É mais fácil de ler e modificar.</td></tr>
+</table>
+
+<div class="exercise">
+  <span class="ex-tag">📋 exercício 069 - separação de responsabilidades</span>
+  <h3>Observe como a função chat() ficou mais limpa depois da separação</h3>
+  <ol>
+    <li>Crie o arquivo <code>069_Exercicio.py</code> com o código da seção acima e rode com o <code>config.py</code> do exercício anterior</li>
+    <li>Teste pelo <code>/docs</code> e confirme que o comportamento é idêntico</li>
+    <li>Adicione uma função <code>resposta_rapida(texto_norm)</code> que verifica "oi" e "tchau" e retorna respostas fixas sem acionar a IA. Chame-a no início da função <code>chat()</code></li>
+    <li>Observe como adicionar a nova funcionalidade não tocou em nenhuma outra função existente</li>
+  </ol>
+</div>
+
+<div class="install-step">
+  <div class="install-step-head"><div class="install-num">▶</div> Exercício 069 - funções com responsabilidades separadas</div>
+  <img src="img/108.png" alt="Código mostrando as funções separadas e a função chat como orquestradora">
+</div>
+
+<div class="break">
+  <span class="be">☕</span>
+  <h3>Pausa para o café!</h3>
+  <p>Levanta, respira, e quando voltar nós adicionamos logs ao sistema.</p>
+</div>
+
+<p>A última prática desta aula são os logs. Um log é um registro de texto que o sistema grava enquanto roda, descrevendo o que está acontecendo. Quando algo dá errado, o log conta a história: quem enviou a mensagem, qual categoria foi identificada, se a busca retornou resultado, se a IA respondeu ou lançou uma exceção.</p>
+
+<p>O Python tem uma biblioteca nativa chamada <strong>logging</strong> que cuida disso. Você configura uma vez e usa <code>logging.info()</code> para registrar eventos normais, <code>logging.warning()</code> para situações que merecem atenção e <code>logging.error()</code> para erros. O resultado vai para o terminal e, se você configurar, para um arquivo em disco. Diferente do <code>print()</code>, os logs têm data, hora e nível, o que facilita muito a análise.</p>
+
+<div class="bubble">
+  <div class="bubble-avatar">🙋</div>
+  <div class="bubble-body">Qual a diferença entre usar print() e logging? Não é a mesma coisa?</div>
+</div>
+
+<p>O <code>print()</code> funciona, mas não escala. Ele não tem data e hora, não tem nível de gravidade, e você não consegue desligar todas as mensagens de uma vez sem apagar cada linha. Com o <code>logging</code>, você configura o nível mínimo e decide o que aparece. Em produção, mostra apenas erros. Em desenvolvimento, mostra tudo. O conteúdo vai automaticamente para um arquivo que você analisa depois. É a diferença entre um post-it e um diário organizado.</p>
+
+<div class="cblock">
+  <div class="cblock-head">
+    <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+    <div class="cfname">070_Exercicio.py (com logging)</div>
+  </div>
+  <pre><span class="kw">import</span> logging, warnings, urllib3, unicodedata, httpx, os
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> config
+
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>); urllib3.<span class="fn">disable_warnings</span>(); <span class="fn">load_dotenv</span>()
+
+<span class="cm"># configuracao do sistema de logs</span>
+logging.<span class="fn">basicConfig</span>(
+    <span class="vr">level</span><span class="op">=</span>logging.<span class="vr">INFO</span>,
+    <span class="vr">format</span><span class="op">=</span><span class="st">"%(asctime)s [%(levelname)s] %(message)s"</span>,
+    <span class="vr">handlers</span><span class="op">=</span>[
+        logging.<span class="fn">StreamHandler</span>(),                        <span class="cm"># exibe no terminal</span>
+        logging.<span class="fn">FileHandler</span>(<span class="vr">config</span>.<span class="vr">LOG_ARQUIVO</span>)         <span class="cm"># salva em arquivo</span>
+    ] <span class="kw">if</span> <span class="vr">config</span>.<span class="vr">LOG_ATIVO</span> <span class="kw">else</span> [logging.<span class="fn">StreamHandler</span>()]
+)
+<span class="vr">logger</span> <span class="op">=</span> logging.<span class="fn">getLogger</span>(<span class="st">"chatbot"</span>)
+
+<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
+
+<span class="vr">PRODUTOS</span> <span class="op">=</span> {
+    <span class="st">"notebook pro"</span>:    {<span class="st">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>},
+    <span class="st">"mouse sem fio"</span>:   {<span class="st">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>},
+    <span class="st">"teclado mecanico"</span>:{<span class="st">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="st">"estoque"</span>: <span class="st">"esgotado"</span>},
+}
+<span class="vr">usuarios</span>: <span class="bi">dict</span> <span class="op">=</span> {}
+
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>.<span class="fn">lower</span>())
+    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+
+<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"meu nome"</span>]):  <span class="kw">return</span> <span class="st">"dados_usuario"</span>
+    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"preco"</span>, <span class="st">"estoque"</span>, <span class="st">"notebook"</span>, <span class="st">"mouse"</span>, <span class="st">"teclado"</span>]):  <span class="kw">return</span> <span class="st">"produto"</span>
+    <span class="kw">return</span> <span class="st">"conversa"</span>
+
+<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+    <span class="vr">r</span> <span class="op">=</span> [<span class="st">f"{n.title()}: {d['preco']}, {d['estoque']}"</span>
+         <span class="kw">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">PRODUTOS</span>.<span class="fn">items</span>()
+         <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="fn">normalizar</span>(<span class="vr">n</span>).<span class="fn">split</span>())]
+    <span class="kw">if not</span> <span class="vr">r</span>:
+        logger.<span class="fn">warning</span>(<span class="st">f"Produto nao encontrado para: {texto}"</span>)
+    <span class="kw">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">r</span>) <span class="kw">if</span> <span class="vr">r</span> <span class="kw">else</span> <span class="st">"Produto nao encontrado."</span>
+
+<span class="kw">def</span> <span class="fn">montar_system</span>(<span class="vr">perfil</span>: <span class="bi">dict</span>, <span class="vr">dados</span>: <span class="bi">str</span> <span class="op">=</span> <span class="st">""</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">ctx</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>
+    <span class="kw">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {perfil['nome']}."</span>
+    <span class="kw">if</span> <span class="vr">dados</span>: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f"\nDados:\n{dados}\nUse apenas essas informacoes."</span>
+    <span class="kw">return</span> <span class="vr">ctx</span>
+
+<span class="kw">def</span> <span class="fn">chamar_ia</span>(<span class="vr">msgs</span>: <span class="bi">list</span>, <span class="vr">temp</span>: <span class="bi">float</span> <span class="op">=</span> <span class="kw">None</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="kw">if</span> <span class="vr">temp</span> <span class="kw">is</span> <span class="kw">None</span>: <span class="vr">temp</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">TEMPERATURA</span>
+    <span class="kw">try</span>:
+        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
+            <span class="vr">model</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MODELO</span>, <span class="vr">messages</span><span class="op">=</span><span class="vr">msgs</span>,
+            <span class="vr">max_tokens</span><span class="op">=</span><span class="vr">config</span>.<span class="vr">MAX_TOKENS</span>, <span class="vr">temperature</span><span class="op">=</span><span class="vr">temp</span>
+        )
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+        logger.<span class="fn">info</span>(<span class="st">f"IA respondeu: {texto[:60]}..."</span>)
+        <span class="kw">return</span> <span class="vr">texto</span>
+    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        logger.<span class="fn">error</span>(<span class="st">f"Erro na chamada a IA: {e}"</span>)
+        <span class="kw">return</span> <span class="st">"Servico indisponivel."</span>
+
+<span class="kw">def</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>: <span class="bi">list</span>, <span class="vr">role</span>: <span class="bi">str</span>, <span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">list</span>:
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="vr">role</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">msgs</span>) <span class="op">></span> <span class="vr">config</span>.<span class="vr">LIMITE_HIST</span>:
+        <span class="vr">msgs</span> <span class="op">=</span> [<span class="vr">msgs</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">msgs</span>[<span class="op">-</span>(<span class="vr">config</span>.<span class="vr">LIMITE_HIST</span> <span class="op">-</span> <span class="nm">1</span>):]
+    <span class="kw">return</span> <span class="vr">msgs</span>
+
+<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">dict</span>:
+    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">not in</span> <span class="vr">usuarios</span>:
+        <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {<span class="st">"perfil"</span>: {<span class="st">"nome"</span>: <span class="kw">None</span>},
+                          <span class="st">"mensagens"</span>: [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">config</span>.<span class="vr">SYSTEM_BASE</span>}]}
+        logger.<span class="fn">info</span>(<span class="st">f"Novo usuario criado: {uid}"</span>)
+    <span class="kw">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
+
+<span class="kw">class</span> <span class="fn">Pergunta</span>(<span class="fn">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="bi">str</span>; <span class="vr">user_id</span>: <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
+
+<span class="dc">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">f"{config.NOME_BOT} no ar!"</span>}
+
+<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="fn">Pergunta</span>):
+    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
+    <span class="vr">u</span> <span class="op">=</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="vr">texto</span>.<span class="fn">strip</span>()
+    <span class="kw">if not</span> <span class="vr">texto</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">""</span>}
+
+    <span class="vr">cat</span> <span class="op">=</span> <span class="fn">classificar</span>(<span class="vr">texto</span>)
+    logger.<span class="fn">info</span>(<span class="st">f"[{uid[:8]}] categoria={cat} | msg={texto[:50]}"</span>)
+
+    <span class="kw">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="st">"dados_usuario"</span>:
+        <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
+        <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">t</span>:
+            <span class="vr">nome</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">split</span>(<span class="st">"meu nome e"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
+            <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>] <span class="op">=</span> <span class="vr">nome</span>
+            logger.<span class="fn">info</span>(<span class="st">f"[{uid[:8]}] nome registrado: {nome}"</span>)
+            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Prazer, {nome}!"</span>}
+
+    <span class="vr">dados</span> <span class="op">=</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>) <span class="kw">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="st">"produto"</span> <span class="kw">else</span> <span class="st">""</span>
+    <span class="vr">temp</span> <span class="op">=</span> <span class="vr">config</span>.<span class="vr">TEMP_DADOS</span> <span class="kw">if</span> <span class="vr">dados</span> <span class="kw">else</span> <span class="vr">config</span>.<span class="vr">TEMPERATURA</span>
+
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="vr">u</span>[<span class="st">"mensagens"</span>]
+    <span class="vr">msgs</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="fn">montar_system</span>(<span class="vr">u</span>[<span class="st">"perfil"</span>], <span class="vr">dados</span>)
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>, <span class="st">"user"</span>, <span class="vr">texto</span>)
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="fn">chamar_ia</span>(<span class="vr">msgs</span>, <span class="vr">temp</span>)
+    <span class="vr">msgs</span> <span class="op">=</span> <span class="fn">atualizar_historico</span>(<span class="vr">msgs</span>, <span class="st">"assistant"</span>, <span class="vr">resposta</span>)
+    <span class="vr">u</span>[<span class="st">"mensagens"</span>] <span class="op">=</span> <span class="vr">msgs</span>
+    <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resposta</span>}</pre>
+</div>
+
+<table class="code-ann">
+  <tr><td>logging.basicConfig(...)</td><td><strong>Configuração única na inicialização.</strong> Define o formato das mensagens com data e hora, o nível mínimo a registrar e os destinos: terminal e arquivo em disco.</td></tr>
+  <tr><td>logger.info(...)</td><td><strong>Registra eventos normais.</strong> Novo usuário criado, categoria identificada, resposta da IA. Com data e hora automáticas, você consegue reconstruir o que aconteceu numa conversa.</td></tr>
+  <tr><td>logger.warning(...)</td><td><strong>Registra situações que merecem atenção.</strong> Produto não encontrado não é um erro, mas vale saber com que frequência acontece para melhorar as palavras-chave.</td></tr>
+  <tr><td>logger.error(...)</td><td><strong>Registra falhas.</strong> Quando a chamada à IA lança uma exceção, o erro vai para o log com a descrição completa do problema, sem aparecer para o usuário.</td></tr>
+</table>
+
+<div class="exercise">
+  <span class="ex-tag">📋 exercício 070 - sistema com logs</span>
+  <h3>Observe os registros de log no terminal e no arquivo enquanto conversa</h3>
+  <ol>
+    <li>Crie o arquivo <code>070_Exercicio.py</code> com o código da seção acima e rode o servidor</li>
+    <li>Pelo <code>/docs</code>, diga seu nome, faça uma pergunta de produto e uma conversa livre</li>
+    <li>Observe o terminal: cada mensagem gera uma linha de log com data, hora e categoria</li>
+    <li>Abra o arquivo <code>chatbot.log</code> criado na mesma pasta e confirme que os registros estão lá</li>
+    <li>Tente buscar um produto que não existe e veja o aviso de <code>WARNING</code> no log</li>
+  </ol>
+</div>
+
+<div class="install-step">
+  <div class="install-step-head"><div class="install-num">▶</div> Exercício 070 - logs no terminal com data, hora e nível</div>
+  <img src="img/109.png" alt="Terminal mostrando linhas de log com data hora e categoria para cada mensagem recebida">
+</div>
+
+<p>Agora é a sua vez.</p>
+
+<!-- EXERCÍCIO 071 -->
+<div class="exercise">
+  <span class="ex-tag">⚡ exercício 071 - config.py para um sistema existente</span>
+  <h3>Crie um config.py para o chatbot que você construiu no exercício 067 <span class="ex-diff diff-1">iniciante</span></h3>
+  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie os arquivos <code>config.py</code> e <code>071_Exercicio.py</code> do zero. No <code>config.py</code>, defina todos os parâmetros do sistema: modelo, temperaturas (uma para conversa e uma para dados), max_tokens, limite do histórico, nome do bot, system prompt base e configurações de log. No <code>071_Exercicio.py</code>, escreva um chatbot completo que importa e usa esses parâmetros em todos os pontos. Confirme que mudar apenas o <code>config.py</code> altera o comportamento do sistema.</p>
+  <div class="ex-ans">
+    <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+    <div class="ex-ans-body">
+      <p style="font-size:.85rem;color:var(--text2);margin-top:12px;">O arquivo <code>config.py</code> segue o modelo mostrado no início desta aula, com as variáveis ajustadas para o tema escolhido. O <code>071_Exercicio.py</code> importa <code>config</code> e substitui todos os valores literais por referências às variáveis de configuração. O arquivo completo está disponível para download.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EXERCÍCIO 072 -->
+<div class="exercise">
+  <span class="ex-tag">⚡ exercício 072 - refatoração com separação de funções</span>
+  <h3>Separe o código do exercício 071 em funções com responsabilidade única <span class="ex-diff diff-2">médio</span></h3>
+  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie o arquivo <code>072_Exercicio.py</code> do zero. Escreva um chatbot completo com as seguintes funções obrigatórias, cada uma com um único papel: <code>normalizar(texto)</code>, <code>classificar(texto)</code>, <code>buscar_dados(texto)</code>, <code>montar_system(perfil, dados)</code>, <code>chamar_ia(msgs, temp)</code>, <code>atualizar_historico(msgs, role, texto)</code> e <code>obter_usuario(uid)</code>. A função <code>chat()</code> deve ser um orquestrador que chama as outras em sequência, sem lógica direta. Adicione logs com o módulo <code>logging</code> nas funções que fazem operações importantes.</p>
+  <div class="ex-ans">
+    <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+    <div class="ex-ans-body">
+      <p style="font-size:.85rem;color:var(--text2);margin-top:12px;">O arquivo <code>072_Exercicio.py</code> segue o mesmo padrão do exercício 069, com as funções extraídas e a <code>chat()</code> como orquestradora. O que muda é o tema e o conteúdo das funções de busca e classificação. O arquivo completo está disponível para download.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EXERCÍCIO 073 -->
+<div class="exercise">
+  <span class="ex-tag">⚡ exercício 073 - sistema profissional completo</span>
+  <h3>Sistema com config, separação de funções, logs e front-end reunindo tudo do curso <span class="ex-diff diff-3">desafio</span></h3>
+  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">Crie os arquivos <code>config.py</code>, <code>073_Exercicio.py</code> e <code>073_index.html</code> do zero, para um tema à sua escolha. O sistema deve reunir tudo o que foi construído no curso.</p>
+  <ol style="font-size:.88rem;color:var(--text2);line-height:2.1;padding-left:18px;margin-top:8px;">
+    <li><strong>config.py</strong> com todos os parâmetros: modelo, temperaturas, max_tokens, limite do histórico, nome do bot, system prompt e configurações de log</li>
+    <li><strong>Funções com responsabilidade única</strong>: normalizar, classificar, buscar dados, montar system, chamar IA, atualizar histórico, obter usuário</li>
+    <li><strong>FAQ</strong> com pelo menos cinco entradas sem acionar a IA</li>
+    <li><strong>Base de dados local</strong> com pelo menos quatro entradas e busca com injeção no prompt</li>
+    <li><strong>Logs</strong> com <code>logging.info</code>, <code>logging.warning</code> e <code>logging.error</code> nos pontos certos</li>
+    <li><strong>Separação por user_id</strong> com dicionário de usuários e rota <code>/limpar</code></li>
+    <li><strong>Front-end</strong> com <code>crypto.randomUUID()</code>, <code>fetch()</code> e <code>async/await</code></li>
+    <li><strong>CORS habilitado</strong>, chave via <code>os.getenv()</code>, todo erro tratado com <code>try/except</code></li>
+  </ol>
+  <p style="font-size:.85rem;color:var(--text3);margin:10px 0 0;font-style:italic;">💡 Dica: construa do zero. O exercício anterior tem uma boa base para consultar, mas escrever cada parte é o que consolida.</p>
+  <div class="ex-ans">
+    <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+    <div class="ex-ans-body">
+      <p style="font-size:.85rem;color:var(--text2);margin-top:12px;">O arquivo completo <code>073_Exercicio.py</code> está disponível para download, com todas as camadas implementadas e logs em cada ponto relevante do fluxo. O <code>config.py</code> de exemplo também está disponível.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOADS -->
+<div class="downloads">
+  <span class="downloads-title">// arquivos desta aula</span>
+  <div class="dl-grid">
+    <a class="dl-item" href="arquivos/config.py" target="_blank">
+      <span class="dl-icon">⚙️</span>
+      <div class="dl-info"><div class="dl-name">config.py</div><div class="dl-desc">Arquivo de configuração centralizada com todos os parâmetros do sistema</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/068_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">068_Exercicio.py</div><div class="dl-desc">Chatbot usando config.py para todos os parâmetros</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/069_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">069_Exercicio.py</div><div class="dl-desc">Chatbot com funções de responsabilidade única e chat() como orquestrador</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/070_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">070_Exercicio.py</div><div class="dl-desc">Sistema completo com logging.info, warning e error integrados</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/071_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">071_Exercicio.py</div><div class="dl-desc">Exercício 071 - chatbot com config.py para tema personalizado</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/072_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">072_Exercicio.py</div><div class="dl-desc">Exercício 072 - refatoração com funções separadas e logs</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/073_Exercicio.py" target="_blank">
+      <span class="dl-icon">🐍</span>
+      <div class="dl-info"><div class="dl-name">073_Exercicio.py</div><div class="dl-desc">Exercício 073 - sistema profissional completo reunindo todo o curso</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+    <a class="dl-item" href="arquivos/073_index.html" target="_blank">
+      <span class="dl-icon">🌐</span>
+      <div class="dl-info"><div class="dl-name">073_index.html</div><div class="dl-desc">Exercício 073 - front-end completo com user_id automático</div></div>
+      <span class="dl-badge">↗ visualizar</span>
+    </a>
+  </div>
+</div>
+
+<div class="ready">
+  <span class="re">🎉</span>
+  <h2>Isso é tudo por hoje!</h2>
+  <p>Com configuração centralizada, funções de responsabilidade única e logs, o que era um script virou um sistema profissional. Revise os exercícios, leia o arquivo de log que o sistema gerou e experimente mudar os parâmetros no config.py para sentir o efeito imediato.</p>
+</div>
+
+<div class="nav-bottom">
+  <a class="nav-link prev" href="aula9.html">← Aula 9</a>
+</div>
+
+</div>
+
+<footer>
+  <span>Chatbots com Python · aula 10</span>
+  <span><a href="AulaChatbot.html">← índice</a></span>
+</footer>
+
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>
