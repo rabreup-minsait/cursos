@@ -1,0 +1,9 @@
+
+# Arquivos com chaves e segredos
+.env
+*.env
+MinhaChave.txt
+Chatbot/arquivos/.env
+Chatbot/arquivos/MinhaChave.txt
+chatbot/arquivos/.env
+chatbot/arquivos/MinhaChave.txt
