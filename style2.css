@@ -1,0 +1,275 @@
+/* style2.css */
+/* CSS unico para blocos de codigo das aulas */
+
+:root {
+  --code-bg: #111111;
+  --code-head: #1f1f1f;
+  --code-border: #2a2a2a;
+  --code-text: #d4d4d4;
+  --code-red: #ff5f5f;
+  --code-purple: #c586f7;
+  --code-cyan: #4ec9b0;
+  --code-blue: #9cdcfe;
+  --code-orange: #ff9d45;
+  --code-yellow: #ffd700;
+  --code-builtin: #569cd6;
+  --code-comment: #6a9955;
+  --code-const: #cfe8ff;
+}
+
+.cblock,
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(30,25,22,.09));
+}
+
+.cblock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px;
+  background: var(--code-head);
+  border-bottom: 1px solid var(--code-border);
+}
+
+.cdots {
+  display: flex;
+  gap: 5px;
+}
+
+.cdots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.c1 { background: #ff6058; }
+.c2 { background: #ffbd2e; }
+.c3 { background: #28ca42; }
+
+.cfname {
+  color: var(--code-text);
+  font-family: 'Fira Code', monospace;
+  font-size: 10.5px;
+}
+
+.cblock pre,
+.code,
+.code-block pre,
+pre.code {
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px 18px;
+  tab-size: 4;
+  white-space: pre;
+}
+
+.cblock pre span,
+.code span,
+pre.code span {
+  background: transparent;
+}
+
+/* Classes finais do padrao das aulas */
+.kw { color: var(--code-red); }
+.kw2 { color: var(--code-purple); }
+.lib,
+.cls { color: var(--code-cyan); }
+.fn { color: var(--code-purple); }
+.vr { color: var(--code-text); }
+.attr,
+.key,
+.st { color: var(--code-blue); }
+.arg { color: var(--code-orange); }
+.fs { color: var(--code-red); }
+.nm,
+.op { color: var(--code-yellow); }
+.bi { color: var(--code-builtin); }
+.dec { color: var(--code-purple); }
+.cm {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.const { color: var(--code-const); }
+.er {
+  color: var(--code-red);
+  text-decoration: underline wavy var(--code-red);
+}
+
+/* Compatibilidade com codigo gerado por Pygments */
+.cblock pre .k,
+.cblock pre.k,
+.cblock pre .kd,
+.cblock pre.kd,
+.cblock pre .kn,
+.cblock pre.kn,
+.cblock pre .kp,
+.cblock pre.kp,
+.cblock pre .kr,
+.cblock pre.kr,
+.cblock pre .kt,
+.cblock pre.kt {
+  color: var(--code-purple);
+}
+
+.cblock pre .kc,
+.cblock pre.kc {
+  color: var(--code-builtin);
+}
+
+.cblock pre .n,
+.cblock pre.n,
+.cblock pre .nx,
+.cblock pre.nx,
+.cblock pre .nv,
+.cblock pre.nv,
+.cblock pre .vc,
+.cblock pre.vc,
+.cblock pre .vg,
+.cblock pre.vg,
+.cblock pre .vi,
+.cblock pre.vi,
+.cblock pre .bp,
+.cblock pre.bp {
+  color: var(--code-text);
+}
+
+.cblock pre .nn,
+.cblock pre.nn,
+.cblock pre .nc,
+.cblock pre.nc {
+  color: var(--code-cyan);
+}
+
+.cblock pre .nf,
+.cblock pre.nf,
+.cblock pre .fm,
+.cblock pre.fm,
+.cblock pre .nb,
+.cblock pre.nb {
+  color: var(--code-purple);
+}
+
+.cblock pre .na,
+.cblock pre.na,
+.cblock pre .nl,
+.cblock pre.nl,
+.cblock pre .py,
+.cblock pre.py {
+  color: var(--code-blue);
+}
+
+.cblock pre .s,
+.cblock pre.s,
+.cblock pre .sb,
+.cblock pre.sb,
+.cblock pre .sc,
+.cblock pre.sc,
+.cblock pre .dl,
+.cblock pre.dl,
+.cblock pre .sd,
+.cblock pre.sd,
+.cblock pre .s2,
+.cblock pre.s2,
+.cblock pre .se,
+.cblock pre.se,
+.cblock pre .sh,
+.cblock pre.sh,
+.cblock pre .sx,
+.cblock pre.sx,
+.cblock pre .sr,
+.cblock pre.sr,
+.cblock pre .s1,
+.cblock pre.s1,
+.cblock pre .ss,
+.cblock pre.ss {
+  color: var(--code-blue);
+}
+
+.cblock pre .sa,
+.cblock pre.sa,
+.cblock pre .si,
+.cblock pre.si {
+  color: var(--code-red);
+}
+
+.cblock pre .m,
+.cblock pre.m,
+.cblock pre .mb,
+.cblock pre.mb,
+.cblock pre .mf,
+.cblock pre.mf,
+.cblock pre .mh,
+.cblock pre.mh,
+.cblock pre .mi,
+.cblock pre.mi,
+.cblock pre .mo,
+.cblock pre.mo,
+.cblock pre .il,
+.cblock pre.il {
+  color: var(--code-yellow);
+}
+
+.cblock pre .o,
+.cblock pre.o,
+.cblock pre .ow,
+.cblock pre.ow,
+.cblock pre .p,
+.cblock pre.p {
+  color: var(--code-yellow);
+}
+
+.cblock pre .nd,
+.cblock pre.nd,
+.cblock pre .nt,
+.cblock pre.nt,
+.cblock pre .gh,
+.cblock pre.gh,
+.cblock pre .gu,
+.cblock pre.gu {
+  color: var(--code-purple);
+}
+
+.cblock pre .c,
+.cblock pre.c,
+.cblock pre .ch,
+.cblock pre.ch,
+.cblock pre .cm,
+.cblock pre.cm,
+.cblock pre .cp,
+.cblock pre.cp,
+.cblock pre .cpf,
+.cblock pre.cpf,
+.cblock pre .c1,
+.cblock pre.c1,
+.cblock pre .cs,
+.cblock pre.cs {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.cblock pre .err,
+.cblock pre.err,
+.cblock pre .ne,
+.cblock pre.ne {
+  color: var(--code-red);
+}
+
+.cblock pre .ge,
+.cblock pre.ge {
+  font-style: italic;
+}
+
+.cblock pre .gs,
+.cblock pre.gs {
+  font-weight: 700;
+}
