@@ -5,189 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aula 5 - Chatbots com Python</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:        #f8f7f5;
-  --surface:   #ffffff;
-  --border:    #e2ddd8;
-  --text:      #1e1916;
-  --text2:     #3d3630;
-  --text3:     #7a726a;
-  --accent:    #1f5fa6;
-  --accent-lt: #e8f0fb;
-  --green:     #0d6e50;
-  --green-lt:  #e4f3ed;
-  --gold:      #a06820;
-  --gold-lt:   #fdf2e0;
-  --red:       #a83030;
-  --red-lt:    #fceeed;
-  --board:     #182e1e;
-  --shadow-sm: 0 1px 4px rgba(30,25,22,.09);
-  --shadow:    0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { font-size:16px; scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text2); font-family:'Nunito',system-ui,sans-serif; line-height:1.85; }
-
-/* ── SCREENSHOT DE INSTALAÇÃO ── */
-.install-step {
-  margin: 24px 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-.install-step-head {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  font-size: .82rem; font-weight: 800; color: var(--text2);
-}
-.install-num {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Fira Code', monospace; font-size: 11px;
-  flex-shrink: 0;
-}
-.install-step img { width: 100%; display: block; }
-.install-step-desc {
-  padding: 10px 16px;
-  font-size: .85rem; color: var(--text2); line-height: 1.7;
-  border-top: 1px solid var(--border);
-}
-
-/* ── LOUSA - compacta, como uma anotação no quadro ── */
-.lousa {
-  background: var(--board);
-  border-radius: 6px;
-  padding: 14px 18px;
-  margin: 22px auto;
-  max-width: 480px;
-  box-shadow: var(--shadow-sm);
-}
-.lousa-title {
-  font-family: 'Nunito', sans-serif; font-weight: 800;
-  font-size: .7rem; text-transform: uppercase; letter-spacing: .1em;
-  color: #6aaa78; margin-bottom: 10px;
-}
-.lousa-row {
-  display: flex; gap: 9px; align-items: flex-start;
-  margin-bottom: 7px; font-size: .86rem;
-  color: #c8e4cc; line-height: 1.6;
-  font-family: 'Nunito', sans-serif;
-}
-.lousa-row:last-child { margin-bottom: 0; }
-.lousa-row .bul { color: #5ad68a; flex-shrink: 0; margin-top: 2px; }
-.lousa strong { color: #e8f5e8; font-weight: 700; }
-.lousa code { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.18); color: #a8e8c0; font-size: .8em; }
-
-.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:48px; position:sticky; top:0; z-index:50; }
-.tb-logo { display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:800; font-size:.85rem; color:var(--text); }
-.tb-logo-icon { width:24px; height:24px; background:var(--accent); border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:12px; }
-.tb-nav { display:flex; align-items:center; gap:4px; }
-.tb-btn { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:700; color:var(--text3); text-decoration:none; padding:5px 10px; border:1px solid var(--border); border-radius:5px; background:var(--bg); transition:all .15s; }
-.tb-btn:hover { border-color:var(--accent); color:var(--accent); }
-.tb-btn.next { background:var(--accent); color:#fff; border-color:var(--accent); }
-.tb-btn.next:hover { background:#1a4f8a; }
-.tb-lesson { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); letter-spacing:.06em; padding:0 12px; }
-
-.prog { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:100; width:0; transition:width .1s; }
-.wrap { max-width:680px; margin:0 auto; padding:44px 28px 90px; }
-
-.cover { margin-bottom:52px; }
-.cover-tag { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
-.cover h1 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,3.5vw,2.3rem); font-weight:700; line-height:1.2; color:var(--text); margin-bottom:16px; }
-.cover h1 em { color:var(--accent); font-style:italic; }
-.cover p { font-size:1rem; color:var(--text2); line-height:1.85; }
-
-p { font-size:.97rem; color:var(--text2); margin-bottom:20px; line-height:1.85; }
-p:last-child { margin-bottom:0; }
-strong { color:var(--text); font-weight:700; }
-code { font-family:'Fira Code',monospace; font-size:.82em; background:var(--accent-lt); border:1px solid rgba(31,95,166,.16); border-radius:4px; padding:1px 6px; color:var(--accent); }
-
-.bubble { display:flex; gap:10px; align-items:flex-start; margin:28px 0 8px; }
-.bubble-avatar { flex-shrink:0; width:32px; height:32px; background:#f0a500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:2px; box-shadow:0 2px 6px rgba(240,165,0,.3); }
-.bubble-body { background:#fffbf0; border:1.5px solid #f0c040; border-radius:4px 14px 14px 14px; padding:11px 15px; font-size:.9rem; color:#4a3800; font-weight:600; box-shadow:0 2px 8px rgba(240,165,0,.15); line-height:1.65; max-width:500px; }
-
-.dica { border-left:3px solid var(--accent); background:var(--accent-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#1a3a6a; line-height:1.75; }
-.dica strong { color:#1a3a6a; font-weight:800; }
-.atencao { border-left:3px solid var(--gold); background:var(--gold-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#5a3808; line-height:1.75; }
-.atencao strong { color:#5a3808; font-weight:800; }
-.aviso { border-left:3px solid var(--red); background:var(--red-lt); border-radius:0 7px 7px 0; padding:12px 16px; margin:20px 0; font-size:.9rem; color:#6a1515; line-height:1.75; }
-.aviso strong { color:#6a1515; font-weight:800; }
-
-.cblock { background:#f5f3f0; border:1px solid #ddd8d0; border-radius:8px; margin:20px 0; overflow:hidden; box-shadow:var(--shadow-sm); }
-.cblock-head { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface); border-bottom:1px solid #ddd8d0; }
-.cdots { display:flex; gap:5px; }
-.cdots span { width:9px; height:9px; border-radius:50%; }
-.c1{background:#ff6058;} .c2{background:#ffbd2e;} .c3{background:#28ca42;}
-.cfname { font-family:'Fira Code',monospace; font-size:10.5px; color:var(--text3); }
-.cblock pre { padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px; line-height:1.8; overflow-x:auto; color:#2a2420; white-space:pre; }
-.kw{color:#6d28d9;} .fn{color:#1d4ed8;} .st{color:#166534;}
-.nm{color:#b45309;} .cm{color:#888078;font-style:italic;}
-.vr{color:#b91c1c;} .op{color:#0d6e50;} .bi{color:#a06820;}
-
-.code-ann { margin:16px 0 24px; border-collapse:collapse; width:100%; }
-.code-ann tr { border-bottom:1px solid var(--border); }
-.code-ann tr:last-child { border-bottom:none; }
-.code-ann td { padding:8px 10px; font-size:.85rem; vertical-align:top; line-height:1.65; }
-.code-ann td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; white-space:nowrap; color:var(--accent); background:var(--accent-lt); border-radius:4px; width:1%; padding:8px 12px; }
-.code-ann td:last-child { color:var(--text2); }
-.code-ann td strong { color:var(--text); }
-
-.break { background:var(--gold-lt); border:1px solid rgba(160,104,32,.2); border-radius:8px; padding:18px 22px; text-align:center; margin:44px 0; }
-.break .be { font-size:1.8rem; display:block; margin-bottom:6px; }
-.break h3 { font-family:'Playfair Display',serif; color:var(--gold); font-size:1rem; font-style:normal; margin-bottom:4px; }
-.break p { font-size:.83rem; color:#7a5010; margin:0; }
-
-.exercise { background:var(--surface); border:1.5px solid var(--accent); border-radius:8px; padding:20px 22px; margin:32px 0; box-shadow:var(--shadow-sm); }
-.ex-tag { font-family:'Fira Code',monospace; font-size:9.5px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:block; }
-.exercise h3 { font-family:'Playfair Display',serif; color:var(--text); font-size:1.05rem; margin-bottom:12px; }
-.exercise ol { padding-left:18px; font-size:.88rem; line-height:2.1; color:var(--text2); }
-.ex-diff { font-family:'Fira Code',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
-.diff-1 { background:var(--green-lt); color:var(--green); }
-.diff-2 { background:var(--gold-lt);  color:var(--gold); }
-.diff-3 { background:var(--red-lt);   color:var(--red); }
-.ex-ans { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
-.ex-ans-body { display:none; }
-.ex-ans-body.visible { display:block; }
-.btn-ans { display:inline-flex; align-items:center; gap:6px; font-family:'Fira Code',monospace; font-size:.75rem; font-weight:600; color:var(--green); background:var(--green-lt); border:1.5px solid rgba(13,110,80,.25); border-radius:5px; padding:6px 14px; cursor:pointer; transition:all .15s; margin-top:4px; letter-spacing:.03em; }
-.btn-ans:hover { background:#d0ece3; border-color:rgba(13,110,80,.5); }
-
-.downloads { margin:48px 0 32px; }
-.downloads-title { font-family:'Fira Code',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; display:block; }
-.dl-grid { display:flex; flex-direction:column; gap:7px; }
-.dl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px 14px; text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:border-color .15s,box-shadow .15s; }
-.dl-item:hover { border-color:var(--accent); box-shadow:var(--shadow); }
-.dl-icon { font-size:1.1rem; flex-shrink:0; }
-.dl-info { flex:1; }
-.dl-name { font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); font-weight:500; }
-.dl-desc { font-size:.75rem; color:var(--text3); margin-top:1px; }
-.dl-badge { font-family:'Fira Code',monospace; font-size:9px; background:var(--accent-lt); color:var(--accent); border-radius:4px; padding:2px 8px; flex-shrink:0; }
-
-.ready { background:var(--green-lt); border:1.5px solid rgba(13,110,80,.3); border-radius:8px; padding:26px; text-align:center; margin:48px 0; }
-.ready .re { font-size:2rem; display:block; margin-bottom:10px; }
-.ready h2 { font-family:'Playfair Display',serif; color:var(--green); font-size:1.25rem; margin:0 0 8px; }
-.ready p { font-size:.88rem; color:#0a4535; margin:0; }
-
-.nav-bottom { display:flex; justify-content:space-between; margin-top:52px; padding-top:20px; border-top:1px solid var(--border); }
-.nav-link { display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--text3); text-decoration:none; padding:7px 14px; border:1px solid var(--border); border-radius:6px; background:var(--bg); transition:all .15s; }
-.nav-link:hover { border-color:var(--accent); color:var(--accent); }
-.nav-link.next { background:var(--accent); color:#fff; border-color:var(--accent); }
-.nav-link.next:hover { background:#1a4f8a; }
-
-footer { border-top:1px solid var(--border); padding:14px 28px; display:flex; justify-content:space-between; font-family:'Fira Code',monospace; font-size:10px; color:var(--text3); background:var(--surface); }
-footer a { color:inherit; text-decoration:none; }
-
-@media (max-width:600px) {
-  .param-table tbody td:nth-child(2) { white-space:normal; }
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="page-aula5">
 
 <div id="prog" class="prog"></div>
 
@@ -211,9 +31,9 @@ footer a { color:inherit; text-decoration:none; }
     <h1>Respostas que o código <em>consegue ler</em></h1>
     <p>Até agora, o GPT sempre respondeu em texto corrido, como se estivesse escrevendo uma mensagem. Isso funciona bem para conversa. Mas pensa no seguinte: e se nós quisermos usar a resposta em alguma outra parte do sistema? Exibir numa tabela, salvar num banco de dados, processar automaticamente? Texto livre não serve para isso.</p>
     <p>É aí que entra o <strong>JSON</strong>. Em vez de pedir ao GPT que escreva uma resposta, nós pedimos que ele organize as informações num formato estruturado que o Python consegue ler e manipular diretamente. Nesta aula nós também vamos atacar um problema que surgiu na aula passada: o histórico que cresce sem parar. Em vez de simplesmente cortá-lo, nós vamos fazer algo mais inteligente, resumir o que já foi dito antes de descartar.</p>
-  </div>
 
   <p>Antes de ver o código, precisamos entender o que é JSON. A sigla vem do inglês <em>JavaScript Object Notation</em>, mas não deixe isso te assustar: JSON é só uma forma de organizar informações usando chave e valor, como uma ficha bem estruturada. Você já viu algo parecido no Python quando usamos dicionários.</p>
+  </div>
 
   <div class="lousa">
     <div class="lousa-title">JSON na prática</div>
@@ -232,15 +52,15 @@ footer a { color:inherit; text-decoration:none; }
       <div class="cfname">exemplo de resposta em JSON</div>
     </div>
     <pre>{
-  <span class="st">"titulo"</span>: <span class="st">"Estômago"</span>,
-  <span class="st">"diretor"</span>: <span class="st">"Marcos Jorge"</span>,
-  <span class="st">"ano"</span>: <span class="nm">2007</span>,
-  <span class="st">"genero"</span>: <span class="st">"Drama/Comédia"</span>,
-  <span class="st">"sinopse"</span>: <span class="st">"Raimundo Nonato descobre o poder da culinária ao chegar em São Paulo."</span>,
-  <span class="st">"avaliacao"</span>: <span class="kw">null</span>
+  <span class="key">"titulo"</span>: <span class="st">"Estômago"</span>,
+  <span class="key">"diretor"</span>: <span class="st">"Marcos Jorge"</span>,
+  <span class="key">"ano"</span>: <span class="nm">2007</span>,
+  <span class="key">"genero"</span>: <span class="st">"Drama/Comédia"</span>,
+  <span class="key">"sinopse"</span>: <span class="st">"Raimundo Nonato descobre o poder da culinária ao chegar em São Paulo."</span>,
+  <span class="key">"avaliacao"</span>: <span class="bi">null</span>
 }</pre>
   </div>
-
+<br>
   <p>Perceba o campo <code>"avaliacao": null</code>. Quando um campo não tem um valor confiável, nós instruímos o GPT a retornar <code>null</code> em vez de inventar um número. Isso é fundamental: a IA pode alucinar dados, e campos com valores fictícios causam problemas sérios num sistema real. O <code>null</code> diz claramente "esse campo existe, mas não tenho informação confiável aqui".</p>
 
   <div class="bubble">
@@ -257,21 +77,21 @@ footer a { color:inherit; text-decoration:none; }
       <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
       <div class="cfname">036_Exercicio.py</div>
     </div>
-    <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> json
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">import</span> os
+    <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">json</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">import</span> <span class="lib">os</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
 <span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 filmes de comédia brasileiros premiados.
@@ -291,23 +111,23 @@ Use exatamente esta estrutura para cada filme:
 }
 Regras: retorne apenas JSON válido. Se não tiver certeza de algum campo, use null."""</span>
 
-<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
-    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+    <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="arg">messages</span><span class="op">=</span>[{<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>
 )
 
-<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
 <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
 
 <span class="fn">print</span>(<span class="st">"Resposta da IA:"</span>)
 <span class="fn">print</span>(<span class="vr">texto</span>)
 <span class="fn">print</span>(<span class="st">"---"</span>)
 
-<span class="kw">try</span>:
-    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
+<span class="kw2">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> <span class="lib">json</span>.<span class="fn">loads</span>(<span class="vr">texto</span>)
     <span class="fn">print</span>(<span class="st">"\nPrimeiro filme:"</span>, <span class="vr">dados</span>[<span class="st">"filmes"</span>][<span class="nm">0</span>][<span class="st">"titulo"</span>])
-<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+<span class="kw2">except</span> <span class="lib">json</span>.<span class="cls">JSONDecodeError</span>:
     <span class="fn">print</span>(<span class="st">"A IA não retornou JSON válido."</span>)</pre>
   </div>
 
@@ -380,7 +200,7 @@ Responda APENAS em JSON válido com esta estrutura:
 }
 Sem texto fora do JSON."""</span></pre>
   </div>
-
+<br>
   <p>Antes de avançar, tem um ponto que faz muita diferença na hora de montar o prompt: nem todos os campos de um JSON precisam sempre ter valor. A distinção entre campos obrigatórios e campos opcionais precisa estar explícita no prompt, ou o GPT vai inventar valores onde não há nada a dizer.</p>
 
   <p>O exemplo mais claro é uma receita. Pensa assim: toda receita tem um modo de preparo. Esse campo é obrigatório, sempre. Mas o campo <code>"recheio"</code> só faz sentido para certos tipos de prato. Um bolo recheado tem. Uma salada não tem. Se nós não dissermos isso no prompt, o GPT vai preencher <code>"recheio"</code> com algo inventado para a salada, só para não deixar o campo vazio. O mesmo vale para <code>"massa"</code>, que existe numa lasanha mas não num frango grelhado, e para <code>"molho"</code>, que existe numa macarronada mas não num brigadeiro.</p>
@@ -426,83 +246,83 @@ Sem texto fora do JSON."""</span></pre>
       <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
       <div class="cfname">037_Exercicio.py</div>
     </div>
-    <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">import</span> os
+    <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">import</span> <span class="lib">os</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
-<span class="vr">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">10</span>
-<span class="vr">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">5</span>
+<span class="const">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">10</span>
+<span class="const">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">5</span>
 
 <span class="vr">mensagens</span> <span class="op">=</span> [
     {
-        <span class="st">"role"</span>: <span class="st">"system"</span>,
-        <span class="st">"content"</span>: <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
+        <span class="key">"role"</span>: <span class="st">"system"</span>,
+        <span class="key">"content"</span>: <span class="st">"Você é um assistente direto e objetivo. Responda de forma curta e clara."</span>
     }
 ]
 
 <span class="kw">def</span> <span class="fn">resumir_conversa</span>(<span class="vr">mensagens_antigas</span>):
     <span class="st">"""Gera um resumo das mensagens antigas usando o GPT"""</span>
-    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">mensagens_antigas</span>])
-    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-        <span class="vr">messages</span><span class="op">=</span>[
-            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase curta."</span>},
-            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>}
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw2">for</span> <span class="vr">m</span> <span class="kw2">in</span> <span class="vr">mensagens_antigas</span>])
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+        <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="arg">messages</span><span class="op">=</span>[
+            {<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase curta."</span>},
+            {<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>}
         ],
-        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">50</span>,
-        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">50</span>,
+        <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>
     )
-    <span class="kw">return</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw2">return</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
 
 <span class="fn">print</span>(<span class="st">"Chatbot iniciado. Digite 'sair' para encerrar."</span>)
 
-<span class="kw">while</span> <span class="kw">True</span>:
+<span class="kw2">while</span> <span class="bi">True</span>:
     <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
-    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+    <span class="kw2">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="key">"sair"</span>:
         <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
-        <span class="kw">break</span>
-    <span class="kw">if not</span> <span class="vr">pergunta</span>:
-        <span class="kw">continue</span>
+        <span class="kw2">break</span>
+    <span class="kw2">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw2">continue</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">pergunta</span>})
 
     <span class="cm"># Se passou do limite, resumimos as mensagens mais antigas</span>
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="vr">LIMITE_MENSAGENS</span>:
-        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>]
-        <span class="kw">if</span> <span class="vr">antigas</span>:
+    <span class="kw2">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="const">LIMITE_MENSAGENS</span>:
+        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="const">ULTIMAS_MENSAGENS</span>]
+        <span class="kw2">if</span> <span class="vr">antigas</span>:
             <span class="vr">resumo</span> <span class="op">=</span> <span class="fn">resumir_conversa</span>(<span class="vr">antigas</span>)
             <span class="vr">mensagens</span> <span class="op">=</span> [
                 <span class="vr">mensagens</span>[<span class="nm">0</span>],
-                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">f"Resumo da conversa anterior: {resumo}"</span>}
-            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>:]
+                {<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">f"Resumo da conversa anterior: {resumo}"</span>}
+            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="const">ULTIMAS_MENSAGENS</span>:]
 
-    <span class="kw">try</span>:
-        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
-            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
-            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+    <span class="kw2">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+            <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
             <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
             <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
         )
-        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+    <span class="kw2">except</span> <span class="cls">Exception</span> <span class="kw2">as</span> <span class="vr">e</span>:
         <span class="fn">print</span>(<span class="st">f"Erro na API: {e}"</span>)
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Desculpe, houve um erro."</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
     <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)</pre>
   </div>
 
@@ -561,63 +381,63 @@ urllib3.<span class="fn">disable_warnings</span>()
       <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
       <div class="cfname">038_Exercicio.py</div>
     </div>
-    <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> json
-<span class="kw">import</span> os
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+    <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">json</span>
+<span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
-<span class="vr">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
+<span class="const">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
 
 <span class="kw">def</span> <span class="fn">carregar_memoria</span>():
-    <span class="kw">if</span> os.path.<span class="fn">exists</span>(<span class="vr">ARQUIVO_MEMORIA</span>):
-        <span class="kw">try</span>:
-            <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
-                <span class="kw">return</span> json.<span class="fn">load</span>(<span class="vr">f</span>)
-        <span class="kw">except</span> (json.<span class="fn">JSONDecodeError</span>, <span class="fn">ValueError</span>):
-            <span class="kw">pass</span>
-    <span class="kw">return</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
+    <span class="kw2">if</span> <span class="lib">os</span>.path.<span class="fn">exists</span>(<span class="const">ARQUIVO_MEMORIA</span>):
+        <span class="kw2">try</span>:
+            <span class="kw2">with</span> <span class="fn">open</span>(<span class="const">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="arg">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw2">as</span> <span class="vr">f</span>:
+                <span class="kw2">return</span> <span class="lib">json</span>.<span class="fn">load</span>(<span class="vr">f</span>)
+        <span class="kw2">except</span> (<span class="lib">json</span>.<span class="cls">JSONDecodeError</span>, <span class="cls">ValueError</span>):
+            <span class="kw2">pass</span>
+    <span class="kw2">return</span> [{<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
 
 <span class="kw">def</span> <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>):
-    <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
-        json.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="kw">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
+    <span class="kw2">with</span> <span class="fn">open</span>(<span class="const">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="arg">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw2">as</span> <span class="vr">f</span>:
+        <span class="lib">json</span>.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="bi">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
 
 <span class="vr">mensagens</span> <span class="op">=</span> <span class="fn">carregar_memoria</span>()
 
 <span class="fn">print</span>(<span class="st">"Chatbot com memória iniciado. Digite 'sair' para encerrar."</span>)
 
-<span class="kw">while</span> <span class="kw">True</span>:
+<span class="kw2">while</span> <span class="bi">True</span>:
     <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
-    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+    <span class="kw2">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="key">"sair"</span>:
         <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
-        <span class="kw">break</span>
-    <span class="kw">if not</span> <span class="vr">pergunta</span>:
-        <span class="kw">continue</span>
+        <span class="kw2">break</span>
+    <span class="kw2">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw2">continue</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">pergunta</span>})
 
-    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
-        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
-        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+        <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+        <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
         <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
         <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
     )
 
-    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
     <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)
 
     <span class="cm"># Salva o histórico completo após cada resposta</span>
@@ -676,27 +496,27 @@ urllib3.<span class="fn">disable_warnings</span>()
     <div class="ex-ans">
       <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
       <div class="ex-ans-body">
-        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 036_Exercicio.py da aula com o tema trocado</span>
-        <div class="cblock" style="margin:0">
+        <span class="u-style-005">// a solução é o próprio 036_Exercicio.py da aula com o tema trocado</span>
+        <div class="cblock u-style-002">
           <div class="cblock-head">
             <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
             <div class="cfname">039_Exercicio.py</div>
           </div>
-          <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> json
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">import</span> os
+          <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">json</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">import</span> <span class="lib">os</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
 <span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 livros clássicos da literatura brasileira.
@@ -715,27 +535,27 @@ Use exatamente esta estrutura:
 }
 Sem texto fora do JSON."""</span>
 
-<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
-    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+    <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="arg">messages</span><span class="op">=</span>[{<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>
 )
 
-<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
 <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
 
-<span class="kw">try</span>:
-    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
-    <span class="kw">if</span> <span class="st">"livros"</span> <span class="kw">not in</span> <span class="vr">dados</span>:
+<span class="kw2">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> <span class="lib">json</span>.<span class="fn">loads</span>(<span class="vr">texto</span>)
+    <span class="kw2">if</span> <span class="st">"livros"</span> <span class="kw2">not in</span> <span class="vr">dados</span>:
         <span class="fn">print</span>(<span class="st">"Campo 'livros' não encontrado no JSON."</span>)
-    <span class="kw">else</span>:
-        <span class="kw">for</span> <span class="vr">livro</span> <span class="kw">in</span> <span class="vr">dados</span>[<span class="st">"livros"</span>]:
+    <span class="kw2">else</span>:
+        <span class="kw2">for</span> <span class="vr">livro</span> <span class="kw2">in</span> <span class="vr">dados</span>[<span class="st">"livros"</span>]:
             <span class="fn">print</span>(<span class="st">f"Título: {livro['titulo']} ({livro['ano']})"</span>)
             <span class="fn">print</span>(<span class="st">f"Autor: {livro['autor']}"</span>)
             <span class="fn">print</span>(<span class="st">f"Sinopse: {livro['sinopse']}"</span>)
             <span class="fn">print</span>(<span class="st">f"Digital: {livro['disponivel_digitalmente']}"</span>)
             <span class="fn">print</span>(<span class="st">"---"</span>)
-<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+<span class="kw2">except</span> <span class="lib">json</span>.<span class="cls">JSONDecodeError</span>:
     <span class="fn">print</span>(<span class="st">"JSON inválido. Resposta bruta:"</span>)
     <span class="fn">print</span>(<span class="vr">texto</span>)</pre>
         </div>
@@ -756,72 +576,72 @@ Sem texto fora do JSON."""</span>
     <div class="ex-ans">
       <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
       <div class="ex-ans-body">
-        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// a solução é o próprio 040_Exercicio.py da aula</span>
-        <div class="cblock" style="margin:0">
+        <span class="u-style-005">// a solução é o próprio 040_Exercicio.py da aula</span>
+        <div class="cblock u-style-002">
           <div class="cblock-head">
           </div>
-<div class="cblock" style="margin:0">
+<div class="cblock u-style-002">
   <div class="cblock-head">
     <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
     <div class="cfname">040_Exercicio.py</div>
   </div>
-  <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> json
-<span class="kw">import</span> os
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+  <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">json</span>
+<span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
-<span class="vr">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
+<span class="const">ARQUIVO_MEMORIA</span> <span class="op">=</span> <span class="st">"memoria.json"</span>
 
 <span class="kw">def</span> <span class="fn">carregar_memoria</span>():
-    <span class="kw">if</span> os.path.<span class="fn">exists</span>(<span class="vr">ARQUIVO_MEMORIA</span>):
-        <span class="kw">try</span>:
-            <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
-                <span class="kw">return</span> json.<span class="fn">load</span>(<span class="vr">f</span>)
-        <span class="kw">except</span> (json.<span class="fn">JSONDecodeError</span>, <span class="fn">ValueError</span>):
-            <span class="kw">pass</span>
-    <span class="kw">return</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
+    <span class="kw2">if</span> <span class="lib">os</span>.path.<span class="fn">exists</span>(<span class="const">ARQUIVO_MEMORIA</span>):
+        <span class="kw2">try</span>:
+            <span class="kw2">with</span> <span class="fn">open</span>(<span class="const">ARQUIVO_MEMORIA</span>, <span class="st">"r"</span>, <span class="arg">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw2">as</span> <span class="vr">f</span>:
+                <span class="kw2">return</span> <span class="lib">json</span>.<span class="fn">load</span>(<span class="vr">f</span>)
+        <span class="kw2">except</span> (<span class="lib">json</span>.<span class="cls">JSONDecodeError</span>, <span class="cls">ValueError</span>):
+            <span class="kw2">pass</span>
+    <span class="kw2">return</span> [{<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">"Você é um assistente direto, objetivo e claro."</span>}]
 
 <span class="kw">def</span> <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>):
-    <span class="kw">with</span> <span class="fn">open</span>(<span class="vr">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="vr">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> <span class="vr">f</span>:
-        json.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="kw">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
+    <span class="kw2">with</span> <span class="fn">open</span>(<span class="const">ARQUIVO_MEMORIA</span>, <span class="st">"w"</span>, <span class="arg">encoding</span><span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw2">as</span> <span class="vr">f</span>:
+        <span class="lib">json</span>.<span class="fn">dump</span>(<span class="vr">mensagens</span>, <span class="vr">f</span>, <span class="vr">ensure_ascii</span><span class="op">=</span><span class="bi">False</span>, <span class="vr">indent</span><span class="op">=</span><span class="nm">2</span>)
 
 <span class="vr">mensagens</span> <span class="op">=</span> <span class="fn">carregar_memoria</span>()
 
 <span class="fn">print</span>(<span class="st">"Chatbot com memória iniciado. Digite 'sair' para encerrar."</span>)
 
-<span class="kw">while</span> <span class="kw">True</span>:
+<span class="kw2">while</span> <span class="bi">True</span>:
     <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
-    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+    <span class="kw2">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="key">"sair"</span>:
         <span class="fn">print</span>(<span class="st">"Bot: Até mais!"</span>)
-        <span class="kw">break</span>
-    <span class="kw">if not</span> <span class="vr">pergunta</span>:
-        <span class="kw">continue</span>
+        <span class="kw2">break</span>
+    <span class="kw2">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw2">continue</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">pergunta</span>})
 
-    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-        <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
-        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
-        <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+        <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">80</span>,
+        <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>,
         <span class="vr">frequency_penalty</span><span class="op">=</span><span class="nm">0.4</span>,
         <span class="vr">presence_penalty</span><span class="op">=</span><span class="nm">0.2</span>
     )
 
-    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
     <span class="fn">print</span>(<span class="st">"Bot:"</span>, <span class="vr">texto</span>)
     <span class="fn">salvar_memoria</span>(<span class="vr">mensagens</span>)</pre>
 </div>        </div>
@@ -843,27 +663,27 @@ urllib3.<span class="fn">disable_warnings</span>()
     <div class="ex-ans">
       <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
       <div class="ex-ans-body">
-        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// exemplo com séries brasileiras</span>
-        <div class="cblock" style="margin:0">
+        <span class="u-style-005">// exemplo com séries brasileiras</span>
+        <div class="cblock u-style-002">
           <div class="cblock-head">
             <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
             <div class="cfname">041_Exercicio.py</div>
           </div>
-          <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> json
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">import</span> os
+          <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">json</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">import</span> <span class="lib">os</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
 <span class="vr">prompt</span> <span class="op">=</span> <span class="st">"""Me dê 3 séries brasileiras populares.
@@ -883,24 +703,24 @@ Use exatamente esta estrutura:
 }
 Use null quando não tiver certeza do valor. Sem texto fora do JSON."""</span>
 
-<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-    <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-    <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">prompt</span>}],
-    <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+<span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+    <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+    <span class="arg">messages</span><span class="op">=</span>[{<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">prompt</span>}],
+    <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>
 )
 
-<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+<span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
 <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">strip</span>().<span class="fn">removeprefix</span>(<span class="st">"```json"</span>).<span class="fn">removeprefix</span>(<span class="st">"```"</span>).<span class="fn">removesuffix</span>(<span class="st">"```"</span>).<span class="fn">strip</span>()
 
-<span class="kw">try</span>:
-    <span class="vr">dados</span> <span class="op">=</span> json.<span class="fn">loads</span>(<span class="vr">texto</span>)
-    <span class="kw">for</span> <span class="vr">serie</span> <span class="kw">in</span> <span class="vr">dados</span>[<span class="st">"series"</span>]:
+<span class="kw2">try</span>:
+    <span class="vr">dados</span> <span class="op">=</span> <span class="lib">json</span>.<span class="fn">loads</span>(<span class="vr">texto</span>)
+    <span class="kw2">for</span> <span class="vr">serie</span> <span class="kw2">in</span> <span class="vr">dados</span>[<span class="st">"series"</span>]:
         <span class="fn">print</span>(<span class="st">f"Série: {serie['titulo']} ({serie['ano_estreia']})"</span>)
         <span class="fn">print</span>(<span class="st">f"Gênero: {serie['genero']} | Plataforma: {serie['plataforma']}"</span>)
         <span class="fn">print</span>(<span class="st">f"Sinopse: {serie['sinopse']}"</span>)
         <span class="fn">print</span>(<span class="st">f"IMDB: {serie['avaliacao_imdb'] or 'sem avaliação'}"</span>)
         <span class="fn">print</span>(<span class="st">"---"</span>)
-<span class="kw">except</span> json.<span class="fn">JSONDecodeError</span>:
+<span class="kw2">except</span> <span class="lib">json</span>.<span class="cls">JSONDecodeError</span>:
     <span class="fn">print</span>(<span class="st">"JSON inválido. Resposta bruta:"</span>)
     <span class="fn">print</span>(<span class="vr">texto</span>)</pre>
         </div>
@@ -922,37 +742,37 @@ Use null quando não tiver certeza do valor. Sem texto fora do JSON."""</span>
     <div class="ex-ans">
       <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
       <div class="ex-ans-body">
-        <span style="font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin:12px 0 8px;display:block">// restaurante Sabor & Arte com memória resumida e nome do cliente</span>
-        <div class="cblock" style="margin:0">
+        <span class="u-style-005">// restaurante Sabor & Arte com memória resumida e nome do cliente</span>
+        <div class="cblock u-style-002">
           <div class="cblock-head">
             <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
             <div class="cfname">042_Exercicio.py</div>
           </div>
-          <pre><span class="kw">import</span> warnings
-<span class="kw">import</span> urllib3
-<span class="kw">import</span> httpx
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">import</span> os
+          <pre><span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">import</span> <span class="lib">os</span>
 
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
 
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(
-    <span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
-    <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>)
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(
+    <span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>),
+    <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>)
 )
 
-<span class="vr">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">8</span>
-<span class="vr">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">4</span>
+<span class="const">LIMITE_MENSAGENS</span> <span class="op">=</span> <span class="nm">8</span>
+<span class="const">ULTIMAS_MENSAGENS</span> <span class="op">=</span> <span class="nm">4</span>
 
 <span class="vr">nome_cliente</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Sabor & Arte: Olá! Qual é o seu nome? "</span>).<span class="fn">strip</span>()
 
 <span class="vr">mensagens</span> <span class="op">=</span> [
     {
-        <span class="st">"role"</span>: <span class="st">"system"</span>,
-        <span class="st">"content"</span>: (
+        <span class="key">"role"</span>: <span class="st">"system"</span>,
+        <span class="key">"content"</span>: (
             <span class="st">f"Você é o assistente virtual do restaurante Sabor &amp; Arte. "</span>
             <span class="st">f"O cliente se chama {nome_cliente}. Use o nome dele ocasionalmente para personalizar. "</span>
             <span class="st">"Responda apenas sobre cardápio, reservas e horários. "</span>
@@ -966,24 +786,24 @@ urllib3.<span class="fn">disable_warnings</span>()
 <span class="vr">total_saida</span>   <span class="op">=</span> <span class="nm">0</span>
 
 <span class="kw">def</span> <span class="fn">resumir_conversa</span>(<span class="vr">mensagens_antigas</span>):
-    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">mensagens_antigas</span>])
-    <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-        <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-        <span class="vr">messages</span><span class="op">=</span>[
-            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase."</span>},
-            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>}
+    <span class="vr">texto</span> <span class="op">=</span> <span class="st">"\n"</span>.<span class="fn">join</span>([<span class="st">f"{m['role']}: {m['content']}"</span> <span class="kw2">for</span> <span class="vr">m</span> <span class="kw2">in</span> <span class="vr">mensagens_antigas</span>])
+    <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+        <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+        <span class="arg">messages</span><span class="op">=</span>[
+            {<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">"Resuma a conversa abaixo em no máximo 1 frase."</span>},
+            {<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>}
         ],
-        <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">50</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.2</span>
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">50</span>, <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span>
     )
-    <span class="kw">return</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
+    <span class="kw2">return</span> <span class="vr">r</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
 
 <span class="fn">print</span>(<span class="st">f"\nSabor &amp; Arte: Que bom ter você aqui, {nome_cliente}! Como posso ajudar?"</span>)
 <span class="fn">print</span>(<span class="st">"(Digite 'sair' para encerrar)\n"</span>)
 
-<span class="kw">while</span> <span class="kw">True</span>:
+<span class="kw2">while</span> <span class="bi">True</span>:
     <span class="vr">pergunta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"Você: "</span>).<span class="fn">strip</span>()
 
-    <span class="kw">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="st">"sair"</span>:
+    <span class="kw2">if</span> <span class="vr">pergunta</span>.<span class="fn">lower</span>() <span class="op">==</span> <span class="key">"sair"</span>:
         <span class="fn">print</span>(<span class="st">"\n-- Resumo da sessão --"</span>)
         <span class="fn">print</span>(<span class="st">f"Tokens de entrada : {total_entrada}"</span>)
         <span class="fn">print</span>(<span class="st">f"Tokens de saída   : {total_saida}"</span>)
@@ -992,37 +812,37 @@ urllib3.<span class="fn">disable_warnings</span>()
         <span class="fn">print</span>(<span class="st">f"Custo estimado    : U${custo:.6f}"</span>)
         <span class="fn">print</span>(<span class="st">"----------------------"</span>)
         <span class="fn">print</span>(<span class="st">f"Sabor &amp; Arte: Até logo, {nome_cliente}! Volte sempre!"</span>)
-        <span class="kw">break</span>
+        <span class="kw2">break</span>
 
-    <span class="kw">if not</span> <span class="vr">pergunta</span>:
-        <span class="kw">continue</span>
+    <span class="kw2">if not</span> <span class="vr">pergunta</span>:
+        <span class="kw2">continue</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">pergunta</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">pergunta</span>})
 
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="vr">LIMITE_MENSAGENS</span>:
-        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>]
-        <span class="kw">if</span> <span class="vr">antigas</span>:
+    <span class="kw2">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="const">LIMITE_MENSAGENS</span>:
+        <span class="vr">antigas</span> <span class="op">=</span> <span class="vr">mensagens</span>[<span class="nm">1</span>:<span class="op">-</span><span class="const">ULTIMAS_MENSAGENS</span>]
+        <span class="kw2">if</span> <span class="vr">antigas</span>:
             <span class="vr">resumo</span> <span class="op">=</span> <span class="fn">resumir_conversa</span>(<span class="vr">antigas</span>)
             <span class="vr">mensagens</span> <span class="op">=</span> [
                 <span class="vr">mensagens</span>[<span class="nm">0</span>],
-                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">f"Resumo anterior: {resumo}"</span>}
-            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="vr">ULTIMAS_MENSAGENS</span>:]
+                {<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="st">f"Resumo anterior: {resumo}"</span>}
+            ] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="const">ULTIMAS_MENSAGENS</span>:]
 
-    <span class="kw">try</span>:
-        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
-            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>,
-            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+    <span class="kw2">try</span>:
+        <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+            <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span>,
+            <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">100</span>,
+            <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.4</span>
         )
-        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-        <span class="vr">total_entrada</span> <span class="op">+=</span> <span class="vr">resposta</span>.<span class="vr">usage</span>.<span class="vr">prompt_tokens</span>
-        <span class="vr">total_saida</span>   <span class="op">+=</span> <span class="vr">resposta</span>.<span class="vr">usage</span>.<span class="vr">completion_tokens</span>
-    <span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="vr">e</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+        <span class="vr">total_entrada</span> <span class="op">+=</span> <span class="vr">resposta</span>.<span class="attr">usage</span>.<span class="attr">prompt_tokens</span>
+        <span class="vr">total_saida</span>   <span class="op">+=</span> <span class="vr">resposta</span>.<span class="attr">usage</span>.<span class="attr">completion_tokens</span>
+    <span class="kw2">except</span> <span class="cls">Exception</span> <span class="kw2">as</span> <span class="vr">e</span>:
         <span class="fn">print</span>(<span class="st">f"Erro: {e}"</span>)
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Não consegui processar. Tente novamente."</span>
 
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
     <span class="fn">print</span>(<span class="st">f"Sabor &amp; Arte: {texto}\n"</span>)</pre>
         </div>
       </div>
@@ -1114,7 +934,7 @@ urllib3.<span class="fn">disable_warnings</span>()
 
 </div>
 
-<p style="font-size: 14px;">
+<p class="u-style-003">
 <!--contador-->
 <?html include 'contador.html'; ?>
 <!------------------------------------------>

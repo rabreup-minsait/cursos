@@ -3,41 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Exercício 057 - Chatbot</title>
+<title>Chatbot TechShop do Exercício 068</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="../style.css">
 </head>
-<body class="page-arquivos-057-index">
+<body class="page-arquivos-068-index">
 <main class="chat-shell">
   <section class="chat-head">
-    <h1>Chatbot do Exercício 057</h1>
-    <p>Esta tela guarda um identificador no navegador e envia esse identificador junto com cada mensagem para o back-end.</p>
-    <div class="user-id-box">
-      <span>user_id:</span>
-      <span id="userIdView"></span>
+    <h1>Chatbot TechShop do Exercício 068</h1>
+    <p>Tela de teste para FAQ, produtos cadastrados, trava de produto fora do catálogo, IA controlada e log.</p>
+    <div class="info-row">
+      <div class="info-pill"><span>api:</span><span>http://127.0.0.1:8000/chat</span></div>
+      <div class="info-pill"><span>user_id:</span><span id="userIdView"></span></div>
     </div>
   </section>
-
   <section class="chat-body" id="chatBody">
-    <div class="msg bot">Olá! Digite uma mensagem para testar a memória separada deste navegador.</div>
+    <div class="msg bot">Olá! Pergunte sobre horário, endereço, pagamento, produtos da TechShop ou teste um produto que não está no catálogo.</div>
   </section>
-
   <form class="chat-form" id="chatForm">
     <input id="mensagem" type="text" placeholder="Digite sua mensagem..." autocomplete="off" />
     <button id="btnEnviar" type="submit">Enviar</button>
   </form>
-
   <div class="actions">
+    <button type="button" data-text="Tem iPhone 17 disponível?">teste rápido</button>
     <button type="button" id="btnNovoId">gerar novo user_id</button>
     <button type="button" id="btnLimpar">limpar conversa da tela</button>
   </div>
 </main>
-
 <script>
 const API_URL = "http://127.0.0.1:8000/chat";
-const STORAGE_KEY = "chatbot_user_id";
-
+const STORAGE_KEY = "aluno_068_user_id";
 const chatBody = document.getElementById("chatBody");
 const chatForm = document.getElementById("chatForm");
 const inputMensagem = document.getElementById("mensagem");
@@ -45,93 +41,70 @@ const btnEnviar = document.getElementById("btnEnviar");
 const btnNovoId = document.getElementById("btnNovoId");
 const btnLimpar = document.getElementById("btnLimpar");
 const userIdView = document.getElementById("userIdView");
-
 function criarUserId() {
-  if (window.crypto && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
-  return "usuario_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+  if (window.crypto && crypto.randomUUID) return "aluno_068_" + crypto.randomUUID();
+  return "aluno_068_" + Date.now() + "_" + Math.random().toString(16).slice(2);
 }
-
 function obterUserId() {
   let userId = localStorage.getItem(STORAGE_KEY);
-
-  if (!userId) {
-    userId = criarUserId();
-    localStorage.setItem(STORAGE_KEY, userId);
-  }
-
+  if (!userId) { userId = criarUserId(); localStorage.setItem(STORAGE_KEY, userId); }
   return userId;
 }
-
-function atualizarUserIdNaTela() {
-  userIdView.textContent = obterUserId();
-}
-
-function adicionarMensagem(texto, tipo) {
+function atualizarUserIdNaTela() { userIdView.textContent = obterUserId(); }
+function adicionarMensagem(texto, tipo, origem) {
   const div = document.createElement("div");
   div.className = "msg " + tipo;
   div.textContent = texto;
+  if (origem) {
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = "origem: " + origem;
+    div.appendChild(meta);
+  }
   chatBody.appendChild(div);
   chatBody.scrollTop = chatBody.scrollHeight;
 }
-
 async function enviarMensagem(texto) {
-  const userId = obterUserId();
-
   const resposta = await fetch(API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      texto: texto,
-      user_id: userId
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ texto: texto, user_id: obterUserId() })
   });
-
-  if (!resposta.ok) {
-    throw new Error("Erro ao chamar a API.");
-  }
-
+  if (!resposta.ok) throw new Error("Erro ao chamar a API.");
   return resposta.json();
 }
-
 chatForm.addEventListener("submit", async function(event) {
   event.preventDefault();
-
   const texto = inputMensagem.value.trim();
   if (!texto) return;
-
   adicionarMensagem(texto, "user");
   inputMensagem.value = "";
   btnEnviar.disabled = true;
-
   try {
     const dados = await enviarMensagem(texto);
-    adicionarMensagem(dados.resposta || "", "bot");
+    adicionarMensagem(dados.resposta || "Sem resposta.", dados.origem === "erro" ? "bot error" : "bot", dados.origem);
   } catch (erro) {
-    adicionarMensagem("Não foi possível conversar com a API. Confira se o servidor está rodando com uvicorn.", "bot error");
+    adicionarMensagem("Não foi possível conversar com a API. Confira se o servidor Python está rodando com uvicorn na porta 8000.", "bot error");
   } finally {
     btnEnviar.disabled = false;
     inputMensagem.focus();
   }
 });
-
+document.querySelectorAll("[data-text]").forEach(function(botao) {
+  botao.addEventListener("click", function() { inputMensagem.value = botao.dataset.text; inputMensagem.focus(); });
+});
 btnNovoId.addEventListener("click", function() {
   const novoId = criarUserId();
   localStorage.setItem(STORAGE_KEY, novoId);
   atualizarUserIdNaTela();
   adicionarMensagem("Novo user_id criado para este navegador.", "bot");
 });
-
 btnLimpar.addEventListener("click", function() {
   chatBody.innerHTML = "";
-  adicionarMensagem("Conversa limpa apenas na tela. A memória do servidor continua enquanto o Python estiver rodando.", "bot");
+  adicionarMensagem("Conversa limpa apenas na tela.", "bot");
 });
-
 atualizarUserIdNaTela();
+inputMensagem.value = "Tem iPhone 17 disponível?";
 inputMensagem.focus();
 </script>
 </body>

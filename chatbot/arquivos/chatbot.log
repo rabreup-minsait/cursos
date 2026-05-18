@@ -1,0 +1,7 @@
+2026-05-18 12:46:55,867 | INFO | REQUISICAO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | Tem iPhone 17 disponível?
+2026-05-18 12:46:55,867 | WARNING | PRODUTO_FORA_CATALOGO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | texto=Tem iPhone 17 disponível?
+2026-05-18 12:47:04,697 | INFO | REQUISICAO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | iPhone 14
+2026-05-18 12:47:04,697 | INFO | PRODUTO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | produto encontrado: iPhone 14
+2026-05-18 12:47:07,339 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-18 12:47:14,993 | INFO | REQUISICAO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | Qual o preço?
+2026-05-18 12:47:14,995 | WARNING | PRODUTO_FORA_CATALOGO | usuario=aluno_068_b07f05da-40a6-4fdf-8a42-6a7a633f1b62 | texto=Qual o preço?

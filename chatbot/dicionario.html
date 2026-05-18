@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dicionário - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-glossario">
+<div id="prog" class="prog"></div>
+<header class="topbar">
+  <a class="tb-logo" href="../index.html"><div class="tb-logo-icon">CB</div>Chatbots com Python</a>
+  <div><a class="tb-btn" href="../index.html">índice</a></div>
+</header>
+<div id="topo"></div>
+<div class="wrap">
+  <div class="cover">
+    <span class="cover-tag">referência</span>
+    <h1>Dicionário do <em>curso</em></h1>
+    <p>Termos técnicos e conceitos que aparecem nas aulas de chatbots com Python, organizados para consulta rápida durante os exercícios e revisões.</p>
+  </div>
+  <nav class="alpha-nav" aria-label="Navegação alfabética">
+    <a href="#A">A</a><a href="#B">B</a><a href="#C">C</a><a href="#D">D</a><a href="#E">E</a><a href="#F">F</a><a href="#G">G</a><a href="#H">H</a><a href="#I">I</a><a href="#J">J</a><a class="empty">K</a><a href="#L">L</a><a href="#M">M</a><a href="#N">N</a><a href="#O">O</a><a href="#P">P</a><a class="empty">Q</a><a href="#R">R</a><a href="#S">S</a><a href="#T">T</a><a href="#U">U</a><a href="#V">V</a><a href="#W">W</a><a class="empty">X</a><a class="empty">Y</a><a class="empty">Z</a>
+  </nav>
+
+<section class="section" id="A">
+  <div class="section-letter-row"><div class="section-letter">A</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">.env</span><span class="term-aula">aulas 03, 07</span></div>
+    <div class="term-def">Arquivo usado para guardar variáveis de ambiente do projeto, como <code>OPENAI_API_KEY</code>. Ele evita colocar chaves e senhas diretamente no código. O Python lê esse arquivo com <code>load_dotenv()</code> e acessa os valores com <code>os.getenv()</code>.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">alucinação</span><span class="term-aula">aulas 09, 10</span></div>
+    <div class="term-def">Resposta inventada pela IA que parece correta, mas não está apoiada nos dados reais do sistema. Em chatbots com catálogo, FAQ ou base interna, a regra é simples: se o dado não veio da fonte real, a IA não deve inventar.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">API</span><span class="term-aula">aulas 03, 07</span></div>
+    <div class="term-def">Interface de Programação de Aplicações. É um contrato de comunicação entre sistemas: você envia dados em um formato esperado e recebe uma resposta estruturada. A OpenAI expõe uma API; o FastAPI permite criar a sua.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">API key</span><span class="term-aula">aula 03</span></div>
+    <div class="term-def">Chave secreta que identifica sua conta ao chamar uma API. No curso, ela fica em <code>OPENAI_API_KEY</code>. Nunca deve aparecer no HTML, no JavaScript público ou em prints.</div>
+  </div>
+</section>
+
+<section class="section" id="B">
+  <div class="section-letter-row"><div class="section-letter">B</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">back-end</span><span class="term-aula">aulas 07 a 10</span></div>
+    <div class="term-def">Parte do sistema que roda no servidor. É onde ficam a chave da API, a chamada à IA, os logs, o catálogo, o FAQ e a memória por usuário. No curso, o back-end é feito em Python com FastAPI.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">BaseModel</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Classe do Pydantic usada para declarar o formato dos dados recebidos por uma rota FastAPI. Se a classe pede <code>texto: str</code>, o FastAPI valida automaticamente se esse campo chegou.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">break</span><span class="term-aula">aula 01</span></div>
+    <div class="term-def">Comando Python que interrompe um loop imediatamente. No chatbot de terminal, é o que permite encerrar o <code>while True</code> quando o usuário digita <code>sair</code>.</div>
+  </div>
+</section>
+
+<section class="section" id="C">
+  <div class="section-letter-row"><div class="section-letter">C</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">catálogo</span><span class="term-aula">aulas 09, 10</span></div>
+    <div class="term-def">Base de dados reais sobre produtos, preços, estoque ou serviços. O catálogo funciona como fonte de verdade: se o item não está nele, o chatbot deve dizer que não encontrou.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">classificação de intenção</span><span class="term-aula">aulas 02, 09</span></div>
+    <div class="term-def">Etapa que identifica o objetivo da mensagem antes de responder. A pergunta pode ser FAQ, produto, conversa livre, encerramento ou coleta de dados do usuário. Essa decisão escolhe o caminho do código.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">config.py</span><span class="term-aula">aula 10</span></div>
+    <div class="term-def">Arquivo separado para concentrar configurações do projeto: modelo, temperatura, limite de tokens, nome do bot, log e system prompt base. Isso reduz repetição e facilita manutenção.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">CORS</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Cross-Origin Resource Sharing. É uma proteção do navegador que controla se uma página pode chamar uma API em outro endereço. O <code>CORSMiddleware</code> libera a comunicação entre front-end e FastAPI.</div>
+  </div>
+</section>
+
+<section class="section" id="D">
+  <div class="section-letter-row"><div class="section-letter">D</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">decorador</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Linha que começa com <code>@</code> e registra a função logo abaixo. Em FastAPI, <code>@app.get("/")</code> e <code>@app.post("/chat")</code> transformam funções Python em rotas web.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">dicionário</span><span class="term-aula">nivelamento, aulas 02, 05, 06</span></div>
+    <div class="term-def">Estrutura de dados Python formada por pares de chave e valor. Exemplo: <code>{"nome": "Ana", "idade": 30}</code>. Aparece em perfis, intenções, produtos, FAQ e respostas JSON.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">dotenv / load_dotenv()</span><span class="term-aula">aulas 03, 07</span></div>
+    <div class="term-def">Biblioteca e função usadas para carregar variáveis do arquivo <code>.env</code>. Depois disso, o código consegue ler valores secretos com <code>os.getenv()</code>.</div>
+  </div>
+</section>
+
+<section class="section" id="E">
+  <div class="section-letter-row"><div class="section-letter">E</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">embedding</span><span class="term-aula">aula 08</span></div>
+    <div class="term-def">Representação numérica do significado de um texto. Textos com sentidos parecidos geram vetores próximos. É a base de buscas por similaridade em documentos e Vector Stores.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">endpoint</span><span class="term-aula">aulas 07 a 10</span></div>
+    <div class="term-def">Endereço específico de uma API, como <code>/chat</code>, <code>/status</code> ou <code>/</code>. Cada endpoint recebe uma requisição, executa uma função e devolve uma resposta.</div>
+  </div>
+</section>
+
+<section class="section" id="F">
+  <div class="section-letter-row"><div class="section-letter">F</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">fallback</span><span class="term-aula">aulas 01, 02, 09</span></div>
+    <div class="term-def">Resposta padrão usada quando nenhuma condição específica é encontrada. É o “não entendi” do chatbot, idealmente acompanhado de uma orientação sobre o que o usuário pode perguntar.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">FAQ</span><span class="term-aula">aulas 09, 10</span></div>
+    <div class="term-def">Frequently Asked Questions, ou perguntas frequentes. No chatbot, é uma base de perguntas e respostas prontas para dúvidas previsíveis, como horário, endereço, pagamento e troca.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">FastAPI</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Framework Python para criar APIs. Ele recebe requisições HTTP, valida dados com Pydantic, executa funções de rota e devolve respostas em JSON. Também cria a página <code>/docs</code>.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">fetch()</span><span class="term-aula">aulas 07, 08</span></div>
+    <div class="term-def">Função JavaScript usada para chamar APIs a partir do navegador. O front-end usa <code>fetch()</code> para mandar a pergunta ao back-end e receber a resposta sem recarregar a página.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">front-end</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Parte visual do sistema, executada no navegador. No curso, é a página HTML com campo de mensagem, botão de envio e histórico da conversa.</div>
+  </div>
+</section>
+
+<section class="section" id="G">
+  <div class="section-letter-row"><div class="section-letter">G</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">GET / POST</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Métodos HTTP. <code>GET</code> normalmente busca informação; <code>POST</code> envia dados para processamento, como mandar uma pergunta para a rota <code>/chat</code>.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">global</span><span class="term-aula">aulas 06, 07</span></div>
+    <div class="term-def">Palavra-chave usada dentro de uma função para indicar que uma variável externa será modificada. Sem <code>global</code>, o Python criaria uma variável local.</div>
+  </div>
+</section>
+
+<section class="section" id="H">
+  <div class="section-letter-row"><div class="section-letter">H</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">histórico de mensagens</span><span class="term-aula">aulas 03, 05, 06</span></div>
+    <div class="term-def">Lista com mensagens anteriores enviadas à IA. Reenviar o histórico dá contexto ao modelo, mas aumenta o consumo de tokens. Por isso o curso também trabalha limite e resumo.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">HTTP</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Protocolo usado na web para cliente e servidor trocarem mensagens. Quando o navegador chama o FastAPI, a comunicação acontece por HTTP.</div>
+  </div>
+</section>
+
+<section class="section" id="I">
+  <div class="section-letter-row"><div class="section-letter">I</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">if / elif / else</span><span class="term-aula">nivelamento, aula 01</span></div>
+    <div class="term-def">Estruturas de decisão do Python. O <code>if</code> testa uma condição; o <code>elif</code> testa outra possibilidade; o <code>else</code> executa quando nenhuma condição anterior foi verdadeira.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">indentação</span><span class="term-aula">nivelamento, revisão</span></div>
+    <div class="term-def">Espaços no início da linha que indicam a qual bloco o código pertence. Em Python, a indentação é parte da sintaxe e precisa estar correta depois de <code>def</code>, <code>if</code>, <code>for</code>, <code>while</code> e <code>try</code>.</div>
+  </div>
+</section>
+
+<section class="section" id="J">
+  <div class="section-letter-row"><div class="section-letter">J</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">JSON</span><span class="term-aula">aulas 05, 07</span></div>
+    <div class="term-def">Formato de texto para representar dados estruturados. APIs usam JSON para trocar informações. Em Python, <code>json.loads()</code> transforma texto JSON em dicionário.</div>
+  </div>
+</section>
+
+<section class="section" id="L">
+  <div class="section-letter-row"><div class="section-letter">L</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">LGPD</span><span class="term-aula">aula 06</span></div>
+    <div class="term-def">Lei Geral de Proteção de Dados. No contexto do chatbot, lembra que dados pessoais e sensíveis exigem cuidado antes de serem enviados para uma IA ou serviço externo.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">LLM</span><span class="term-aula">aulas 03, 09</span></div>
+    <div class="term-def">Large Language Model, ou modelo de linguagem de grande escala. É o tipo de IA que gera respostas em linguagem natural a partir do contexto recebido.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">localStorage</span><span class="term-aula">aula 08</span></div>
+    <div class="term-def">Armazenamento persistente do navegador. O curso usa <code>localStorage</code> para guardar o <code>user_id</code> e manter a mesma identidade entre visitas.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">logging</span><span class="term-aula">aula 10</span></div>
+    <div class="term-def">Módulo nativo do Python para registrar eventos do sistema com data, hora, nível e detalhe. É mais adequado que <code>print()</code> em aplicações reais.</div>
+  </div>
+</section>
+
+<section class="section" id="M">
+  <div class="section-letter-row"><div class="section-letter">M</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">max_tokens</span><span class="term-aula">aula 04</span></div>
+    <div class="term-def">Parâmetro que limita o tamanho máximo da resposta gerada pela IA. Ajuda a controlar custo e manter o chatbot objetivo.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">middleware</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Camada que intercepta requisições e respostas no servidor. O <code>CORSMiddleware</code> é um middleware usado para liberar chamadas vindas do front-end.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">modelo</span><span class="term-aula">aulas 03, 04, 10</span></div>
+    <div class="term-def">Motor de IA escolhido para gerar respostas. No curso aparece como <code>model="gpt-4.1-mini"</code>. Modelos diferentes podem ter custos, velocidades e capacidades diferentes.</div>
+  </div>
+</section>
+
+<section class="section" id="N">
+  <div class="section-letter-row"><div class="section-letter">N</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">NFD</span><span class="term-aula">aula 02, revisão</span></div>
+    <div class="term-def">Forma de normalização Unicode que separa letras e acentos. Isso permite remover acentos e comparar textos com mais segurança.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">normalizar()</span><span class="term-aula">aula 02 em diante</span></div>
+    <div class="term-def">Função criada no curso para padronizar texto antes da comparação. Ela costuma converter para minúsculas e remover acentos.</div>
+  </div>
+</section>
+
+<section class="section" id="O">
+  <div class="section-letter-row"><div class="section-letter">O</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">os.getenv()</span><span class="term-aula">aulas 03, 07</span></div>
+    <div class="term-def">Função que lê variáveis de ambiente. No curso, <code>os.getenv("OPENAI_API_KEY")</code> busca a chave da API sem escrevê-la diretamente no código.</div>
+  </div>
+</section>
+
+<section class="section" id="P">
+  <div class="section-letter-row"><div class="section-letter">P</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">perfil do usuário</span><span class="term-aula">aulas 06, 08</span></div>
+    <div class="term-def">Conjunto de informações guardadas pelo código sobre uma pessoa, como nome, gostos ou histórico. Permite personalização sem depender apenas da memória textual enviada à IA.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">prompt</span><span class="term-aula">aulas 03, 04</span></div>
+    <div class="term-def">Texto ou conjunto de mensagens enviado para orientar a IA. Um bom prompt define contexto, tarefa, formato e restrições.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">Pydantic</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Biblioteca usada pelo FastAPI para validar dados. Ela garante que a requisição respeite o modelo declarado antes de executar a função da rota.</div>
+  </div>
+</section>
+
+<section class="section" id="R">
+  <div class="section-letter-row"><div class="section-letter">R</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">RAG</span><span class="term-aula">aulas 08, 09</span></div>
+    <div class="term-def">Retrieval Augmented Generation. Padrão em que o sistema busca dados reais primeiro e depois passa esses dados para a IA responder. Ajuda a reduzir alucinações.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">requisição</span><span class="term-aula">aulas 07 a 10</span></div>
+    <div class="term-def">Mensagem enviada de um cliente para um servidor. Pode vir do navegador, de <code>fetch()</code>, de um script Python ou da página <code>/docs</code>.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">return</span><span class="term-aula">aula 01 em diante</span></div>
+    <div class="term-def">Comando que encerra uma função e devolve um valor. Em rotas FastAPI, o <code>return</code> define o conteúdo da resposta HTTP.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">role</span><span class="term-aula">aula 03</span></div>
+    <div class="term-def">Papel de uma mensagem enviada ao modelo. Os principais são <code>system</code>, <code>user</code> e <code>assistant</code>.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">rota</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Caminho de uma API associado a uma função, como <code>/chat</code> ou <code>/status</code>. Em FastAPI, uma rota é declarada com decoradores.</div>
+  </div>
+</section>
+
+<section class="section" id="S">
+  <div class="section-letter-row"><div class="section-letter">S</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">separação de responsabilidades</span><span class="term-aula">aula 10</span></div>
+    <div class="term-def">Prática de dividir o código em partes com papéis claros. Uma função busca FAQ, outra busca produto, outra chama a IA e outra registra logs.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">status HTTP</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Código numérico que resume o resultado de uma requisição. <code>200</code> indica sucesso, <code>422</code> erro de validação e <code>500</code> erro interno.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">system prompt</span><span class="term-aula">aulas 03, 04, 06, 10</span></div>
+    <div class="term-def">Instrução principal que define quem é o chatbot, como ele deve responder e quais limites deve respeitar. Controla comportamento, tom e segurança.</div>
+  </div>
+</section>
+
+<section class="section" id="T">
+  <div class="section-letter-row"><div class="section-letter">T</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">temperature</span><span class="term-aula">aula 04</span></div>
+    <div class="term-def">Parâmetro que controla a variação das respostas da IA. Valores baixos tornam a resposta mais previsível; valores altos aumentam criatividade.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">token</span><span class="term-aula">aulas 03 a 06</span></div>
+    <div class="term-def">Unidade usada pelos modelos para ler e gerar texto. Entrada e saída consomem tokens, então prompts longos e históricos grandes aumentam custo.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">try / except</span><span class="term-aula">aulas 04, 07, revisão</span></div>
+    <div class="term-def">Estrutura usada para lidar com erros. O código dentro de <code>try</code> é executado; se algo falhar, o <code>except</code> captura o erro.</div>
+  </div>
+</section>
+
+<section class="section" id="U">
+  <div class="section-letter-row"><div class="section-letter">U</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">unicodedata</span><span class="term-aula">aula 02</span></div>
+    <div class="term-def">Biblioteca nativa do Python usada para manipular caracteres Unicode. No curso, ela ajuda a remover acentos no processo de normalização.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">user_id</span><span class="term-aula">aula 08</span></div>
+    <div class="term-def">Identificador usado para distinguir usuários. O front-end envia o <code>user_id</code> com cada mensagem; o back-end usa esse valor para separar memória e perfil.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">uvicorn</span><span class="term-aula">aula 07</span></div>
+    <div class="term-def">Servidor que executa a aplicação FastAPI. O comando <code>python -m uvicorn arquivo:app --reload</code> inicia o servidor.</div>
+  </div>
+</section>
+
+<section class="section" id="V">
+  <div class="section-letter-row"><div class="section-letter">V</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">variável</span><span class="term-aula">nivelamento</span></div>
+    <div class="term-def">Nome que aponta para um valor na memória do programa. Exemplo: <code>nome = "Ana"</code>. Variáveis permitem guardar dados e reutilizá-los.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">Vector Store</span><span class="term-aula">aula 08</span></div>
+    <div class="term-def">Banco especializado em guardar vetores de significado e buscar informações por similaridade. Ajuda o chatbot a consultar documentos grandes.</div>
+  </div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">verify=False</span><span class="term-aula">aulas 03, 07, 10</span></div>
+    <div class="term-def">Configuração passada ao cliente HTTP para ignorar verificação de certificado SSL. Pode ajudar em testes, mas não é recomendada em produção.</div>
+  </div>
+</section>
+
+<section class="section" id="W">
+  <div class="section-letter-row"><div class="section-letter">W</div><a class="top-link" href="#topo" title="voltar ao topo">topo</a></div>
+
+  <div class="term">
+    <div class="term-head"><span class="term-name">while True</span><span class="term-aula">aula 01</span></div>
+    <div class="term-def">Loop infinito em Python. O chatbot de terminal usa <code>while True</code> para continuar pedindo mensagens até encontrar uma condição de saída.</div>
+  </div>
+</section>
+</div>
+<footer>
+  <span>Chatbots com Python - dicionário</span>
+  <span><a href="../index.html">índice</a></span>
+</footer>
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0';
+});
+</script>
+</body>
+</html>

@@ -5,166 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Exercício 59 - Chatbot</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f8f7f5;
-  --surface: #ffffff;
-  --border: #e2ddd8;
-  --text: #1e1916;
-  --text2: #3d3630;
-  --text3: #7a726a;
-  --accent: #1f5fa6;
-  --accent-lt: #e8f0fb;
-  --green: #0d6e50;
-  --green-lt: #e4f3ed;
-  --red: #a83030;
-  --red-lt: #fceeed;
-  --shadow: 0 2px 4px rgba(30,25,22,.07), 0 6px 18px rgba(30,25,22,.08);
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text2);
-  font-family: 'Nunito', system-ui, sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px;
-}
-.chat-shell {
-  width: min(760px, 100%);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.chat-head {
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-}
-.chat-head h1 {
-  font-size: 1.2rem;
-  color: var(--text);
-  line-height: 1.3;
-  margin-bottom: 6px;
-}
-.chat-head p {
-  font-size: .88rem;
-  color: var(--text3);
-  line-height: 1.55;
-}
-.user-id-box {
-  margin-top: 12px;
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  padding: 7px 10px;
-  background: var(--accent-lt);
-  border: 1px solid rgba(31,95,166,.16);
-  border-radius: 8px;
-  font-family: 'Fira Code', monospace;
-  font-size: .74rem;
-  color: var(--accent);
-  max-width: 100%;
-}
-.user-id-box span:last-child { overflow-wrap: anywhere; }
-.chat-body {
-  height: 560px;
-  padding: 20px;
-  overflow-y: auto;
-  background: #fbfaf8;
-}
-.msg {
-  max-width: 82%;
-  padding: 10px 13px;
-  border-radius: 14px;
-  margin-bottom: 12px;
-  font-size: .95rem;
-  line-height: 1.55;
-  white-space: pre-wrap;
-}
-.msg.bot {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  border-top-left-radius: 4px;
-}
-.msg.user {
-  margin-left: auto;
-  background: var(--accent);
-  color: #ffffff;
-  border-top-right-radius: 4px;
-}
-.msg.error {
-  background: var(--red-lt);
-  border: 1px solid rgba(168,48,48,.25);
-  color: var(--red);
-}
-.chat-form {
-  display: flex;
-  gap: 10px;
-  padding: 16px;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-}
-.chat-form input {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 13px;
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: .95rem;
-  color: var(--text2);
-  outline: none;
-}
-.chat-form input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(31,95,166,.12);
-}
-.chat-form button {
-  border: 0;
-  border-radius: 10px;
-  padding: 0 18px;
-  background: var(--accent);
-  color: #ffffff;
-  font-weight: 800;
-  font-family: 'Nunito', system-ui, sans-serif;
-  cursor: pointer;
-}
-.chat-form button:disabled { opacity: .6; cursor: not-allowed; }
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 0 16px 16px;
-  background: var(--surface);
-  flex-wrap: wrap;
-}
-.actions button {
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text3);
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-size: .78rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.actions button:hover { border-color: var(--accent); color: var(--accent); }
 
-@media (max-width: 560px) {
-  body { padding: 12px; }
-  .chat-body { height: 360px; }
-  .chat-form { flex-direction: column; }
-  .chat-form button { padding: 12px; }
-  .msg { max-width: 94%; }
-}
-</style>
+<link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="page-arquivos-059-index">
 <main class="chat-shell">
   <section class="chat-head">
     <h1>Chatbot do Exercício 059</h1>
@@ -173,7 +17,7 @@ body {
       <span>user_id</span>
       <span id="userIdView"></span>
     </div>
-    <p style="margin-top:10px;">Use uma janela anônima ou outro navegador para simular outro usuário.</p>
+    <p class="u-arquivos-style-001">Use uma janela anônima ou outro navegador para simular outro usuário.</p>
   </section>
 
   <section class="chat-body" id="chatBody">

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aula 10 - Chatbots com Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&amp;family=Nunito:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css">
+</head>
+<!-- Inicio -->
+<body class="page-aula10">
+<div class="prog" id="prog"></div>
+<header class="topbar">
+<a class="tb-logo" href="..\index.html"><span class="tb-logo-icon">🤖</span><span>Chatbots com Python</span></a>
+<div class="tb-nav">
+<a class="tb-btn" href="..\index.html">⊞ índice</a>
+<span class="tb-lesson">aula 10 · arquitetura final</span>
+<a class="tb-btn" href="aula9.html">←</a>
+</div>
+</header>
+<div class="wrap">
+<div class="cover">
+<span class="cover-tag">aula 10 · fechamento do curso</span>
+<h1>De chatbot com IA <em>a sistema controlado</em></h1>
+<!-- Prof começa a falar -->
+<p>O chatbot já consegue conversar, chamar a IA e receber perguntas por uma página HTML. Agora nós vamos organizar o sistema para ele não depender só da boa vontade da IA. Uma loja, uma clínica ou um banco não pode deixar a IA inventar produto, preço, regra de troca ou disponibilidade. O código precisa decidir quando a IA pode responder e quando ela precisa ficar dentro dos dados cadastrados.</p>
+<p>Pensa numa loja de tecnologia. Se alguém pergunta o horário de funcionamento, a resposta não precisa de IA. Se alguém pergunta o preço de um produto cadastrado, a IA até pode ajudar a escrever a resposta, mas os dados precisam sair do catálogo. E se alguém pergunta por um produto que não existe no catálogo, o sistema não pode tentar adivinhar. Ele precisa responder que aquele produto não está cadastrado.</p>
+<!-- Lousa 1 -->
+<div class="lousa">
+<div class="lousa-title">regra principal da arquitetura</div>
+<div class="lousa-row"><span class="bul">1</span><span><strong>FAQ</strong> responde perguntas frequentes sem gastar IA.</span></div>
+<div class="lousa-row"><span class="bul">2</span><span><strong>Catálogo</strong> responde produtos usando dados reais.</span></div>
+<div class="lousa-row"><span class="bul">3</span><span><strong>Trava de escopo</strong> bloqueia produto que não está cadastrado.</span></div>
+<div class="lousa-row"><span class="bul">4</span><span><strong>IA</strong> entra quando o código permite e com contexto controlado.</span></div>
+</div>
+<p>Vamos criar agora os arquivos que precisamos para compor esse chatbot, mais "inteligente", o primeiro arquivo que faremos é o <code>faq.py</code>. FAQ significa perguntas frequentes. Na prática, é uma lista de perguntas que aparecem muitas vezes e que têm resposta pronta. Isso serve para deixar o atendimento mais rápido, mais barato e mais previsível. Nós colocamos as palavras que podem indicar aquela dúvida e a resposta que deve voltar.</p>
+</div>
+<!-- FAQ -->
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">faq.py</div>
+</div>
+<pre><span class="const">FAQ</span> <span class="op">=</span> <span class="op">[</span>
+    <span class="op">{</span>
+        <span class="st">"</span><span class="st">palavras</span><span class="st">"</span><span class="op">:</span> <span class="op">[</span><span class="st">"</span><span class="st">horario</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">funcionamento</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">abre</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">fecha</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A TechShop atende de segunda a sexta, das 9h às 18h, e aos sábados, das 9h às 13h.</span><span class="st">"</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="op">{</span>
+        <span class="st">"</span><span class="st">palavras</span><span class="st">"</span><span class="op">:</span> <span class="op">[</span><span class="st">"</span><span class="st">endereco</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">loja</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">localizacao</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">onde fica</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A loja fica na Avenida Central, 1000, perto da estação principal.</span><span class="st">"</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="op">{</span>
+        <span class="st">"</span><span class="st">palavras</span><span class="st">"</span><span class="op">:</span> <span class="op">[</span><span class="st">"</span><span class="st">troca</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">devolucao</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">garantia</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A troca pode ser solicitada em até 7 dias, com nota fiscal e produto sem sinais de uso.</span><span class="st">"</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="op">{</span>
+        <span class="st">"</span><span class="st">palavras</span><span class="st">"</span><span class="op">:</span> <span class="op">[</span><span class="st">"</span><span class="st">pagamento</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">cartao</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">pix</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">boleto</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Aceitamos Pix, cartão de crédito, cartão de débito e boleto para compras pelo site.</span><span class="st">"</span>
+    <span class="op">}</span>
+<span class="op">]</span>
+<span class="kw">def</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">item</span> <span class="op">in</span> <span class="const">FAQ</span><span class="op">:</span>
+        <span class="kw2">for</span> <span class="vr">palavra</span> <span class="op">in</span> <span class="vr">item</span><span class="op">[</span><span class="st">"</span><span class="st">palavras</span><span class="st">"</span><span class="op">]</span><span class="op">:</span>
+            <span class="kw2">if</span> <span class="vr">palavra</span> <span class="op">in</span> <span class="vr">texto_normalizado</span><span class="op">:</span>
+                <span class="kw2">return</span> <span class="vr">item</span><span class="op">[</span><span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">]</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+</pre>
+</div>
+<!-- Explicação faq.py -->
+<table class="code-ann">
+<tr><td>FAQ</td><td><strong>Guarda as respostas frequentes.</strong> Cada item tem uma lista de palavras e uma resposta pronta.</td></tr>
+<tr><td>palavras</td><td><strong>São pistas dentro da frase do usuário.</strong> Se a pessoa escrever horário, funcionamento, abre ou fecha, o código entende que é a mesma intenção.</td></tr>
+<tr><td>buscar_faq()</td><td><strong>Procura uma resposta pronta.</strong> Ela recebe o texto já normalizado, passa pelas palavras cadastradas e devolve a resposta quando encontra uma combinação.</td></tr>
+<tr><td>return None</td><td><strong>Indica que o FAQ não encontrou nada.</strong> Assim o sistema pode tentar outro caminho sem quebrar.</td></tr>
+</table>
+<p>O segundo arquivo separado será o <code>produtos.py</code>. Ele faz o papel de catálogo. Catálogo, aqui, é a fonte simples de verdade sobre o que a loja tem. Se o produto está nesse arquivo, o sistema pode responder sobre ele. Se não está, o sistema bloqueia a resposta inventada.</p>
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">produtos.py</div>
+</div>
+<!-- Produtos.py -->
+<pre><span class="const">PRODUTOS</span> <span class="op">=</span> <span class="op">{</span>
+    <span class="st">"</span><span class="st">iphone 14</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">iPhone 14</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 4.299,00</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">8</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">descricao</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Smartphone Apple com 128 GB, câmera dupla e tela de 6,1 polegadas.</span><span class="st">"</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">notebook pro 14</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Notebook Pro 14</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 5.899,00</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">5</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">descricao</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Notebook com 16 GB de memória, SSD de 512 GB e tela de 14 polegadas.</span><span class="st">"</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">fone bluetooth x</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Fone Bluetooth X</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 249,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">20</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">descricao</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Fone sem fio com cancelamento de ruído e bateria de até 30 horas.</span><span class="st">"</span>
+    <span class="op">}</span>
+<span class="op">}</span>
+<span class="const">GATILHOS_PRODUTO</span> <span class="op">=</span> <span class="op">[</span>
+    <span class="st">"</span><span class="st">produto</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">valor</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">disponivel</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">comprar</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">iphone</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">notebook</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">fone</span><span class="st">"</span>
+<span class="op">]</span>
+<span class="kw">def</span> <span class="fn">parece_pergunta_de_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="bi">any</span><span class="op">(</span><span class="vr">gatilho</span> <span class="op">in</span> <span class="vr">texto_normalizado</span> <span class="kw2">for</span> <span class="vr">gatilho</span> <span class="op">in</span> <span class="const">GATILHOS_PRODUTO</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">nome_normalizado</span><span class="op">,</span> <span class="vr">dados</span> <span class="op">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">nome_normalizado</span> <span class="op">in</span> <span class="vr">texto_normalizado</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">dados</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">[</span><span class="vr">dados</span><span class="op">[</span><span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">]</span> <span class="kw2">for</span> <span class="vr">dados</span> <span class="op">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">values</span><span class="op">(</span><span class="op">)</span><span class="op">]</span>
+</pre>
+</div>
+<!-- Explicação Produtos.py -->
+<table class="code-ann">
+<tr><td>PRODUTOS</td><td><strong>É a base de produtos cadastrados.</strong> Cada produto tem nome, preço, estoque e descrição.</td></tr>
+<tr><td>GATILHOS_PRODUTO</td><td><strong>Ajuda o código a perceber que a pergunta parece ser sobre produto.</strong> Isso é importante para acionar a trava certa.</td></tr>
+<tr><td>parece_pergunta_de_produto()</td><td><strong>Verifica se a frase tem cara de consulta de produto.</strong> Se tiver, o sistema consulta o catálogo antes de chamar a IA.</td></tr>
+<tr><td>buscar_produto()</td><td><strong>Procura o produto pelo nome cadastrado.</strong> Se não encontrar, a IA não recebe liberdade para inventar.</td></tr>
+<tr><td>nomes_cadastrados()</td><td><strong>Lista os produtos disponíveis para consulta.</strong> Isso permite responder ao usuário com opções reais.</td></tr>
+</table>
+<!-- Exercício 68 -->
+<p>Agora juntamos os dois arquivos no servidor. O arquivo <code>068_Exercicio.py</code> recebe a pergunta pela rota <code>/chat</code>, normaliza o texto e segue uma ordem simples. Primeiro tenta FAQ. Depois verifica se parece produto. Se for produto e não estiver no catálogo, a resposta sai do próprio código. Essa é a correção da alucinação de produto fora do catálogo.</p>
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">068_Exercicio.py</div>
+</div>
+<!-- Código 68 -->
+<pre><span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">import</span> <span class="lib">unicodedata</span>
+<span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="fn">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="lib">.</span><span class="lib">middleware</span><span class="lib">.</span><span class="lib">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="cls">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="kw2">from</span> <span class="lib">faq</span> <span class="kw2">import</span> <span class="fn">buscar_faq</span>
+<span class="kw2">from</span> <span class="lib">produtos</span> <span class="kw2">import</span> <span class="fn">buscar_produto</span><span class="op">,</span> <span class="fn">nomes_cadastrados</span><span class="op">,</span> <span class="fn">parece_pergunta_de_produto</span>
+<span class="lib">warnings</span><span class="op">.</span><span class="fn">filterwarnings</span><span class="op">(</span><span class="st">"</span><span class="st">ignore</span><span class="st">"</span><span class="op">)</span>
+<span class="lib">urllib3</span><span class="op">.</span><span class="fn">disable_warnings</span><span class="op">(</span><span class="op">)</span>
+<span class="fn">load_dotenv</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="arg">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span>
+    <span class="arg">api_key</span><span class="op">=</span><span class="lib">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"</span><span class="st">OPENAI_API_KEY</span><span class="st">"</span><span class="op">)</span><span class="op">,</span>
+    <span class="arg">http_client</span><span class="op">=</span><span class="lib">httpx</span><span class="op">.</span><span class="cls">Client</span><span class="op">(</span><span class="arg">verify</span><span class="op">=</span><span class="bi">False</span><span class="op">)</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="arg">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">"</span><span class="st">default</span><span class="st">"</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span> <span class="op">=</span> <span class="arg">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+    <span class="arg">texto</span> <span class="op">=</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">normalize</span><span class="op">(</span><span class="st">"</span><span class="st">NFD</span><span class="st">"</span><span class="op">,</span> <span class="arg">texto</span><span class="op">)</span>
+    <span class="kw2">return</span> <span class="st">"</span><span class="st">"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
+        <span class="vr">caractere</span>
+        <span class="kw2">for</span> <span class="vr">caractere</span> <span class="op">in</span> <span class="arg">texto</span>
+        <span class="kw2">if</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">caractere</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"</span><span class="st">Mn</span><span class="st">"</span>
+    <span class="op">)</span>
+<span class="kw">def</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="arg">mensagem</span><span class="op">,</span> <span class="arg">contexto</span><span class="op">=</span><span class="bi">None</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">system_prompt</span> <span class="op">=</span> <span class="op">(</span>
+        <span class="st">"</span><span class="st">Você é a assistente virtual da TechShop. </span><span class="st">"</span>
+        <span class="st">"</span><span class="st">Responda em português, com clareza e sem inventar informações.</span><span class="st">"</span>
+    <span class="op">)</span>
+    <span class="kw2">if</span> <span class="arg">contexto</span><span class="op">:</span>
+        <span class="vr">system_prompt</span> <span class="op">+</span><span class="op">=</span> <span class="fs">f</span><span class="st">"</span><span class="st">\n</span><span class="st">Use somente estes dados para responder:</span><span class="st">\n</span><span class="st">{</span><span class="arg">contexto</span><span class="st">}</span><span class="st">"</span>
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="fn">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
+        <span class="arg">model</span><span class="op">=</span><span class="st">"</span><span class="st">gpt-4.1-mini</span><span class="st">"</span><span class="op">,</span>
+        <span class="arg">messages</span><span class="op">=</span><span class="op">[</span>
+            <span class="op">{</span><span class="st">"</span><span class="st">role</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">system</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">content</span><span class="st">"</span><span class="op">:</span> <span class="vr">system_prompt</span><span class="op">}</span><span class="op">,</span>
+            <span class="op">{</span><span class="st">"</span><span class="st">role</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">user</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">content</span><span class="st">"</span><span class="op">:</span> <span class="arg">mensagem</span><span class="op">}</span><span class="op">,</span>
+        <span class="op">]</span><span class="op">,</span>
+        <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.2</span><span class="op">,</span>
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">180</span><span class="op">,</span>
+    <span class="op">)</span>
+    <span class="kw2">return</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="arg">content</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">get</span><span class="op">(</span><span class="st">"</span><span class="st">/</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">mensagem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Assistente TechShop no ar</span><span class="st">"</span><span class="op">}</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">post</span><span class="op">(</span><span class="st">"</span><span class="st">/chat</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto_original</span> <span class="op">=</span> <span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+    <span class="vr">texto_normalizado</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span>
+    <span class="vr">resposta_faq</span> <span class="op">=</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+    <span class="kw2">if</span> <span class="vr">resposta_faq</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">faq</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="vr">resposta_faq</span><span class="op">}</span>
+    <span class="kw2">if</span> <span class="fn">parece_pergunta_de_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+        <span class="vr">produto</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+        <span class="kw2">if</span> <span class="op">not</span> <span class="vr">produto</span><span class="op">:</span>
+            <span class="vr">cadastrados</span> <span class="op">=</span> <span class="st">"</span><span class="st">, </span><span class="st">"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+            <span class="kw2">return</span> <span class="op">{</span>
+                <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">trava_de_escopo</span><span class="st">"</span><span class="op">,</span>
+                <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="op">(</span>
+                    <span class="st">"</span><span class="st">Não encontrei esse produto no catálogo da TechShop. </span><span class="st">"</span>
+                    <span class="fs">f</span><span class="st">"</span><span class="st">Hoje consigo consultar estes produtos: </span><span class="st">{</span><span class="vr">cadastrados</span><span class="st">}</span><span class="st">.</span><span class="st">"</span>
+                <span class="op">)</span><span class="op">,</span>
+            <span class="op">}</span>
+        <span class="arg">contexto</span> <span class="op">=</span> <span class="op">(</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">Produto: </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">nome</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st">\n</span><span class="st">"</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">Preço: </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">preco</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st">\n</span><span class="st">"</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">Estoque: </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">estoque</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> unidades</span><span class="st">\n</span><span class="st">"</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">Descrição: </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">descricao</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st">"</span>
+        <span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">produto_cadastrado</span><span class="st">"</span><span class="op">,</span>
+            <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">,</span> <span class="arg">contexto</span><span class="op">)</span><span class="op">,</span>
+        <span class="op">}</span>
+    <span class="kw2">return</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">ia_geral</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span><span class="op">,</span>
+    <span class="op">}</span>
+</pre>
+</div>
+<!-- Explicação 068 -->
+<table class="code-ann">
+<tr><td>from faq import buscar_faq</td><td><strong>Importa a busca do FAQ.</strong> O servidor não precisa carregar as perguntas frequentes dentro do mesmo arquivo.</td></tr>
+<tr><td>from produtos import ...</td><td><strong>Importa a consulta do catálogo.</strong> O servidor pergunta ao arquivo de produtos o que existe e o que não existe.</td></tr>
+<tr><td>resposta_faq = buscar_faq(...)</td><td><strong>Primeira tentativa.</strong> Pergunta frequente é respondida antes da IA.</td></tr>
+<tr><td>if parece_pergunta_de_produto(...)</td><td><strong>Segunda decisão.</strong> Se a pergunta parece sobre produto, o código consulta o catálogo.</td></tr>
+<tr><td>if not produto</td><td><strong>Trava contra alucinação.</strong> Quando o produto não está cadastrado, a IA não é chamada para improvisar.</td></tr>
+<tr><td>responder_com_ia(..., contexto)</td><td><strong>IA com limite.</strong> Quando o produto existe, a IA recebe somente os dados daquele produto para escrever uma resposta melhor.</td></tr>
+<tr><td>httpx.Client(verify=False)</td><td><strong>Usado aqui por causa de ambiente de aula e possíveis bloqueios de certificado.</strong> A observação completa fica no último código em que esse recurso aparece.</td></tr>
+</table>
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="068_index.zip" href="arquivos/068_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">068_index.zip</div><div class="dl-desc">Página HTML para testar FAQ, produto cadastrado e produto fora do catálogo</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+<p>Para rodar esse conjunto, os três arquivos Python precisam ficar na mesma pasta: <code>faq.py</code>, <code>produtos.py</code> e <code>068_Exercicio.py</code>. O comando do servidor fica assim: <code>python -m uvicorn 068_Exercicio:app --reload</code>. Depois abrimos o <code>068_index.html</code> no navegador e testamos frases como “Qual o horário de atendimento?”, “Tem iPhone 14?” e “Tem iPhone 17?”.</p>
+<div class="install-step">
+<div class="install-step-head"><div class="install-num">1</div> Teste do Chatbot</div>
+<img alt="Teste do chatbot respondendo que o produto não está cadastrado no catálogo" src="img/116.png"/>
+</div>
+<div class="install-step">
+<div class="install-step-head"><div class="install-num">2</div> Origem das respostas</div>
+<img alt="Teste do chatbot respondendo que o produto não está cadastrado no catálogo" src="img/117.png"/>
+</div>
+<!-- Entrada do config -->
+<p>Até aqui, nós separamos duas coisas que pertencem ao atendimento da TechShop. No <code>faq.py</code>, ficam perguntas frequentes, como horário, endereço, troca e pagamento. No <code>produtos.py</code>, ficam os produtos que realmente existem no catálogo. Isso já impede a parte mais perigosa da alucinação, porque produto fora da base não passa livre para a IA inventar.</p>
+<p>Agora entra outra separação. Quando definimos como a IA devia se comportar, colocamos tudo no próprio código do chatbot, agora vamos fazer uma arrumação no projeto. Vamos tirar esses ajustes de dentro do servidor e colocar em um arquivo próprio, chamado <code>config.py</code>.</p>
+<div class="bubble">
+<div class="bubble-avatar">🙋</div>
+<div class="bubble-body"> O uso do config.py será para organização?</div>
+</div>
+<p>Exatamente. O <code>config.py</code> passa a ser o lugar dos ajustes gerais. Quando quisermos trocar o modelo, alterar a temperatura, mudar o limite de tokens, ajustar o nome do bot ou definir o arquivo de log, mexemos nele. O servidor continua fazendo o trabalho principal, mas fica mais limpo e mais fácil de manter.</p>
+<p>Agora criaremos o <code>config.py</code> para organizar nosso arquivo, e continuarmos trabalhando com o nosso projeto <code>068_Exercicio.py</code>. </p>
+<!-- código do config -->
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">config.py</div>
+</div>
+<pre><span class="const">MODELO</span> <span class="op">=</span> <span class="st">"</span><span class="st">gpt-4.1-mini</span><span class="st">"</span>
+<span class="const">TEMPERATURA_PADRAO</span> <span class="op">=</span> <span class="nm">0.3</span>
+<span class="const">TEMPERATURA_DADOS</span> <span class="op">=</span> <span class="nm">0.1</span>
+<span class="const">MAX_TOKENS</span> <span class="op">=</span> <span class="nm">180</span>
+<span class="const">NOME_BOT</span> <span class="op">=</span> <span class="st">"</span><span class="st">Assistente TechShop</span><span class="st">"</span>
+<span class="const">EMPRESA</span> <span class="op">=</span> <span class="st">"</span><span class="st">TechShop</span><span class="st">"</span>
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
+    <span class="st">"</span><span class="st">Você é a assistente virtual da TechShop. </span><span class="st">"</span>
+    <span class="st">"</span><span class="st">Responda em português, de forma clara e objetiva. </span><span class="st">"</span>
+    <span class="st">"</span><span class="st">Não invente produto, preço, disponibilidade, prazo ou política da loja.</span><span class="st">"</span>
+<span class="op">)</span>
+<span class="const">LOG_ATIVO</span> <span class="op">=</span> <span class="bi">True</span>
+<span class="const">LOG_ARQUIVO</span> <span class="op">=</span> <span class="st">"</span><span class="st">chatbot.log</span><span class="st">"</span>
+<span class="const">LOG_LEVEL</span> <span class="op">=</span> <span class="st">"</span><span class="st">INFO</span><span class="st">"</span>
+<span class="const">TIMEOUT_API</span> <span class="op">=</span> <span class="nm">30</span>
+<span class="const">SSL_VERIFY</span> <span class="op">=</span> <span class="bi">False</span>
+<span class="const">EXIGIR_PRODUTO_CADASTRADO</span> <span class="op">=</span> <span class="bi">True</span>
+<span class="const">MOSTRAR_PRODUTOS_DISPONIVEIS</span> <span class="op">=</span> <span class="bi">True</span>
+</pre>
+</div>
+<!-- Explicação config -->
+<table class="code-ann">
+<tr><td>MODELO</td><td><strong>Guarda o modelo chamado pela IA.</strong> Antes esse valor ficava direto na chamada da OpenAI. Agora fica concentrado no arquivo de configuração.</td></tr>
+<tr><td>TEMPERATURA_PADRAO</td><td><strong>Define a variação das respostas gerais.</strong> É usada quando a pergunta não vem do FAQ nem do catálogo e precisa passar pela IA.</td></tr>
+<tr><td>TEMPERATURA_DADOS</td><td><strong>Controla respostas baseadas em dados reais.</strong> Quando existe produto, preço e estoque no contexto, usamos um valor menor para reduzir improviso.</td></tr>
+<tr><td>MAX_TOKENS</td><td><strong>Limita o tamanho da resposta da IA.</strong> Esse ajuste ajuda a evitar respostas longas demais e mantém o retorno mais controlado.</td></tr>
+<tr><td>NOME_BOT</td><td><strong>Guarda o nome da assistente.</strong> O servidor pode usar esse nome em mensagens de teste, retorno da rota inicial ou identificação do projeto.</td></tr>
+<tr><td>EMPRESA</td><td><strong>Guarda o nome da empresa usada no projeto.</strong> Isso evita repetir TechShop em vários pontos do código.</td></tr>
+<tr><td>SYSTEM_BASE</td><td><strong>Concentra a orientação principal da IA.</strong> É o texto que diz como a assistente deve responder e quais limites precisa respeitar.</td></tr>
+<tr><td>LOG_ATIVO</td><td><strong>Liga ou desliga o registro de log.</strong> Quando estiver como <code>True</code>, o servidor grava os eventos técnicos do atendimento.</td></tr>
+<tr><td>LOG_ARQUIVO</td><td><strong>Define o nome do arquivo de log.</strong> É nele que o servidor registra o caminho da pergunta e possíveis erros.</td></tr>
+<tr><td>LOG_LEVEL</td><td><strong>Define o nível de detalhe do log.</strong> Em geral, usamos <code>INFO</code> para registrar o fluxo comum e deixamos níveis mais detalhados para investigação.</td></tr>
+<tr><td>TIMEOUT_API</td><td><strong>Define por quanto tempo o sistema espera a resposta da API.</strong> Se a chamada demorar demais, o servidor pode encerrar a tentativa em vez de ficar preso.</td></tr>
+<tr><td>SSL_VERIFY</td><td><strong>Controla a verificação de certificado.</strong> No curso pode aparecer como apoio para ambiente bloqueado, mas em produção a verificação deve ficar ativa.</td></tr>
+<tr><td>EXIGIR_PRODUTO_CADASTRADO</td><td><strong>Ativa a regra de não inventar produto.</strong> Quando essa configuração está ligada, produto fora do catálogo não segue livre para a IA.</td></tr>
+<tr><td>MOSTRAR_PRODUTOS_DISPONIVEIS</td><td><strong>Controla se a resposta mostra os produtos cadastrados.</strong> Isso ajuda o usuário a saber quais itens podem ser consultados.</td></tr>
+</table>
+<div class="break">
+<span class="be">☕</span>
+<h3>Pausa para o café!</h3>
+<p>Levanta um pouco, bebe uma água ou pega um café, e volta com calma.</p>
+</div>
+
+<p>Considerando os três arquivos separados: <code>faq.py</code>, <code>produtos.py</code> e <code>config.py</code>, o servidor não precisa mais carregar tudo dentro dele. Agora vamos limpar o <code>068_Exercicio.py</code>, retirando aquilo que já ganhou um arquivo próprio.</p>
+<p>O comportamento do chatbot continua o mesmo. Ele ainda consulta FAQ, catálogo, trava produto fora da base e chama a IA quando faz sentido. A diferença é que o servidor fica mais organizado, porque cada arquivo passa a cuidar de uma parte do projeto.</p>
+
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">068_Exercicio.py</div>
+</div>
+<pre><span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">import</span> <span class="lib">unicodedata</span>
+<span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="vr">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="cls">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="kw2">import</span> <span class="lib">config</span>
+<span class="kw2">from</span> <span class="lib">faq</span> <span class="kw2">import</span> <span class="vr">buscar_faq</span>
+<span class="kw2">from</span> <span class="lib">produtos</span> <span class="kw2">import</span> <span class="vr">buscar_produto</span><span class="op">,</span> <span class="vr">nomes_cadastrados</span><span class="op">,</span> <span class="vr">parece_pergunta_de_produto</span>
+
+<span class="lib">warnings</span><span class="op">.</span><span class="fn">filterwarnings</span><span class="op">(</span><span class="st">&quot;ignore&quot;</span><span class="op">)</span>
+<span class="lib">urllib3</span><span class="op">.</span><span class="fn">disable_warnings</span><span class="op">(</span><span class="op">)</span>
+<span class="fn">load_dotenv</span><span class="op">(</span><span class="vr">override</span><span class="op">=</span><span class="kw2">True</span><span class="op">)</span>
+
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="vr">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+    <span class="vr">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+    <span class="vr">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span>
+    <span class="vr">api_key</span><span class="op">=</span><span class="lib">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">&quot;OPENAI_API_KEY&quot;</span><span class="op">)</span><span class="op">,</span>
+    <span class="vr">http_client</span><span class="op">=</span><span class="lib">httpx</span><span class="op">.</span><span class="cls">Client</span><span class="op">(</span>
+        <span class="vr">verify</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">SSL_VERIFY</span><span class="op">,</span>
+        <span class="vr">timeout</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">TIMEOUT_API</span><span class="op">,</span>
+    <span class="op">)</span><span class="op">,</span>
+<span class="op">)</span>
+
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="vr">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">&quot;default&quot;</span>
+
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+    <span class="vr">texto</span> <span class="op">=</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">normalize</span><span class="op">(</span><span class="st">&quot;NFD&quot;</span><span class="op">,</span> <span class="vr">texto</span><span class="op">)</span>
+    <span class="kw2">return</span> <span class="st">&quot;&quot;</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
+        <span class="vr">caractere</span>
+        <span class="kw2">for</span> <span class="vr">caractere</span> <span class="kw2">in</span> <span class="vr">texto</span>
+        <span class="kw2">if</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">caractere</span><span class="op">)</span> <span class="op">!=</span> <span class="st">&quot;Mn&quot;</span>
+    <span class="op">)</span>
+
+<span class="kw">def</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">mensagem</span><span class="op">,</span> <span class="vr">contexto</span><span class="op">=</span><span class="kw2">None</span><span class="op">,</span> <span class="vr">temperatura</span><span class="op">=</span><span class="kw2">None</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">system_prompt</span> <span class="op">=</span> <span class="lib">config</span><span class="op">.</span><span class="const">SYSTEM_BASE</span>
+
+    <span class="kw2">if</span> <span class="vr">contexto</span><span class="op">:</span>
+        <span class="vr">system_prompt</span> <span class="op">+=</span> f&quot;\nUse somente estes dados para responder:\n<span class="op">{</span><span class="vr">contexto</span><span class="op">}</span>&quot;
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="vr">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
+        <span class="vr">model</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">MODELO</span><span class="op">,</span>
+        <span class="vr">messages</span><span class="op">=</span><span class="op">[</span>
+            <span class="op">{</span><span class="st">&quot;role&quot;</span><span class="op">:</span> <span class="st">&quot;system&quot;</span><span class="op">,</span> <span class="st">&quot;content&quot;</span><span class="op">:</span> <span class="vr">system_prompt</span><span class="op">}</span><span class="op">,</span>
+            <span class="op">{</span><span class="st">&quot;role&quot;</span><span class="op">:</span> <span class="st">&quot;user&quot;</span><span class="op">,</span> <span class="st">&quot;content&quot;</span><span class="op">:</span> <span class="vr">mensagem</span><span class="op">}</span><span class="op">,</span>
+        <span class="op">]</span><span class="op">,</span>
+        <span class="vr">temperature</span><span class="op">=</span><span class="vr">temperatura</span> <span class="kw2">if</span> <span class="vr">temperatura</span> <span class="kw2">is</span> <span class="kw2">not</span> <span class="kw2">None</span> <span class="kw2">else</span> <span class="lib">config</span><span class="op">.</span><span class="const">TEMPERATURA_PADRAO</span><span class="op">,</span>
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">MAX_TOKENS</span><span class="op">,</span>
+    <span class="op">)</span>
+
+    <span class="kw2">return</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span>
+
+<span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">get</span><span class="op">(</span><span class="st">&quot;/&quot;</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;mensagem&quot;</span><span class="op">:</span> f&quot;<span class="op">{</span><span class="lib">config</span><span class="op">.</span><span class="const">NOME_BOT</span><span class="op">}</span> no ar&quot;<span class="op">}</span>
+
+<span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">post</span><span class="op">(</span><span class="st">&quot;/chat&quot;</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="vr">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto_original</span> <span class="op">=</span> <span class="vr">pergunta</span><span class="op">.</span><span class="vr">texto</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+    <span class="vr">texto_normalizado</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span>
+
+    <span class="vr">resposta_faq</span> <span class="op">=</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+    <span class="kw2">if</span> <span class="vr">resposta_faq</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;faq&quot;</span><span class="op">,</span> <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="vr">resposta_faq</span><span class="op">}</span>
+
+    <span class="kw2">if</span> <span class="fn">parece_pergunta_de_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+        <span class="vr">produto</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+
+        <span class="kw2">if</span> <span class="kw2">not</span> <span class="vr">produto</span> <span class="kw2">and</span> <span class="lib">config</span><span class="op">.</span><span class="const">EXIGIR_PRODUTO_CADASTRADO</span><span class="op">:</span>
+            <span class="kw2">if</span> <span class="lib">config</span><span class="op">.</span><span class="const">MOSTRAR_PRODUTOS_DISPONIVEIS</span><span class="op">:</span>
+                <span class="vr">cadastrados</span> <span class="op">=</span> <span class="st">&quot;, &quot;</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+                <span class="vr">resposta</span> <span class="op">=</span> <span class="op">(</span>
+                    <span class="st">&quot;Não encontrei esse produto no catálogo da TechShop. &quot;</span>
+                    f&quot;Hoje consigo consultar estes produtos: <span class="op">{</span><span class="vr">cadastrados</span><span class="op">}</span>.&quot;
+                <span class="op">)</span>
+            <span class="kw2">else</span><span class="op">:</span>
+                <span class="vr">resposta</span> <span class="op">=</span> <span class="st">&quot;Não encontrei esse produto no catálogo da TechShop.&quot;</span>
+
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;trava_de_escopo&quot;</span><span class="op">,</span> <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="vr">resposta</span><span class="op">}</span>
+
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
+            f&quot;Produto: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;nome&#x27;</span><span class="op">]</span><span class="op">}</span>\n&quot;
+            f&quot;Preço: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;preco&#x27;</span><span class="op">]</span><span class="op">}</span>\n&quot;
+            f&quot;Estoque: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;estoque&#x27;</span><span class="op">]</span><span class="op">}</span> unidades\n&quot;
+            f&quot;Descrição: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;descricao&#x27;</span><span class="op">]</span><span class="op">}</span>&quot;
+        <span class="op">)</span>
+
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;produto_cadastrado&quot;</span><span class="op">,</span>
+            <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span>
+                <span class="vr">texto_original</span><span class="op">,</span>
+                <span class="vr">contexto</span><span class="op">=</span><span class="vr">contexto</span><span class="op">,</span>
+                <span class="vr">temperatura</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">TEMPERATURA_DADOS</span><span class="op">,</span>
+            <span class="op">)</span><span class="op">,</span>
+        <span class="op">}</span>
+
+    <span class="kw2">return</span> <span class="op">{</span>
+        <span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;ia_geral&quot;</span><span class="op">,</span>
+        <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span><span class="op">,</span>
+    <span class="op">}</span></pre>
+</div>
+
+<table class="code-ann">
+<tr><td>import config</td><td><strong>Mostra o caminho para o arquivo de configuração.</strong> O servidor passa a ler modelo, temperatura, limite de tokens, texto base, timeout e verificação SSL a partir do <code>config.py</code>.</td></tr>
+<tr><td>from faq import buscar_faq</td><td><strong>Mostra o caminho para o arquivo de perguntas frequentes.</strong> O servidor não precisa guardar a lista de FAQ dentro dele, só chama a função que está no <code>faq.py</code>.</td></tr>
+<tr><td>from produtos import ...</td><td><strong>Mostra o caminho para o arquivo de produtos.</strong> O servidor usa as funções do <code>produtos.py</code> para consultar catálogo, listar produtos cadastrados e perceber pergunta de produto.</td></tr>
+<tr><td>config.MODELO</td><td><strong>Substitui o modelo escrito direto na chamada da IA.</strong> Se o modelo mudar, mexemos no <code>config.py</code>, não no meio do servidor.</td></tr>
+<tr><td>config.TEMPERATURA_PADRAO</td><td><strong>Substitui a temperatura fixa das respostas gerais.</strong> A chamada da IA passa a buscar esse ajuste no arquivo de configuração.</td></tr>
+<tr><td>config.TEMPERATURA_DADOS</td><td><strong>Controla respostas com dados de produto.</strong> Quando o produto existe no catálogo, usamos uma temperatura menor para reduzir improviso.</td></tr>
+<tr><td>config.MAX_TOKENS</td><td><strong>Substitui o limite escrito direto no código.</strong> O tamanho máximo da resposta fica centralizado.</td></tr>
+<tr><td>config.SYSTEM_BASE</td><td><strong>Substitui o texto base escrito dentro da função.</strong> A orientação principal da assistente fica no arquivo de configuração.</td></tr>
+<tr><td>config.SSL_VERIFY e config.TIMEOUT_API</td><td><strong>Substituem os ajustes técnicos escritos direto no cliente HTTP.</strong> O servidor lê se deve verificar certificado e quanto tempo deve esperar pela API.</td></tr>
+</table>
+
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="068_index.zip" href="arquivos/068_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">068_index.zip</div><div class="dl-desc">Página HTML para testar o servidor limpo usando FAQ, catálogo e config</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+
+<p>Para testar essa versão, os arquivos <code>faq.py</code>, <code>produtos.py</code>, <code>config.py</code> e <code>068_Exercicio.py</code> precisam ficar na mesma pasta. O comando continua sendo <code>python -m uvicorn 068_Exercicio:app --reload</code>. No navegador e testamos perguntas de FAQ, produto cadastrado, produto fora do catálogo e pergunta livre.</p>
+
+<div class="install-step">
+<div class="install-step-head"><div class="install-num">3</div> Teste do arquivo limpo</div>
+<img alt="Teste do arquivo limpo" src="img/118.png"/>
+</div>
+
+<p>Com o servidor organizado e testado, entra uma camada técnica importante: o log. Log é o registro do que aconteceu no servidor. Ele não aparece como resposta para o usuário. Ele fica guardado em arquivo para ajudar a investigar erro e enxergar o caminho da resposta.</p>
+<p>Em testes pequenos, até daria para usar <code>print()</code>. Só que o <code>logging</code> é mais organizado. Ele grava data, hora, nível da mensagem e detalhe do evento. Assim, se uma pergunta falhar ou passar pela trava de escopo, conseguimos olhar o arquivo técnico sem poluir a conversa do usuário.</p>
+
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">068_Exercicio.py</div>
+</div>
+<pre><span class="kw2">import</span> <span class="lib">logging</span>
+<span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">import</span> <span class="lib">unicodedata</span>
+<span class="kw2">import</span> <span class="lib">warnings</span>
+<span class="kw2">import</span> <span class="lib">httpx</span>
+<span class="kw2">import</span> <span class="lib">urllib3</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="vr">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="cls">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="kw2">import</span> <span class="lib">config</span>
+<span class="kw2">from</span> <span class="lib">faq</span> <span class="kw2">import</span> <span class="vr">buscar_faq</span>
+<span class="kw2">from</span> <span class="lib">produtos</span> <span class="kw2">import</span> <span class="vr">buscar_produto</span><span class="op">,</span> <span class="vr">nomes_cadastrados</span><span class="op">,</span> <span class="vr">parece_pergunta_de_produto</span>
+
+<span class="lib">warnings</span><span class="op">.</span><span class="fn">filterwarnings</span><span class="op">(</span><span class="st">&quot;ignore&quot;</span><span class="op">)</span>
+<span class="lib">urllib3</span><span class="op">.</span><span class="fn">disable_warnings</span><span class="op">(</span><span class="op">)</span>
+<span class="fn">load_dotenv</span><span class="op">(</span><span class="vr">override</span><span class="op">=</span><span class="kw2">True</span><span class="op">)</span>
+
+<span class="lib">logging</span><span class="op">.</span><span class="fn">basicConfig</span><span class="op">(</span>
+    <span class="vr">filename</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">LOG_ARQUIVO</span><span class="op">,</span>
+    <span class="vr">level</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">LOG_LEVEL</span><span class="op">,</span>
+    <span class="vr">format</span><span class="op">=</span><span class="st">&quot;%(asctime)s | %(levelname)s | %(message)s&quot;</span><span class="op">,</span>
+    <span class="vr">encoding</span><span class="op">=</span><span class="st">&quot;utf-8&quot;</span><span class="op">,</span>
+<span class="op">)</span>
+
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="vr">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+    <span class="vr">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+    <span class="vr">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">&quot;*&quot;</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span>
+    <span class="vr">api_key</span><span class="op">=</span><span class="lib">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">&quot;OPENAI_API_KEY&quot;</span><span class="op">)</span><span class="op">,</span>
+    <span class="vr">http_client</span><span class="op">=</span><span class="lib">httpx</span><span class="op">.</span><span class="cls">Client</span><span class="op">(</span>
+        <span class="vr">verify</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">SSL_VERIFY</span><span class="op">,</span>
+        <span class="vr">timeout</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">TIMEOUT_API</span><span class="op">,</span>
+    <span class="op">)</span><span class="op">,</span>
+<span class="op">)</span>
+
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="vr">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">&quot;default&quot;</span>
+
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+    <span class="vr">texto</span> <span class="op">=</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">normalize</span><span class="op">(</span><span class="st">&quot;NFD&quot;</span><span class="op">,</span> <span class="vr">texto</span><span class="op">)</span>
+    <span class="kw2">return</span> <span class="st">&quot;&quot;</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
+        <span class="vr">caractere</span>
+        <span class="kw2">for</span> <span class="vr">caractere</span> <span class="kw2">in</span> <span class="vr">texto</span>
+        <span class="kw2">if</span> <span class="lib">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">caractere</span><span class="op">)</span> <span class="op">!=</span> <span class="st">&quot;Mn&quot;</span>
+    <span class="op">)</span>
+
+<span class="kw">def</span> <span class="fn">registrar</span><span class="op">(</span><span class="vr">evento</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> <span class="vr">detalhe</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="lib">config</span><span class="op">.</span><span class="const">LOG_ATIVO</span><span class="op">:</span>
+        <span class="lib">logging</span><span class="op">.</span><span class="fn">info</span><span class="op">(</span><span class="st">&quot;%s | usuario=%s | %s&quot;</span><span class="op">,</span> <span class="vr">evento</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> <span class="vr">detalhe</span><span class="op">)</span>
+
+<span class="kw">def</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">mensagem</span><span class="op">,</span> <span class="vr">contexto</span><span class="op">=</span><span class="kw2">None</span><span class="op">,</span> <span class="vr">temperatura</span><span class="op">=</span><span class="kw2">None</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">system_prompt</span> <span class="op">=</span> <span class="lib">config</span><span class="op">.</span><span class="const">SYSTEM_BASE</span>
+
+    <span class="kw2">if</span> <span class="vr">contexto</span><span class="op">:</span>
+        <span class="vr">system_prompt</span> <span class="op">+=</span> f&quot;\nUse somente estes dados para responder:\n<span class="op">{</span><span class="vr">contexto</span><span class="op">}</span>&quot;
+
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="vr">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
+        <span class="vr">model</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">MODELO</span><span class="op">,</span>
+        <span class="vr">messages</span><span class="op">=</span><span class="op">[</span>
+            <span class="op">{</span><span class="st">&quot;role&quot;</span><span class="op">:</span> <span class="st">&quot;system&quot;</span><span class="op">,</span> <span class="st">&quot;content&quot;</span><span class="op">:</span> <span class="vr">system_prompt</span><span class="op">}</span><span class="op">,</span>
+            <span class="op">{</span><span class="st">&quot;role&quot;</span><span class="op">:</span> <span class="st">&quot;user&quot;</span><span class="op">,</span> <span class="st">&quot;content&quot;</span><span class="op">:</span> <span class="vr">mensagem</span><span class="op">}</span><span class="op">,</span>
+        <span class="op">]</span><span class="op">,</span>
+        <span class="vr">temperature</span><span class="op">=</span><span class="vr">temperatura</span> <span class="kw2">if</span> <span class="vr">temperatura</span> <span class="kw2">is</span> <span class="kw2">not</span> <span class="kw2">None</span> <span class="kw2">else</span> <span class="lib">config</span><span class="op">.</span><span class="const">TEMPERATURA_PADRAO</span><span class="op">,</span>
+        <span class="vr">max_tokens</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">MAX_TOKENS</span><span class="op">,</span>
+    <span class="op">)</span>
+
+    <span class="kw2">return</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span>
+
+<span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">get</span><span class="op">(</span><span class="st">&quot;/&quot;</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;mensagem&quot;</span><span class="op">:</span> f&quot;<span class="op">{</span><span class="lib">config</span><span class="op">.</span><span class="const">NOME_BOT</span><span class="op">}</span> no ar&quot;<span class="op">}</span>
+
+<span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">post</span><span class="op">(</span><span class="st">&quot;/chat&quot;</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="vr">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">try</span><span class="op">:</span>
+        <span class="vr">user_id</span> <span class="op">=</span> <span class="vr">pergunta</span><span class="op">.</span><span class="vr">user_id</span> <span class="kw2">or</span> <span class="st">&quot;default&quot;</span>
+        <span class="vr">texto_original</span> <span class="op">=</span> <span class="vr">pergunta</span><span class="op">.</span><span class="vr">texto</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+        <span class="vr">texto_normalizado</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span>
+
+        <span class="fn">registrar</span><span class="op">(</span><span class="st">&quot;REQUISICAO&quot;</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> <span class="vr">texto_original</span><span class="op">)</span>
+
+        <span class="vr">resposta_faq</span> <span class="op">=</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+        <span class="kw2">if</span> <span class="vr">resposta_faq</span><span class="op">:</span>
+            <span class="fn">registrar</span><span class="op">(</span><span class="st">&quot;FAQ&quot;</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> <span class="st">&quot;resposta encontrada no arquivo faq.py&quot;</span><span class="op">)</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;faq&quot;</span><span class="op">,</span> <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="vr">resposta_faq</span><span class="op">}</span>
+
+        <span class="kw2">if</span> <span class="fn">parece_pergunta_de_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span><span class="op">:</span>
+            <span class="vr">produto</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto_normalizado</span><span class="op">)</span>
+
+            <span class="kw2">if</span> <span class="kw2">not</span> <span class="vr">produto</span> <span class="kw2">and</span> <span class="lib">config</span><span class="op">.</span><span class="const">EXIGIR_PRODUTO_CADASTRADO</span><span class="op">:</span>
+                <span class="lib">logging</span><span class="op">.</span><span class="fn">warning</span><span class="op">(</span>
+                    <span class="st">&quot;PRODUTO_FORA_CATALOGO | usuario=%s | texto=%s&quot;</span><span class="op">,</span>
+                    <span class="vr">user_id</span><span class="op">,</span>
+                    <span class="vr">texto_original</span><span class="op">,</span>
+                <span class="op">)</span>
+
+                <span class="kw2">if</span> <span class="lib">config</span><span class="op">.</span><span class="const">MOSTRAR_PRODUTOS_DISPONIVEIS</span><span class="op">:</span>
+                    <span class="vr">cadastrados</span> <span class="op">=</span> <span class="st">&quot;, &quot;</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+                    <span class="vr">resposta</span> <span class="op">=</span> <span class="op">(</span>
+                        <span class="st">&quot;Não encontrei esse produto no catálogo da TechShop. &quot;</span>
+                        f&quot;Hoje consigo consultar estes produtos: <span class="op">{</span><span class="vr">cadastrados</span><span class="op">}</span>.&quot;
+                    <span class="op">)</span>
+                <span class="kw2">else</span><span class="op">:</span>
+                    <span class="vr">resposta</span> <span class="op">=</span> <span class="st">&quot;Não encontrei esse produto no catálogo da TechShop.&quot;</span>
+
+                <span class="kw2">return</span> <span class="op">{</span><span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;trava_de_escopo&quot;</span><span class="op">,</span> <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="vr">resposta</span><span class="op">}</span>
+
+            <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
+                f&quot;Produto: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;nome&#x27;</span><span class="op">]</span><span class="op">}</span>\n&quot;
+                f&quot;Preço: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;preco&#x27;</span><span class="op">]</span><span class="op">}</span>\n&quot;
+                f&quot;Estoque: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;estoque&#x27;</span><span class="op">]</span><span class="op">}</span> unidades\n&quot;
+                f&quot;Descrição: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;descricao&#x27;</span><span class="op">]</span><span class="op">}</span>&quot;
+            <span class="op">)</span>
+
+            <span class="fn">registrar</span><span class="op">(</span><span class="st">&quot;PRODUTO&quot;</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> f&quot;produto encontrado: <span class="op">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">&#x27;nome&#x27;</span><span class="op">]</span><span class="op">}</span>&quot;<span class="op">)</span>
+            <span class="kw2">return</span> <span class="op">{</span>
+                <span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;produto_cadastrado&quot;</span><span class="op">,</span>
+                <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span>
+                    <span class="vr">texto_original</span><span class="op">,</span>
+                    <span class="vr">contexto</span><span class="op">=</span><span class="vr">contexto</span><span class="op">,</span>
+                    <span class="vr">temperatura</span><span class="op">=</span><span class="lib">config</span><span class="op">.</span><span class="const">TEMPERATURA_DADOS</span><span class="op">,</span>
+                <span class="op">)</span><span class="op">,</span>
+            <span class="op">}</span>
+
+        <span class="fn">registrar</span><span class="op">(</span><span class="st">&quot;IA_GERAL&quot;</span><span class="op">,</span> <span class="vr">user_id</span><span class="op">,</span> <span class="st">&quot;pergunta enviada para a IA&quot;</span><span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;ia_geral&quot;</span><span class="op">,</span>
+            <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">)</span><span class="op">,</span>
+        <span class="op">}</span>
+
+    <span class="kw2">except</span> <span class="cls">Exception</span> <span class="kw2">as</span> <span class="vr">erro</span><span class="op">:</span>
+        <span class="lib">logging</span><span class="op">.</span><span class="fn">error</span><span class="op">(</span><span class="st">&quot;ERRO_CHAT | %s&quot;</span><span class="op">,</span> <span class="vr">erro</span><span class="op">,</span> <span class="vr">exc_info</span><span class="op">=</span><span class="kw2">True</span><span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">&quot;origem&quot;</span><span class="op">:</span> <span class="st">&quot;erro&quot;</span><span class="op">,</span>
+            <span class="st">&quot;resposta&quot;</span><span class="op">:</span> <span class="st">&quot;Não consegui processar sua mensagem agora. Tente novamente em alguns instantes.&quot;</span><span class="op">,</span>
+        <span class="op">}</span></pre>
+</div>
+
+<table class="code-ann">
+<tr><td>import logging</td><td><strong>Carrega o recurso de log do Python.</strong> É ele que grava mensagens técnicas em arquivo.</td></tr>
+<tr><td>logging.basicConfig(...)</td><td><strong>Configura onde e como o log será gravado.</strong> O nome do arquivo, o nível de detalhe e o formato saem do <code>config.py</code>.</td></tr>
+<tr><td>registrar()</td><td><strong>Centraliza o registro dos eventos comuns.</strong> Em vez de repetir <code>logging.info</code> em vários pontos, chamamos uma função com evento, usuário e detalhe.</td></tr>
+<tr><td>logging.warning(...)</td><td><strong>Registra uma situação de atenção.</strong> Aqui usamos quando alguém pergunta por produto fora do catálogo.</td></tr>
+<tr><td>try / except</td><td><strong>Evita jogar erro técnico na tela do usuário.</strong> O erro completo fica no log, e a pessoa recebe uma resposta segura.</td></tr>
+<tr><td>responder_com_ia()</td><td><strong>Continua com o mesmo papel.</strong> A função chama a IA e monta a resposta, só que agora usando os valores que vieram do <code>config.py</code>.</td></tr>
+</table>
+
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="068_index.zip" href="arquivos/068_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">068_index.zip</div><div class="dl-desc">Página HTML para testar o servidor limpo usando FAQ, catálogo e config</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+
+
+<div class="atencao"><strong>Observação sobre <code>verify=False</code>.</strong> Durante o curso nós usamos <code>httpx.Client(verify=config.SSL_VERIFY)</code> com <code>SSL_VERIFY = False</code> para reduzir problemas de certificado em ambiente corporativo, laboratório ou máquina com bloqueio de rede. Isso facilita os testes da aula, mas não é prática de produção. Em produção, a verificação de certificado deve ficar ativa, porque ela ajuda a proteger a comunicação entre o sistema e o serviço externo.</div>
+
+<p>O teste final usa os mesmos arquivos na mesma pasta. Agora, além da resposta no navegador, o servidor também pode gravar o caminho técnico no arquivo <code>chatbot.log</code>. O comando continua sendo <code>python -m uvicorn 068_Exercicio:app --reload</code>.</p>
+
+<div class="install-step">
+<div class="install-step-head"><div class="install-num">4</div> Pasta com Log</div>
+<img alt="Pasta com Log" src="img/119.png"/>
+</div>
+
+<div class="install-step">
+<div class="install-step-head"><div class="install-num">5</div> Arquivo Log</div>
+<img alt="Arquivo Log" src="img/120.png"/>
+</div>
+<br>
+
+<p>Agora é a sua vez. A ideia é tentar escrever cada arquivo do zero, consultando os exemplos quando precisar. Quando abrir a solução possível, o botão mostra todos os códigos necessários para aquele exercício, não apenas um trecho.</p>
+
+<div class="exercise">
+<span class="ex-tag">⚡ exercício 069 - FAQ com configuração</span>
+<h3>Crie um chatbot de clínica usando arquivo de configuração <span class="ex-diff diff-1">iniciante</span></h3>
+<p>Crie um servidor para a Clínica Viva. Ele deve responder perguntas sobre horário, endereço, marcação de consulta e exames. Os textos principais devem ficar em um arquivo de configuração separado.</p>
+<ul>
+<li>Crie o arquivo <code>config_069.py</code>.</li>
+<li>Crie o arquivo <code>069_Exercicio.py</code>.</li>
+<li>Crie uma rota <code>/chat</code>.</li>
+<li>Quando não encontrar a informação, responda que ela não está no FAQ da clínica.</li>
+<li>Baixe o HTML para testar no navegador.</li>
+</ul>
+<div class="ex-ans">
+<button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+<div class="ex-ans-body">
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">config_069.py</div>
+</div>
+<pre><span class="const">NOME_BOT</span> <span class="op">=</span> <span class="st">"</span><span class="st">Assistente Clínica Viva</span><span class="st">"</span>
+<span class="const">RESPOSTA_PADRAO</span> <span class="op">=</span> <span class="st">"</span><span class="st">Não encontrei essa informação no FAQ da Clínica Viva.</span><span class="st">"</span>
+<span class="const">FAQ_CLINICA</span> <span class="op">=</span> <span class="op">{</span>
+    <span class="st">"</span><span class="st">horario</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A Clínica Viva atende de segunda a sexta, das 8h às 18h.</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">endereco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A Clínica Viva fica na Rua das Flores, 120, Centro.</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">consulta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">As consultas podem ser marcadas pelo telefone (11) 3333-0000.</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">exame</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Os exames são realizados com agendamento prévio.</span><span class="st">"</span>
+<span class="op">}</span>
+</pre>
+</div>
+<br>
+
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">069_Exercicio.py</div>
+</div>
+<pre><span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="lib">.</span><span class="lib">middleware</span><span class="lib">.</span><span class="lib">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="kw2">import</span> <span class="lib">config_069</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="arg">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="arg">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">"</span><span class="st">default</span><span class="st">"</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="arg">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">buscar_resposta</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span>
+    <span class="kw2">for</span> <span class="vr">palavra</span><span class="op">,</span> <span class="vr">resposta</span> <span class="op">in</span> <span class="lib">config_069</span><span class="op">.</span><span class="const">FAQ_CLINICA</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">palavra</span> <span class="op">in</span> <span class="arg">texto</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">resposta</span>
+    <span class="kw2">return</span> <span class="lib">config_069</span><span class="op">.</span><span class="const">RESPOSTA_PADRAO</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">get</span><span class="op">(</span><span class="st">"</span><span class="st">/</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">mensagem</span><span class="st">"</span><span class="op">:</span> <span class="fs">f</span><span class="st">"</span><span class="st">{</span><span class="lib">config_069</span><span class="op">.</span><span class="const">NOME_BOT</span><span class="st">}</span><span class="st"> no ar</span><span class="st">"</span><span class="op">}</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">post</span><span class="op">(</span><span class="st">"</span><span class="st">/chat</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">faq_configurado</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="fn">buscar_resposta</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">)</span><span class="op">,</span>
+    <span class="op">}</span>
+</pre>
+</div>
+<br>
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="069_index.zip" href="arquivos/069_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">069_index.zip</div><div class="dl-desc">Página HTML para testar o servidor limpo usando FAQ, catálogo e config</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+
+
+</div>
+</div>
+</div>
+
+
+<div class="exercise">
+<span class="ex-tag">⚡ exercício 070 - produto fora do catálogo</span>
+<h3>Crie uma trava de escopo para uma papelaria <span class="ex-diff diff-2">intermediário</span></h3>
+<p>Crie um chatbot para a Papelaria Ponto Certo. Ele deve consultar produtos cadastrados e bloquear qualquer produto que não esteja na base. Nesse exercício, o sistema não precisa chamar IA.</p>
+<ul>
+<li>Crie o arquivo <code>070_Exercicio.py</code>.</li>
+<li>Cadastre pelo menos três produtos.</li>
+<li>Quando encontrar o produto, responda com nome, preço e estoque.</li>
+<li>Quando não encontrar, diga que o produto não está cadastrado e mostre quais produtos podem ser consultados.</li>
+<li>Baixe o HTML para testar no navegador.</li>
+</ul>
+<div class="ex-ans">
+<button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+<div class="ex-ans-body">
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">070_Exercicio.py</div>
+</div>
+<pre><span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="lib">.</span><span class="lib">middleware</span><span class="lib">.</span><span class="lib">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="arg">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="const">PRODUTOS</span> <span class="op">=</span> <span class="op">{</span>
+    <span class="st">"</span><span class="st">caderno universitario</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Caderno Universitário</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 24,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">30</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">caneta azul</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Caneta Azul</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 2,50</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">120</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">mochila escolar</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Mochila Escolar</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 89,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">12</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+<span class="op">}</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="arg">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">"</span><span class="st">default</span><span class="st">"</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="arg">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span>
+    <span class="kw2">for</span> <span class="vr">chave</span><span class="op">,</span> <span class="vr">produto</span> <span class="op">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">chave</span> <span class="op">in</span> <span class="arg">texto</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">produto</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">[</span><span class="vr">produto</span><span class="op">[</span><span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">]</span> <span class="kw2">for</span> <span class="vr">produto</span> <span class="op">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">values</span><span class="op">(</span><span class="op">)</span><span class="op">]</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">get</span><span class="op">(</span><span class="st">"</span><span class="st">/</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">mensagem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Consulta de produtos da Papelaria Ponto Certo</span><span class="st">"</span><span class="op">}</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">post</span><span class="op">(</span><span class="st">"</span><span class="st">/chat</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">produto</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">)</span>
+    <span class="kw2">if</span> <span class="op">not</span> <span class="vr">produto</span><span class="op">:</span>
+        <span class="vr">cadastrados</span> <span class="op">=</span> <span class="st">"</span><span class="st">, </span><span class="st">"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="fn">nomes_cadastrados</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">trava_de_escopo</span><span class="st">"</span><span class="op">,</span>
+            <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="op">(</span>
+                <span class="st">"</span><span class="st">Esse produto não está cadastrado na Papelaria Ponto Certo. </span><span class="st">"</span>
+                <span class="fs">f</span><span class="st">"</span><span class="st">Produtos disponíveis para consulta: </span><span class="st">{</span><span class="vr">cadastrados</span><span class="st">}</span><span class="st">.</span><span class="st">"</span>
+            <span class="op">)</span><span class="op">,</span>
+        <span class="op">}</span>
+    <span class="kw2">return</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">produto_cadastrado</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="op">(</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">nome</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> custa </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">preco</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> </span><span class="st">"</span>
+            <span class="fs">f</span><span class="st">"</span><span class="st">e temos </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">estoque</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> unidades em estoque.</span><span class="st">"</span>
+        <span class="op">)</span><span class="op">,</span>
+    <span class="op">}</span>
+</pre>
+</div>
+<br>
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="070_index.zip" href="arquivos/070_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">070_index.zip</div><div class="dl-desc">Página HTML para testar o chatbot com config</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- ****************************************************************************** --!>
+<!-- ****************************************************************************** --!>
+<!-- ****************************************************************************** --!>
+<!-- ****************************************************************************** --!>
+<!-- ****************************************************************************** --!>
+<!-- ****************************************************************************** --!>
+
+
+
+<div class="exercise">
+<span class="ex-tag">⚡ exercício 071 - sistema completo</span>
+<h3>Crie um chatbot com FAQ, catálogo, trava, IA, configuração e log <span class="ex-diff diff-3">avançado</span></h3>
+<p>Crie um chatbot para a Livraria Aurora. Ele deve responder FAQ, consultar produtos, bloquear produto fora do catálogo, chamar a IA para perguntas gerais e registrar os caminhos no log.</p>
+<ul>
+<li>Crie o arquivo <code>config_071.py</code>.</li>
+<li>Crie o arquivo <code>071_Exercicio.py</code>.</li>
+<li>Inclua FAQ e produtos próprios da livraria.</li>
+<li>Registre no log se a resposta veio do FAQ, produto, trava ou IA.</li>
+<li>Baixe o HTML para testar no navegador.</li>
+</ul>
+<div class="ex-ans">
+<button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
+<div class="ex-ans-body">
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">config_071.py</div>
+</div>
+<pre><span class="const">MODELO</span> <span class="op">=</span> <span class="st">"</span><span class="st">gpt-4.1-mini</span><span class="st">"</span>
+<span class="const">TEMPERATURA</span> <span class="op">=</span> <span class="nm">0.2</span>
+<span class="const">MAX_TOKENS</span> <span class="op">=</span> <span class="nm">180</span>
+<span class="const">NOME_BOT</span> <span class="op">=</span> <span class="st">"</span><span class="st">Assistente Livraria Aurora</span><span class="st">"</span>
+<span class="const">LOG_ARQUIVO</span> <span class="op">=</span> <span class="st">"</span><span class="st">livraria_aurora.log</span><span class="st">"</span>
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
+    <span class="st">"</span><span class="st">Você é a assistente da Livraria Aurora. </span><span class="st">"</span>
+    <span class="st">"</span><span class="st">Responda com clareza e não invente informações da loja.</span><span class="st">"</span>
+<span class="op">)</span>
+</pre>
+</div>
+
+<br>
+<div class="cblock">
+<div class="cblock-head">
+<div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
+<div class="cfname">071_Exercicio.py</div>
+</div>
+<pre><span class="kw2">import</span> <span class="lib">logging</span>
+<span class="kw2">import</span> <span class="lib">os</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="fn">load_dotenv</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="cls">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi</span><span class="lib">.</span><span class="lib">middleware</span><span class="lib">.</span><span class="lib">cors</span> <span class="kw2">import</span> <span class="cls">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="cls">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="cls">BaseModel</span>
+<span class="kw2">import</span> <span class="lib">config_071</span>
+<span class="fn">load_dotenv</span><span class="op">(</span><span class="arg">override</span><span class="op">=</span><span class="bi">True</span><span class="op">)</span>
+<span class="const">FAQ</span> <span class="op">=</span> <span class="op">{</span>
+    <span class="st">"</span><span class="st">horario</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A Livraria Aurora atende de segunda a sábado, das 10h às 20h.</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">endereco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A Livraria Aurora fica na Rua do Livro, 45, Centro.</span><span class="st">"</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">entrega</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">A entrega é feita em até 5 dias úteis para a região metropolitana.</span><span class="st">"</span><span class="op">,</span>
+<span class="op">}</span>
+<span class="const">PRODUTOS</span> <span class="op">=</span> <span class="op">{</span>
+    <span class="st">"</span><span class="st">livro de python</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Livro de Python</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 79,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">10</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">planner semanal</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Planner Semanal</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 39,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">18</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+    <span class="st">"</span><span class="st">marca texto</span><span class="st">"</span><span class="op">:</span> <span class="op">{</span>
+        <span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Marca Texto</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">R$ 6,90</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">:</span> <span class="nm">50</span><span class="op">,</span>
+    <span class="op">}</span><span class="op">,</span>
+<span class="op">}</span>
+<span class="lib">logging</span><span class="op">.</span><span class="fn">basicConfig</span><span class="op">(</span>
+    <span class="arg">filename</span><span class="op">=</span><span class="lib">config_071</span><span class="op">.</span><span class="const">LOG_ARQUIVO</span><span class="op">,</span>
+    <span class="arg">level</span><span class="op">=</span><span class="lib">logging</span><span class="op">.</span><span class="const">INFO</span><span class="op">,</span>
+    <span class="arg">format</span><span class="op">=</span><span class="st">"</span><span class="st">%(asctime)s</span><span class="st"> | </span><span class="st">%(levelname)s</span><span class="st"> | </span><span class="st">%(message)s</span><span class="st">"</span><span class="op">,</span>
+    <span class="arg">encoding</span><span class="op">=</span><span class="st">"</span><span class="st">utf-8</span><span class="st">"</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span><span class="arg">api_key</span><span class="op">=</span><span class="lib">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"</span><span class="st">OPENAI_API_KEY</span><span class="st">"</span><span class="op">)</span><span class="op">)</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
+    <span class="cls">CORSMiddleware</span><span class="op">,</span>
+    <span class="arg">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+    <span class="arg">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"</span><span class="st">*</span><span class="st">"</span><span class="op">]</span><span class="op">,</span>
+<span class="op">)</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="cls">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="arg">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="arg">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">=</span> <span class="st">"</span><span class="st">default</span><span class="st">"</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="arg">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">palavra</span><span class="op">,</span> <span class="vr">resposta</span> <span class="op">in</span> <span class="const">FAQ</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">palavra</span> <span class="op">in</span> <span class="arg">texto</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">resposta</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">chave</span><span class="op">,</span> <span class="vr">produto</span> <span class="op">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">chave</span> <span class="op">in</span> <span class="arg">texto</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">produto</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">parece_produto</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">gatilhos</span> <span class="op">=</span> <span class="op">[</span>
+        <span class="st">"</span><span class="st">preco</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">valor</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">tem</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">produto</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">estoque</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">comprar</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">livro</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">planner</span><span class="st">"</span><span class="op">,</span>
+        <span class="st">"</span><span class="st">marca texto</span><span class="st">"</span><span class="op">,</span>
+        <span class="op">]</span>
+    <span class="kw2">return</span> <span class="bi">any</span><span class="op">(</span><span class="vr">gatilho</span> <span class="op">in</span> <span class="arg">texto</span> <span class="kw2">for</span> <span class="vr">gatilho</span> <span class="op">in</span> <span class="vr">gatilhos</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="fn">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
+        <span class="arg">model</span><span class="op">=</span><span class="lib">config_071</span><span class="op">.</span><span class="const">MODELO</span><span class="op">,</span>
+        <span class="arg">messages</span><span class="op">=</span><span class="op">[</span>
+            <span class="op">{</span><span class="st">"</span><span class="st">role</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">system</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">content</span><span class="st">"</span><span class="op">:</span> <span class="lib">config_071</span><span class="op">.</span><span class="const">SYSTEM_BASE</span><span class="op">}</span><span class="op">,</span>
+            <span class="op">{</span><span class="st">"</span><span class="st">role</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">user</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">content</span><span class="st">"</span><span class="op">:</span> <span class="arg">texto</span><span class="op">}</span><span class="op">,</span>
+        <span class="op">]</span><span class="op">,</span>
+        <span class="arg">temperature</span><span class="op">=</span><span class="lib">config_071</span><span class="op">.</span><span class="const">TEMPERATURA</span><span class="op">,</span>
+        <span class="arg">max_tokens</span><span class="op">=</span><span class="lib">config_071</span><span class="op">.</span><span class="const">MAX_TOKENS</span><span class="op">,</span>
+    <span class="op">)</span>
+    <span class="kw2">return</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="arg">content</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">get</span><span class="op">(</span><span class="st">"</span><span class="st">/</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">mensagem</span><span class="st">"</span><span class="op">:</span> <span class="fs">f</span><span class="st">"</span><span class="st">{</span><span class="lib">config_071</span><span class="op">.</span><span class="const">NOME_BOT</span><span class="st">}</span><span class="st"> no ar</span><span class="st">"</span><span class="op">}</span>
+<span class="dec">@app</span><span class="op">.</span><span class="vr">post</span><span class="op">(</span><span class="st">"</span><span class="st">/chat</span><span class="st">"</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">:</span> <span class="cls">Pergunta</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">try</span><span class="op">:</span>
+        <span class="arg">texto</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">)</span>
+        <span class="lib">logging</span><span class="op">.</span><span class="fn">info</span><span class="op">(</span><span class="st">"</span><span class="st">REQUISICAO | usuario=</span><span class="st">%s</span><span class="st"> | pergunta=</span><span class="st">%s</span><span class="st">"</span><span class="op">,</span> <span class="arg">pergunta</span><span class="op">.</span><span class="arg">user_id</span><span class="op">,</span> <span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">)</span>
+        <span class="vr">resposta_faq</span> <span class="op">=</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span>
+        <span class="kw2">if</span> <span class="vr">resposta_faq</span><span class="op">:</span>
+            <span class="lib">logging</span><span class="op">.</span><span class="fn">info</span><span class="op">(</span><span class="st">"</span><span class="st">ORIGEM | faq</span><span class="st">"</span><span class="op">)</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">faq</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="vr">resposta_faq</span><span class="op">}</span>
+        <span class="kw2">if</span> <span class="vr">parece_produto</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span><span class="op">:</span>
+            <span class="vr">produto</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="arg">texto</span><span class="op">)</span>
+            <span class="kw2">if</span> <span class="op">not</span> <span class="vr">produto</span><span class="op">:</span>
+                <span class="lib">logging</span><span class="op">.</span><span class="fn">warning</span><span class="op">(</span><span class="st">"</span><span class="st">PRODUTO_FORA_CATALOGO | usuario=</span><span class="st">%s</span><span class="st">"</span><span class="op">,</span> <span class="arg">pergunta</span><span class="op">.</span><span class="arg">user_id</span><span class="op">)</span>
+                <span class="kw2">return</span> <span class="op">{</span>
+                    <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">trava_de_escopo</span><span class="st">"</span><span class="op">,</span>
+                    <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Esse produto não está cadastrado na Livraria Aurora.</span><span class="st">"</span><span class="op">,</span>
+                <span class="op">}</span>
+            <span class="lib">logging</span><span class="op">.</span><span class="fn">info</span><span class="op">(</span><span class="st">"</span><span class="st">ORIGEM | produto | </span><span class="st">%s</span><span class="st">"</span><span class="op">,</span> <span class="vr">produto</span><span class="op">[</span><span class="st">"</span><span class="st">nome</span><span class="st">"</span><span class="op">]</span><span class="op">)</span>
+            <span class="kw2">return</span> <span class="op">{</span>
+                <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">produto_cadastrado</span><span class="st">"</span><span class="op">,</span>
+                <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="op">(</span>
+                    <span class="fs">f</span><span class="st">"</span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">nome</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> custa </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">preco</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> </span><span class="st">"</span>
+                    <span class="fs">f</span><span class="st">"</span><span class="st">e temos </span><span class="st">{</span><span class="vr">produto</span><span class="op">[</span><span class="st">'</span><span class="st">estoque</span><span class="st">'</span><span class="op">]</span><span class="st">}</span><span class="st"> unidades em estoque.</span><span class="st">"</span>
+                <span class="op">)</span><span class="op">,</span>
+            <span class="op">}</span>
+        <span class="lib">logging</span><span class="op">.</span><span class="fn">info</span><span class="op">(</span><span class="st">"</span><span class="st">ORIGEM | ia</span><span class="st">"</span><span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">ia</span><span class="st">"</span><span class="op">,</span> <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="fn">responder_com_ia</span><span class="op">(</span><span class="arg">pergunta</span><span class="op">.</span><span class="arg">texto</span><span class="op">)</span><span class="op">}</span>
+    <span class="kw2">except</span> <span class="cls">Exception</span> <span class="kw2">as</span> <span class="vr">erro</span><span class="op">:</span>
+        <span class="lib">logging</span><span class="op">.</span><span class="fn">error</span><span class="op">(</span><span class="st">"</span><span class="st">ERRO | </span><span class="st">%s</span><span class="st">"</span><span class="op">,</span> <span class="vr">erro</span><span class="op">,</span> <span class="arg">exc_info</span><span class="op">=</span><span class="bi">True</span><span class="op">)</span>
+        <span class="kw2">return</span> <span class="op">{</span>
+            <span class="st">"</span><span class="st">origem</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">erro</span><span class="st">"</span><span class="op">,</span>
+            <span class="st">"</span><span class="st">resposta</span><span class="st">"</span><span class="op">:</span> <span class="st">"</span><span class="st">Não consegui processar sua mensagem agora.</span><span class="st">"</span><span class="op">,</span>
+        <span class="op">}</span>
+</pre>
+</div>
+
+<br>
+<div class="downloads inline-download">
+<div class="dl-grid">
+<a class="dl-item" download="071_index.zip" href="arquivos/071_index.zip">
+<span class="dl-icon">🌐</span>
+<div class="dl-info"><div class="dl-name">071_index.zip</div><div class="dl-desc">Página HTML para testar o chatbot final</div></div>
+<span class="dl-badge">↓ baixar</span>
+</a>
+</div>
+</div>
+
+
+</div>
+</div>
+</div>
+<div class="downloads">
+<span class="downloads-title">// arquivos desta aula</span>
+<div class="dl-grid">
+<a class="dl-item" href="arquivos/faq.py" target="_blank">
+<span class="dl-icon">🐍</span>
+<div class="dl-info"><div class="dl-name">faq.py</div><div class="dl-desc">Arquivo Python com perguntas frequentes da TechShop</div></div>
+<span class="dl-badge">↗ visualizar</span>
+</a>
+<a class="dl-item" href="arquivos/produtos.py" target="_blank">
+<span class="dl-icon">🐍</span>
+<div class="dl-info"><div class="dl-name">produtos.py</div><div class="dl-desc">Arquivo Python com catálogo e trava de consulta de produtos</div></div>
+<span class="dl-badge">↗ visualizar</span>
+</a>
+<a class="dl-item" href="arquivos/config.py" target="_blank">
+<span class="dl-icon">🐍</span>
+<div class="dl-info"><div class="dl-name">config.py</div><div class="dl-desc">Arquivo Python com parâmetros gerais do sistema</div></div>
+<span class="dl-badge">↗ visualizar</span>
+</a>
+<a class="dl-item" href="arquivos/068_Exercicio.py" target="_blank">
+<span class="dl-icon">🐍</span>
+<div class="dl-info"><div class="dl-name">068_Exercicio.py</div><div class="dl-desc">Servidor final da TechShop com FAQ, catálogo, configuração, IA controlada e log</div></div>
+<span class="dl-badge">↗ visualizar</span>
+</a>
+<a class="dl-item" href="arquivos/068_Exercicio_final.py" target="_blank">
+<span class="dl-icon">🐍</span>
+<div class="dl-info"><div class="dl-name">068_Exercicio_final.py</div><div class="dl-desc">Arquvo Final</div></div>
+<span class="dl-badge">↗ visualizar</span>
+</a>
+
+       <a class="dl-item" href="arquivos/Config_069.py" target="_blank"><span class="dl-icon">🐍</span><div class="dl-info"><div class="dl-name">Config_069.py</div><div class="dl-desc">Config_069.py</div></div><span class="dl-badge">↗ visualizar</span></a>
+
+     <a class="dl-item" href="arquivos/069_Exercicio.py" target="_blank"><span class="dl-icon">🐍</span><div class="dl-info"><div class="dl-name">069_Exercicio.py</div><div class="dl-desc">Exercício 069 — chatbot de clínica com FAQ e configuração</div></div><span class="dl-badge">↗ visualizar</span></a>
+
+      <a class="dl-item" href="arquivos/070_Exercicio.py" target="_blank"><span class="dl-icon">🐍</span><div class="dl-info"><div class="dl-name">070_Exercicio.py</div><div class="dl-desc">Exercício 070 — trava de escopo para produto fora do catálogo</div></div><span class="dl-badge">↗ visualizar</span></a>
+
+      <a class="dl-item" href="arquivos/Config_071.py" target="_blank"><span class="dl-icon">🐍</span><div class="dl-info"><div class="dl-name">Config_071.py</div><div class="dl-desc">Config_071.py</div></div><span class="dl-badge">↗ visualizar</span></a>
+
+      <a class="dl-item" href="arquivos/071_Exercicio.py" target="_blank"><span class="dl-icon">🐍</span><div class="dl-info"><div class="dl-name">071_Exercicio.py</div><div class="dl-desc">Exercício 071 — projeto completo com FAQ, catálogo, config, IA e log</div></div><span class="dl-badge">↗ visualizar</span></a>
+    </div>
+</div>
+<div class="ready">
+<span class="re">🎓</span>
+<h2>Curso finalizado, parabéns!</h2>
+<p>Fiquei contente de participar dessa jornada com você. Até a próxima!</p>
+</div>
+<div class="nav-bottom">
+<a class="nav-link" href="aula9.html">← Aula 9</a>
+<a class="nav-link next" href="..\index.html">Índice →</a>
+</div>
+</div>
+<footer>
+<span>Chatbots com Python · aula 10</span>
+<span><a href="..\index.html">← índice</a></span>
+</footer>
+<script>
+const p = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  p.style.width = (window.scrollY / h * 100) + '%';
+});
+function toggleAns(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('visible');
+  btn.textContent = open ? '▼ ocultar solução' : '▶ ver uma possível solução';
+}
+</script>
+</body>
+</html>

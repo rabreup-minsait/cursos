@@ -5,86 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aula 9 - Chatbots com Python</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f8f7f5;--surface:#ffffff;--border:#e2ddd8;--text:#1e1916;--text2:#3d3630;--text3:#7a726a;--accent:#1f5fa6;--accent-lt:#e8f0fb;--green:#0d6e50;--green-lt:#e4f3ed;--gold:#a06820;--gold-lt:#fdf2e0;--red:#a83030;--red-lt:#fceeed;--board:#182e1e;--shadow-sm:0 1px 4px rgba(30,25,22,.09);--shadow:0 2px 4px rgba(30,25,22,.07),0 6px 18px rgba(30,25,22,.08);}
-*{margin:0;padding:0;box-sizing:border-box;}html{font-size:16px;scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text2);font-family:'Nunito',system-ui,sans-serif;line-height:1.85;}
-.prog{position:fixed;top:0;left:0;height:2px;background:var(--accent);z-index:100;width:0;transition:width .1s;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:48px;position:sticky;top:0;z-index:50;}
-.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:800;font-size:.85rem;color:var(--text);}
-.tb-logo-icon{width:24px;height:24px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;}
-.tb-nav{display:flex;align-items:center;gap:4px;}
-.tb-btn{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700;color:var(--text3);text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);transition:all .15s;}
-.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
-.tb-btn.next{background:var(--accent);color:#fff;border-color:var(--accent);}
-.tb-lesson{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--text3);letter-spacing:.06em;padding:0 12px;}
-.wrap{max-width:680px;margin:0 auto;padding:44px 28px 90px;}
-.cover{margin-bottom:52px;}.cover-tag{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:block;}
-.cover h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.3rem);font-weight:700;line-height:1.2;color:var(--text);margin-bottom:16px;}
-.cover h1 em{color:var(--accent);font-style:italic;}.cover p{font-size:1rem;color:var(--text2);line-height:1.85;}
-p{font-size:.97rem;color:var(--text2);margin-bottom:20px;line-height:1.85;}p:last-child{margin-bottom:0;}
-strong{color:var(--text);font-weight:700;}
-code{font-family:'Fira Code',monospace;font-size:.82em;background:var(--accent-lt);border:1px solid rgba(31,95,166,.16);border-radius:4px;padding:1px 6px;color:var(--accent);}
-.lousa{background:var(--board);border-radius:6px;padding:14px 18px;margin:22px auto;max-width:480px;box-shadow:var(--shadow-sm);}
-.lousa-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#6aaa78;margin-bottom:10px;display:block;}
-.lousa-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;font-size:.86rem;color:#c8e4cc;line-height:1.6;}
-.lousa-row:last-child{margin-bottom:0;}.lousa-row .bul{color:#5ad68a;flex-shrink:0;margin-top:2px;}
-.lousa strong{color:#e8f5e8;font-weight:700;}.lousa code{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18);color:#a8e8c0;font-size:.8em;}
-.bubble{display:flex;gap:10px;align-items:flex-start;margin:28px 0 8px;}
-.bubble-avatar{flex-shrink:0;width:32px;height:32px;background:#f0a500;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:2px;box-shadow:0 2px 6px rgba(240,165,0,.3);}
-.bubble-body{background:#fffbf0;border:1.5px solid #f0c040;border-radius:4px 14px 14px 14px;padding:11px 15px;font-size:.9rem;color:#4a3800;font-weight:600;line-height:1.65;max-width:500px;}
-.dica{border-left:3px solid var(--accent);background:var(--accent-lt);border-radius:0 7px 7px 0;padding:12px 16px;margin:20px 0;font-size:.9rem;color:#1a3a6a;line-height:1.75;}
-.cblock{background:#f5f3f0;border:1px solid #ddd8d0;border-radius:8px;margin:20px 0;overflow:hidden;box-shadow:var(--shadow-sm);}
-.cblock-head{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:var(--surface);border-bottom:1px solid #ddd8d0;}
-.cdots{display:flex;gap:5px;}.cdots span{width:9px;height:9px;border-radius:50%;}
-.c1{background:#ff6058;}.c2{background:#ffbd2e;}.c3{background:#28ca42;}
-.cfname{font-family:'Fira Code',monospace;font-size:10.5px;color:var(--text3);}
-.cblock pre{padding:16px 18px;font-family:'Fira Code',monospace;font-size:13px;line-height:1.8;overflow-x:auto;color:#2a2420;white-space:pre;}
-.kw{color:#6d28d9;}.fn{color:#1d4ed8;}.st{color:#166534;}.nm{color:#b45309;}.cm{color:#888078;font-style:italic;}
-.vr{color:#b91c1c;}.op{color:#0d6e50;}.bi{color:#a06820;}.dc{color:#0e7a5a;}
-.code-ann{margin:16px 0 24px;border-collapse:collapse;width:100%;}
-.code-ann tr{border-bottom:1px solid var(--border);}.code-ann tr:last-child{border-bottom:none;}
-.code-ann td{padding:8px 10px;font-size:.85rem;vertical-align:top;line-height:1.65;}
-.code-ann td:first-child{font-family:'Fira Code',monospace;font-size:.78rem;white-space:nowrap;color:var(--accent);background:var(--accent-lt);border-radius:4px;width:1%;padding:8px 12px;}
-.install-step{margin:24px 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm);}
-.install-step-head{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);font-size:.82rem;font-weight:800;color:var(--text2);}
-.install-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:11px;flex-shrink:0;}
-.install-step img{width:100%;display:block;}
-.break{background:var(--gold-lt);border:1px solid rgba(160,104,32,.2);border-radius:8px;padding:18px 22px;text-align:center;margin:44px 0;}
-.break .be{font-size:1.8rem;display:block;margin-bottom:6px;}
-.break h3{font-family:'Playfair Display',serif;color:var(--gold);font-size:1rem;margin-bottom:4px;}
-.break p{font-size:.83rem;color:#7a5010;margin:0;}
-.exercise{background:var(--surface);border:1.5px solid var(--accent);border-radius:8px;padding:20px 22px;margin:32px 0;box-shadow:var(--shadow-sm);}
-.ex-tag{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;display:block;}
-.exercise h3{font-family:'Playfair Display',serif;color:var(--text);font-size:1.05rem;margin-bottom:12px;}
-.exercise ol{padding-left:18px;font-size:.88rem;line-height:2.1;color:var(--text2);}
-.ex-diff{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-left:8px;}
-.diff-1{background:var(--green-lt);color:var(--green);}.diff-2{background:var(--gold-lt);color:var(--gold);}.diff-3{background:var(--red-lt);color:var(--red);}
-.ex-ans{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.ex-ans-body{display:none;}.ex-ans-body.visible{display:block;}
-.btn-ans{display:inline-flex;align-items:center;gap:6px;font-family:'Fira Code',monospace;font-size:.75rem;font-weight:600;color:var(--green);background:var(--green-lt);border:1.5px solid rgba(13,110,80,.25);border-radius:5px;padding:6px 14px;cursor:pointer;transition:all .15s;margin-top:4px;}
-.btn-ans:hover{background:#d0ece3;}
-.downloads{margin:48px 0 32px;}.downloads-title{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:block;}
-.dl-grid{display:flex;flex-direction:column;gap:7px;}
-.dl-item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:10px 14px;text-decoration:none;color:inherit;box-shadow:var(--shadow-sm);transition:border-color .15s;}
-.dl-item:hover{border-color:var(--accent);}
-.dl-icon{font-size:1.1rem;flex-shrink:0;}.dl-info{flex:1;}
-.dl-name{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--accent);font-weight:500;}
-.dl-desc{font-size:.75rem;color:var(--text3);margin-top:1px;}
-.dl-badge{font-family:'Fira Code',monospace;font-size:9px;background:var(--accent-lt);color:var(--accent);border-radius:4px;padding:2px 8px;flex-shrink:0;}
-.ready{background:var(--green-lt);border:1.5px solid rgba(13,110,80,.3);border-radius:8px;padding:26px;text-align:center;margin:48px 0;}
-.ready .re{font-size:2rem;display:block;margin-bottom:10px;}
-.ready h2{font-family:'Playfair Display',serif;color:var(--green);font-size:1.25rem;margin:0 0 8px;}
-.ready p{font-size:.88rem;color:#0a4535;margin:0;}
-.nav-bottom{display:flex;justify-content:space-between;margin-top:52px;padding-top:20px;border-top:1px solid var(--border);}
-.nav-link{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:var(--text3);text-decoration:none;padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:var(--bg);transition:all .15s;}
-.nav-link:hover{border-color:var(--accent);color:var(--accent);}
-.nav-link.next{background:var(--accent);color:#fff;border-color:var(--accent);}
-footer{border-top:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;font-family:'Fira Code',monospace;font-size:10px;color:var(--text3);background:var(--surface);}
-footer a{color:inherit;text-decoration:none;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="page-aula9">
 <div id="prog" class="prog"></div>
 <header class="topbar">
   <a class="tb-logo" href="../index.html"><div class="tb-logo-icon">🐍</div>Chatbots com Python</a>
@@ -151,35 +74,35 @@ footer a{color:inherit;text-decoration:none;}
     <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
     <div class="cfname">062_Exercicio.py</div>
   </div>
-  <pre><span class="kw">import</span> unicodedata
-<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+  <pre><span class="kw2">import</span> <span class="lib">unicodedata</span>
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
-    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
-    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="vr">texto</span> <span class="op">=</span> <span class="lib">unicodedata</span>.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="kw2">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">texto</span> <span class="kw2">if</span> <span class="lib">unicodedata</span>.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
 <span class="cm"># base de dados local - em producao viria de planilha ou banco</span>
-<span class="vr">PRODUTOS</span> <span class="op">=</span> {
-    <span class="st">"notebook pro"</span>:    {<span class="st">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"16GB RAM, SSD 512GB"</span>},
-    <span class="st">"mouse sem fio"</span>:   {<span class="st">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"Ergonomico 2.4GHz"</span>},
-    <span class="st">"teclado mecanico"</span>:{<span class="st">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="st">"estoque"</span>: <span class="st">"esgotado"</span>,   <span class="st">"descricao"</span>: <span class="st">"Switch azul"</span>},
-    <span class="st">"monitor 24"</span>:      {<span class="st">"preco"</span>: <span class="st">"R$ 1.200"</span>,  <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"Full HD 24 pol"</span>},
+<span class="const">PRODUTOS</span> <span class="op">=</span> {
+    <span class="key">"notebook pro"</span>:    {<span class="key">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"16GB RAM, SSD 512GB"</span>},
+    <span class="key">"mouse sem fio"</span>:   {<span class="key">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"Ergonomico 2.4GHz"</span>},
+    <span class="key">"teclado mecanico"</span>:{<span class="key">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="key">"estoque"</span>: <span class="st">"esgotado"</span>,   <span class="key">"descricao"</span>: <span class="st">"Switch azul"</span>},
+    <span class="key">"monitor 24"</span>:      {<span class="key">"preco"</span>: <span class="st">"R$ 1.200"</span>,  <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"Full HD 24 pol"</span>},
 }
-<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"meu nome"</span>, <span class="st">"eu me chamo"</span>, <span class="st">"quem eu sou"</span>]):
-        <span class="kw">return</span> <span class="st">"dados_usuario"</span>
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"preco"</span>, <span class="st">"valor"</span>, <span class="st">"custa"</span>, <span class="st">"estoque"</span>, <span class="st">"disponivel"</span>,
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"meu nome"</span>, <span class="st">"eu me chamo"</span>, <span class="st">"quem eu sou"</span>]):
+        <span class="kw2">return</span> <span class="st">"dados_usuario"</span>
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"preco"</span>, <span class="st">"valor"</span>, <span class="st">"custa"</span>, <span class="st">"estoque"</span>, <span class="st">"disponivel"</span>,
                                         <span class="st">"notebook"</span>, <span class="st">"mouse"</span>, <span class="st">"teclado"</span>, <span class="st">"monitor"</span>]):
-        <span class="kw">return</span> <span class="st">"busca_produto"</span>
-    <span class="kw">return</span> <span class="st">"conversa"</span>
-<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+        <span class="kw2">return</span> <span class="st">"busca_produto"</span>
+    <span class="kw2">return</span> <span class="st">"conversa"</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
     <span class="vr">encontrados</span> <span class="op">=</span> [
         <span class="st">f"{nome.title()}: {d['preco']}, {d['estoque']}, {d['descricao']}"</span>
-        <span class="kw">for</span> <span class="vr">nome</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">PRODUTOS</span>.<span class="fn">items</span>()
-        <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="fn">normalizar</span>(<span class="vr">nome</span>).<span class="fn">split</span>())
+        <span class="kw2">for</span> <span class="vr">nome</span>, <span class="vr">d</span> <span class="kw2">in</span> <span class="const">PRODUTOS</span>.<span class="fn">items</span>()
+        <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="fn">normalizar</span>(<span class="vr">nome</span>).<span class="fn">split</span>())
     ]
-    <span class="kw">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">encontrados</span>) <span class="kw">if</span> <span class="vr">encontrados</span> <span class="kw">else</span> <span class="st">"Nenhum produto encontrado."</span>
-<span class="kw">if</span> __name__ <span class="op">==</span> <span class="st">"__main__"</span>:
+    <span class="kw2">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">encontrados</span>) <span class="kw2">if</span> <span class="vr">encontrados</span> <span class="kw2">else</span> <span class="st">"Nenhum produto encontrado."</span>
+<span class="kw2">if</span> __name__ <span class="op">==</span> <span class="key">"__main__"</span>:
     <span class="vr">testes</span> <span class="op">=</span> [
         <span class="st">"Qual o preco do notebook?"</span>,
         <span class="st">"Meu nome e Ana"</span>,
@@ -187,10 +110,10 @@ footer a{color:inherit;text-decoration:none;}
         <span class="st">"Boa tarde, pode me ajudar?"</span>,
         <span class="st">"Quanto custa o monitor?"</span>,
     ]
-    <span class="kw">for</span> <span class="vr">msg</span> <span class="kw">in</span> <span class="vr">testes</span>:
+    <span class="kw2">for</span> <span class="vr">msg</span> <span class="kw2">in</span> <span class="vr">testes</span>:
         <span class="vr">cat</span> <span class="op">=</span> <span class="fn">classificar</span>(<span class="vr">msg</span>)
         <span class="fn">print</span>(<span class="st">f"[{cat}] {msg}"</span>)
-        <span class="kw">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="st">"busca_produto"</span>:
+        <span class="kw2">if</span> <span class="vr">cat</span> <span class="op">==</span> <span class="key">"busca_produto"</span>:
             <span class="fn">print</span>(<span class="st">"  Dados:"</span>, <span class="fn">buscar_produto</span>(<span class="vr">msg</span>))
         <span class="fn">print</span>()</pre>
 </div>
@@ -221,121 +144,121 @@ footer a{color:inherit;text-decoration:none;}
     <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
     <div class="cfname">063_Exercicio.py</div>
   </div>
-  <pre><span class="kw">import</span> warnings, urllib3, unicodedata, httpx, os
-<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
-<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
-<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+  <pre><span class="kw2">import</span> <span class="lib">warnings</span>, urllib3, unicodedata, httpx, os
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="lib">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi.middleware</span>.cors <span class="kw2">import</span> <span class="lib">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="lib">BaseModel</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
 urllib3.<span class="fn">disable_warnings</span>()
 <span class="fn">load_dotenv</span>()
-<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
-<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
-<span class="vr">PRODUTOS</span> <span class="op">=</span> {
-    <span class="st">"notebook pro"</span>:    {<span class="st">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"16GB RAM, SSD 512GB"</span>},
-    <span class="st">"mouse sem fio"</span>:   {<span class="st">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"Ergonomico 2.4GHz"</span>},
-    <span class="st">"teclado mecanico"</span>:{<span class="st">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="st">"estoque"</span>: <span class="st">"esgotado"</span>,   <span class="st">"descricao"</span>: <span class="st">"Switch azul"</span>},
-    <span class="st">"monitor 24"</span>:      {<span class="st">"preco"</span>: <span class="st">"R$ 1.200"</span>,  <span class="st">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="st">"descricao"</span>: <span class="st">"Full HD 24 pol"</span>},
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="cls">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(<span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>))
+<span class="const">PRODUTOS</span> <span class="op">=</span> {
+    <span class="key">"notebook pro"</span>:    {<span class="key">"preco"</span>: <span class="st">"R$ 4.500"</span>, <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"16GB RAM, SSD 512GB"</span>},
+    <span class="key">"mouse sem fio"</span>:   {<span class="key">"preco"</span>: <span class="st">"R$ 120"</span>,   <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"Ergonomico 2.4GHz"</span>},
+    <span class="key">"teclado mecanico"</span>:{<span class="key">"preco"</span>: <span class="st">"R$ 350"</span>,   <span class="key">"estoque"</span>: <span class="st">"esgotado"</span>,   <span class="key">"descricao"</span>: <span class="st">"Switch azul"</span>},
+    <span class="key">"monitor 24"</span>:      {<span class="key">"preco"</span>: <span class="st">"R$ 1.200"</span>,  <span class="key">"estoque"</span>: <span class="st">"disponivel"</span>, <span class="key">"descricao"</span>: <span class="st">"Full HD 24 pol"</span>},
 }
-<span class="vr">SYSTEM_BASE</span> <span class="op">=</span> (
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> (
     <span class="st">"Voce e o assistente da TechShop. "</span>
     <span class="st">"Responda sempre em portugues, de forma clara e amigavel. "</span>
     <span class="st">"Se nao tiver certeza de uma informacao, diga que nao sabe, nunca invente."</span>
 )
-<span class="vr">usuarios</span>: <span class="bi">dict</span> <span class="op">=</span> {}
-<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+<span class="vr">usuarios</span>: <span class="cls">dict</span> <span class="op">=</span> {}
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span>.<span class="fn">lower</span>()
-    <span class="vr">texto</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
-    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
-<span class="kw">def</span> <span class="fn">pegar_depois</span>(<span class="vr">texto_original</span>: <span class="bi">str</span>, <span class="vr">texto_normalizado</span>: <span class="bi">str</span>, <span class="vr">marcador</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="vr">texto</span> <span class="op">=</span> <span class="lib">unicodedata</span>.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">texto</span>)
+    <span class="kw2">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">texto</span> <span class="kw2">if</span> <span class="lib">unicodedata</span>.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+<span class="kw">def</span> <span class="fn">pegar_depois</span>(<span class="vr">texto_original</span>: <span class="cls">str</span>, <span class="vr">texto_normalizado</span>: <span class="cls">str</span>, <span class="vr">marcador</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">posicao</span> <span class="op">=</span> <span class="vr">texto_normalizado</span>.<span class="fn">find</span>(<span class="vr">marcador</span>)
-    <span class="kw">if</span> <span class="vr">posicao</span> <span class="op">==</span> <span class="op">-</span><span class="nm">1</span>:
-        <span class="kw">return</span> <span class="st">""</span>
+    <span class="kw2">if</span> <span class="vr">posicao</span> <span class="op">==</span> <span class="op">-</span><span class="nm">1</span>:
+        <span class="kw2">return</span> <span class="st">""</span>
     <span class="vr">inicio</span> <span class="op">=</span> <span class="vr">posicao</span> <span class="op">+</span> <span class="fn">len</span>(<span class="vr">marcador</span>)
-    <span class="kw">return</span> <span class="vr">texto_original</span>[<span class="vr">inicio</span>:].<span class="fn">strip</span>(<span class="st">".,!?:; "</span>)
-<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">dict</span>:
-    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">not in</span> <span class="vr">usuarios</span>:
+    <span class="kw2">return</span> <span class="vr">texto_original</span>[<span class="vr">inicio</span>:].<span class="fn">strip</span>(<span class="st">".,!?:; "</span>)
+<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">dict</span>:
+    <span class="kw2">if</span> <span class="vr">uid</span> <span class="kw2">not in</span> <span class="vr">usuarios</span>:
         <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {
-            <span class="st">"perfil"</span>: {<span class="st">"nome"</span>: <span class="kw">None</span>},
-            <span class="st">"mensagens"</span>: [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">SYSTEM_BASE</span>}]
+            <span class="key">"perfil"</span>: {<span class="key">"nome"</span>: <span class="bi">None</span>},
+            <span class="key">"mensagens"</span>: [{<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="const">SYSTEM_BASE</span>}]
         }
-    <span class="kw">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
-<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="kw2">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
+<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"meu nome"</span>, <span class="st">"eu me chamo"</span>, <span class="st">"quem eu sou"</span>]):
-        <span class="kw">return</span> <span class="st">"dados_usuario"</span>
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"preco"</span>, <span class="st">"valor"</span>, <span class="st">"custa"</span>, <span class="st">"estoque"</span>, <span class="st">"disponivel"</span>,
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"meu nome"</span>, <span class="st">"eu me chamo"</span>, <span class="st">"quem eu sou"</span>]):
+        <span class="kw2">return</span> <span class="st">"dados_usuario"</span>
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"preco"</span>, <span class="st">"valor"</span>, <span class="st">"custa"</span>, <span class="st">"estoque"</span>, <span class="st">"disponivel"</span>,
                                         <span class="st">"notebook"</span>, <span class="st">"mouse"</span>, <span class="st">"teclado"</span>, <span class="st">"monitor"</span>]):
-        <span class="kw">return</span> <span class="st">"busca_produto"</span>
-    <span class="kw">return</span> <span class="st">"conversa"</span>
-<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+        <span class="kw2">return</span> <span class="st">"busca_produto"</span>
+    <span class="kw2">return</span> <span class="st">"conversa"</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
     <span class="vr">encontrados</span> <span class="op">=</span> [
         <span class="st">f"{nome.title()}: {d['preco']}, {d['estoque']}, {d['descricao']}"</span>
-        <span class="kw">for</span> <span class="vr">nome</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">PRODUTOS</span>.<span class="fn">items</span>()
-        <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="fn">normalizar</span>(<span class="vr">nome</span>).<span class="fn">split</span>())
+        <span class="kw2">for</span> <span class="vr">nome</span>, <span class="vr">d</span> <span class="kw2">in</span> <span class="const">PRODUTOS</span>.<span class="fn">items</span>()
+        <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="fn">normalizar</span>(<span class="vr">nome</span>).<span class="fn">split</span>())
     ]
-    <span class="kw">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">encontrados</span>) <span class="kw">if</span> <span class="vr">encontrados</span> <span class="kw">else</span> <span class="st">"Produto nao encontrado no catalogo."</span>
-<span class="kw">class</span> <span class="fn">Pergunta</span>(<span class="fn">BaseModel</span>):
-    <span class="vr">texto</span>: <span class="bi">str</span>
-    <span class="vr">user_id</span>: <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
-<span class="dc">@app.get</span>(<span class="st">"/"</span>)
-<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">"TechShop API no ar!"</span>}
-<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
-<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="fn">Pergunta</span>):
-    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
+    <span class="kw2">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">encontrados</span>) <span class="kw2">if</span> <span class="vr">encontrados</span> <span class="kw2">else</span> <span class="st">"Produto nao encontrado no catalogo."</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span>(<span class="cls">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="cls">str</span>
+    <span class="vr">user_id</span>: <span class="cls">str</span> <span class="op">|</span> <span class="bi">None</span> <span class="op">=</span> <span class="st">"default"</span>
+<span class="dec">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw2">return</span> {<span class="key">"mensagem"</span>: <span class="st">"TechShop API no ar!"</span>}
+<span class="dec">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="cls">Pergunta</span>):
+    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="attr">user_id</span> <span class="kw2">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
     <span class="vr">usuario</span> <span class="op">=</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>)
     <span class="vr">perfil</span> <span class="op">=</span> <span class="vr">usuario</span>[<span class="st">"perfil"</span>]
     <span class="vr">mensagens</span> <span class="op">=</span> <span class="vr">usuario</span>[<span class="st">"mensagens"</span>]
-    <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="vr">texto</span>.<span class="fn">strip</span>()
-    <span class="kw">if not</span> <span class="vr">texto_usuario</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">""</span>}
+    <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="attr">texto</span>.<span class="fn">strip</span>()
+    <span class="kw2">if not</span> <span class="vr">texto_usuario</span>: <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">""</span>}
     <span class="vr">categoria</span> <span class="op">=</span> <span class="fn">classificar</span>(<span class="vr">texto_usuario</span>)
     <span class="cm"># caminho 1: dados do usuario</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"dados_usuario"</span>:
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="key">"dados_usuario"</span>:
         <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto_usuario</span>)
-        <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">t</span>:
+        <span class="kw2">if</span> <span class="st">"meu nome e"</span> <span class="kw2">in</span> <span class="vr">t</span>:
             <span class="vr">nome</span> <span class="op">=</span> <span class="fn">pegar_depois</span>(<span class="vr">texto_usuario</span>, <span class="vr">t</span>, <span class="st">"meu nome e"</span>).<span class="fn">title</span>()
             <span class="vr">perfil</span>[<span class="st">"nome"</span>] <span class="op">=</span> <span class="vr">nome</span>
-            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Prazer, {nome}! Como posso ajudar?"</span>}
-        <span class="kw">if</span> <span class="st">"quem eu sou"</span> <span class="kw">in</span> <span class="vr">t</span>:
-            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Voce e {perfil['nome']}."</span> <span class="kw">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>] <span class="kw">else</span> <span class="st">"Ainda nao sei seu nome."</span>}
+            <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">f"Prazer, {nome}! Como posso ajudar?"</span>}
+        <span class="kw2">if</span> <span class="st">"quem eu sou"</span> <span class="kw2">in</span> <span class="vr">t</span>:
+            <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">f"Voce e {perfil['nome']}."</span> <span class="kw2">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>] <span class="kw2">else</span> <span class="st">"Ainda nao sei seu nome."</span>}
     <span class="cm"># caminho 2: busca de produto com dados reais</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"busca_produto"</span>:
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="key">"busca_produto"</span>:
         <span class="vr">dados</span> <span class="op">=</span> <span class="fn">buscar_produto</span>(<span class="vr">texto_usuario</span>)
         <span class="vr">prompt_produto</span> <span class="op">=</span> (
             <span class="st">f"{SYSTEM_BASE} Responda usando APENAS as informacoes abaixo. "</span>
             <span class="st">"Se a informacao nao estiver nos dados, diga que nao tem essa informacao.\n\n"</span>
             <span class="st">f"Dados disponiveis:\n{dados}"</span>
         )
-        <span class="kw">try</span>:
-            <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-                <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
-                <span class="vr">messages</span><span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">prompt_produto</span>},
-                           {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto_usuario</span>}],
-                <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.1</span>
+        <span class="kw2">try</span>:
+            <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+                <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>,
+                <span class="arg">messages</span><span class="op">=</span>[{<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="vr">prompt_produto</span>},
+                           {<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">texto_usuario</span>}],
+                <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.1</span>
             )
-            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">resp</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>}
-        <span class="kw">except</span> <span class="fn">Exception</span>:
-            <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">"Nao consegui consultar o catalogo agora."</span>}
+            <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="vr">resp</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>}
+        <span class="kw2">except</span> <span class="cls">Exception</span>:
+            <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">"Nao consegui consultar o catalogo agora."</span>}
     <span class="cm"># caminho 3: conversa livre com historico</span>
-    <span class="vr">ctx</span> <span class="op">=</span> <span class="vr">SYSTEM_BASE</span>
-    <span class="kw">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {perfil['nome']}."</span>
+    <span class="vr">ctx</span> <span class="op">=</span> <span class="const">SYSTEM_BASE</span>
+    <span class="kw2">if</span> <span class="vr">perfil</span>[<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {perfil['nome']}."</span>
     <span class="vr">mensagens</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">ctx</span>
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto_usuario</span>})
-    <span class="kw">try</span>:
-        <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>, <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span>, <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">texto_usuario</span>})
+    <span class="kw2">try</span>:
+        <span class="vr">resp</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>, <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span>, <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.4</span>
         )
-        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resp</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-    <span class="kw">except</span> <span class="fn">Exception</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resp</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+    <span class="kw2">except</span> <span class="cls">Exception</span>:
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Servico temporariamente indisponivel."</span>
-    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="nm">10</span>:
+    <span class="vr">mensagens</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
+    <span class="kw2">if</span> <span class="fn">len</span>(<span class="vr">mensagens</span>) <span class="op">></span> <span class="nm">10</span>:
         <span class="vr">mensagens</span> <span class="op">=</span> [<span class="vr">mensagens</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">mensagens</span>[<span class="op">-</span><span class="nm">9</span>:]
     <span class="vr">usuario</span>[<span class="st">"mensagens"</span>] <span class="op">=</span> <span class="vr">mensagens</span>
-    <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">texto</span>}</pre>
+    <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="vr">texto</span>}</pre>
 </div>
 
 <table class="code-ann">
@@ -344,7 +267,7 @@ urllib3.<span class="fn">disable_warnings</span>()
   <tr><td>mensagens isoladas para produto</td><td><strong>Histórico separado por caminho.</strong> A busca de produto não mistura com o histórico de conversa, evitando que contexto irrelevante confunda o modelo.</td></tr>
   <tr><td>temperature=0.1 vs 0.4</td><td><strong>Temperatura diferente para cada caminho.</strong> Para produto, temperatura baixa garante fidelidade aos dados. Para conversa livre, temperatura maior deixa as respostas mais naturais.</td></tr>
 </table>
-<div class="downloads" style="margin:16px 0 28px;">
+<div class="downloads u-style-028">
   <div class="dl-grid">
     <a class="dl-item" href="arquivos/063_index.html" target="_blank">
       <span class="dl-icon">🌐</span>
@@ -389,31 +312,31 @@ urllib3.<span class="fn">disable_warnings</span>()
     <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
     <div class="cfname">064_Exercicio.py</div>
   </div>
-  <pre><span class="kw">import</span> <span class="vr">warnings</span>
-<span class="kw">import</span> <span class="vr">urllib3</span>
-<span class="kw">import</span> <span class="vr">unicodedata</span>
-<span class="kw">import</span> <span class="vr">httpx</span>
-<span class="kw">import</span> <span class="vr">os</span>
-<span class="kw">from</span> <span class="vr">fastapi</span> <span class="kw">import</span> <span class="vr">FastAPI</span>
-<span class="kw">from</span> <span class="vr">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw">import</span> <span class="vr">CORSMiddleware</span>
-<span class="kw">from</span> <span class="vr">pydantic</span> <span class="kw">import</span> <span class="vr">BaseModel</span>
-<span class="kw">from</span> <span class="vr">openai</span> <span class="kw">import</span> <span class="vr">OpenAI</span>
-<span class="kw">from</span> <span class="vr">dotenv</span> <span class="kw">import</span> <span class="vr">load_dotenv</span>
+  <pre><span class="kw2">import</span> <span class="vr">warnings</span>
+<span class="kw2">import</span> <span class="vr">urllib3</span>
+<span class="kw2">import</span> <span class="vr">unicodedata</span>
+<span class="kw2">import</span> <span class="vr">httpx</span>
+<span class="kw2">import</span> <span class="vr">os</span>
+<span class="kw2">from</span> <span class="vr">fastapi</span> <span class="kw2">import</span> <span class="vr">FastAPI</span>
+<span class="kw2">from</span> <span class="vr">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw2">import</span> <span class="vr">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="vr">pydantic</span> <span class="kw2">import</span> <span class="vr">BaseModel</span>
+<span class="kw2">from</span> <span class="vr">openai</span> <span class="kw2">import</span> <span class="vr">OpenAI</span>
+<span class="kw2">from</span> <span class="vr">dotenv</span> <span class="kw2">import</span> <span class="vr">load_dotenv</span>
 <span class="vr">warnings</span><span class="op">.</span><span class="fn">filterwarnings</span><span class="op">(</span><span class="st">"ignore"</span><span class="op">)</span>
 <span class="vr">urllib3</span><span class="op">.</span><span class="fn">disable_warnings</span><span class="op">(</span><span class="op">)</span>
 <span class="fn">load_dotenv</span><span class="op">(</span><span class="op">)</span>
-<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
 <span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
     <span class="vr">CORSMiddleware</span><span class="op">,</span>
     <span class="vr">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
     <span class="vr">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
     <span class="vr">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
 <span class="op">)</span>
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span><span class="op">(</span>
-    <span class="vr">api_key</span><span class="op">=</span><span class="vr">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">,</span>
-    <span class="vr">http_client</span><span class="op">=</span><span class="vr">httpx</span><span class="op">.</span><span class="fn">Client</span><span class="op">(</span><span class="vr">verify</span><span class="op">=</span><span class="kw">False</span><span class="op">)</span>
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span>
+    <span class="arg">api_key</span><span class="op">=</span><span class="vr">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">,</span>
+    <span class="arg">http_client</span><span class="op">=</span><span class="vr">httpx</span><span class="op">.</span><span class="cls">Client</span><span class="op">(</span><span class="arg">verify</span><span class="op">=</span><span class="bi">False</span><span class="op">)</span>
 <span class="op">)</span>
-<span class="vr">PRODUTOS</span> <span class="op">=</span> <span class="op">{</span>
+<span class="const">PRODUTOS</span> <span class="op">=</span> <span class="op">{</span>
     <span class="st">"notebook pro"</span><span class="op">:</span> <span class="op">{</span>
         <span class="st">"preco"</span><span class="op">:</span> <span class="st">"R$ 4.500"</span><span class="op">,</span>
         <span class="st">"estoque"</span><span class="op">:</span> <span class="st">"disponível"</span><span class="op">,</span>
@@ -435,33 +358,33 @@ urllib3.<span class="fn">disable_warnings</span>()
         <span class="st">"descricao"</span><span class="op">:</span> <span class="st">"Monitor Full HD de 24 polegadas"</span>
     <span class="op">}</span><span class="op">,</span>
 <span class="op">}</span>
-<span class="vr">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
     <span class="st">"Você é o assistente da TechShop. "</span>
     <span class="st">"Responda em português, com clareza e objetividade. "</span>
     <span class="st">"Quando houver dados do catálogo, use esses dados como fonte principal. "</span>
     <span class="st">"Nunca invente preço, estoque, prazo ou característica técnica."</span>
 <span class="op">)</span>
-<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span>
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">normalize</span><span class="op">(</span><span class="st">"NFD"</span><span class="op">,</span> <span class="vr">texto</span><span class="op">)</span>
-    <span class="kw">return</span> <span class="st">""</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
-        <span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span>
-        <span class="kw">if</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">c</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"Mn"</span>
+    <span class="kw2">return</span> <span class="st">""</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
+        <span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">texto</span>
+        <span class="kw2">if</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">c</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"Mn"</span>
     <span class="op">)</span>
-<span class="kw">def</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+<span class="kw">def</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span>
     <span class="vr">encontrados</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>
-    <span class="kw">for</span> <span class="vr">nome</span><span class="op">,</span> <span class="vr">dados</span> <span class="kw">in</span> <span class="vr">PRODUTOS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">nome</span><span class="op">,</span> <span class="vr">dados</span> <span class="kw2">in</span> <span class="const">PRODUTOS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
         <span class="vr">palavras_produto</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">nome</span><span class="op">)</span><span class="op">.</span><span class="fn">split</span><span class="op">(</span><span class="op">)</span>
-        <span class="kw">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">palavras_produto</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">palavras_produto</span><span class="op">)</span><span class="op">:</span>
             <span class="vr">encontrados</span><span class="op">.</span><span class="fn">append</span><span class="op">(</span>
                 f"<span class="op">{</span><span class="vr">nome</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span><span class="op">}</span>: <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'preco'</span><span class="op">]</span><span class="op">}</span>, "
                 f"<span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'estoque'</span><span class="op">]</span><span class="op">}</span>, <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'descricao'</span><span class="op">]</span><span class="op">}</span>"
             <span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">encontrados</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"\n"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="vr">encontrados</span><span class="op">)</span>
-    <span class="kw">return</span> <span class="st">""</span>
-<span class="kw">def</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">encontrados</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"\n"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="vr">encontrados</span><span class="op">)</span>
+    <span class="kw2">return</span> <span class="st">""</span>
+<span class="kw">def</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span>
     <span class="vr">palavras_produto</span> <span class="op">=</span> <span class="op">[</span>
         <span class="st">"preco"</span><span class="op">,</span> <span class="st">"valor"</span><span class="op">,</span> <span class="st">"custa"</span><span class="op">,</span> <span class="st">"estoque"</span><span class="op">,</span> <span class="st">"disponivel"</span><span class="op">,</span>
@@ -471,61 +394,61 @@ urllib3.<span class="fn">disable_warnings</span>()
         <span class="st">"melhor"</span><span class="op">,</span> <span class="st">"recomenda"</span><span class="op">,</span> <span class="st">"vale a pena"</span><span class="op">,</span> <span class="st">"indicado"</span><span class="op">,</span>
         <span class="st">"bom para"</span><span class="op">,</span> <span class="st">"qual escolher"</span>
     <span class="op">]</span>
-    <span class="vr">tem_produto</span> <span class="op">=</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="vr">palavras_produto</span><span class="op">)</span>
-    <span class="vr">tem_opiniao</span> <span class="op">=</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="vr">palavras_opiniao</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">tem_produto</span> <span class="kw">and</span> <span class="vr">tem_opiniao</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"produto_com_opiniao"</span>
-    <span class="kw">if</span> <span class="vr">tem_produto</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"produto"</span>
-    <span class="kw">return</span> <span class="st">"conversa"</span>
-<span class="kw">class</span> <span class="fn">Pergunta</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
-    <span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="vr">tem_produto</span> <span class="op">=</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="vr">palavras_produto</span><span class="op">)</span>
+    <span class="vr">tem_opiniao</span> <span class="op">=</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="vr">palavras_opiniao</span><span class="op">)</span>
+    <span class="kw2">if</span> <span class="vr">tem_produto</span> <span class="kw2">and</span> <span class="vr">tem_opiniao</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"produto_com_opiniao"</span>
+    <span class="kw2">if</span> <span class="vr">tem_produto</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"produto"</span>
+    <span class="kw2">return</span> <span class="st">"conversa"</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span>
 <span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">get</span><span class="op">(</span><span class="st">"/"</span><span class="op">)</span>
 <span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
-    <span class="kw">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"API híbrida da TechShop no ar!"</span><span class="op">}</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"API híbrida da TechShop no ar!"</span><span class="op">}</span>
 <span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">post</span><span class="op">(</span><span class="st">"/chat"</span><span class="op">)</span>
 <span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="vr">pergunta</span><span class="op">:</span> <span class="vr">Pergunta</span><span class="op">)</span><span class="op">:</span>
     <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span><span class="op">.</span><span class="vr">texto</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="kw">not</span> <span class="vr">texto_usuario</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">""</span><span class="op">}</span>
+    <span class="kw2">if</span> <span class="kw2">not</span> <span class="vr">texto_usuario</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">""</span><span class="op">}</span>
     <span class="vr">categoria</span> <span class="op">=</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span>
     <span class="vr">dados</span> <span class="op">=</span> <span class="fn">buscar_produto</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="kw">in</span> <span class="op">[</span><span class="st">"produto"</span><span class="op">,</span> <span class="st">"produto_com_opiniao"</span><span class="op">]</span><span class="op">:</span>
-        <span class="kw">if</span> <span class="vr">dados</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="kw2">in</span> <span class="op">[</span><span class="st">"produto"</span><span class="op">,</span> <span class="st">"produto_com_opiniao"</span><span class="op">]</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">dados</span><span class="op">:</span>
             <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
-                f"<span class="op">{</span><span class="vr">SYSTEM_BASE</span><span class="op">}</span>\n\n"
+                f"<span class="op">{</span><span class="const">SYSTEM_BASE</span><span class="op">}</span>\n\n"
                 <span class="st">"Dados encontrados no catálogo:\n"</span>
                 f"<span class="op">{</span><span class="vr">dados</span><span class="op">}</span>\n\n"
                 <span class="st">"Responda usando esses dados. "</span>
                 <span class="st">"Se a pergunta pedir recomendação, explique a recomendação com base nos dados encontrados."</span>
             <span class="op">)</span>
             <span class="vr">temperatura</span> <span class="op">=</span> <span class="nm">0.2</span>
-        <span class="kw">else</span><span class="op">:</span>
+        <span class="kw2">else</span><span class="op">:</span>
             <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
-                f"<span class="op">{</span><span class="vr">SYSTEM_BASE</span><span class="op">}</span>\n\n"
+                f"<span class="op">{</span><span class="const">SYSTEM_BASE</span><span class="op">}</span>\n\n"
                 <span class="st">"Nenhum produto foi encontrado no catálogo. "</span>
                 <span class="st">"Responda de forma geral, sem inventar preço, estoque ou característica específica."</span>
             <span class="op">)</span>
             <span class="vr">temperatura</span> <span class="op">=</span> <span class="nm">0.5</span>
-    <span class="kw">else</span><span class="op">:</span>
-        <span class="vr">contexto</span> <span class="op">=</span> <span class="vr">SYSTEM_BASE</span>
+    <span class="kw2">else</span><span class="op">:</span>
+        <span class="vr">contexto</span> <span class="op">=</span> <span class="const">SYSTEM_BASE</span>
         <span class="vr">temperatura</span> <span class="op">=</span> <span class="nm">0.4</span>
-    <span class="kw">try</span><span class="op">:</span>
+    <span class="kw2">try</span><span class="op">:</span>
         <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="vr">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
-            <span class="vr">messages</span><span class="op">=</span><span class="op">[</span>
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
+            <span class="arg">messages</span><span class="op">=</span><span class="op">[</span>
                 <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"system"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">contexto</span><span class="op">}</span><span class="op">,</span>
                 <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"user"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">texto_usuario</span><span class="op">}</span>
             <span class="op">]</span><span class="op">,</span>
-            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">120</span><span class="op">,</span>
-            <span class="vr">temperature</span><span class="op">=</span><span class="vr">temperatura</span>
+            <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">120</span><span class="op">,</span>
+            <span class="arg">temperature</span><span class="op">=</span><span class="vr">temperatura</span>
         <span class="op">)</span>
         <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span>
-    <span class="kw">except</span> <span class="vr">Exception</span><span class="op">:</span>
+    <span class="kw2">except</span> <span class="vr">Exception</span><span class="op">:</span>
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Serviço temporariamente indisponível."</span>
-    <span class="kw">return</span> <span class="op">{</span>
+    <span class="kw2">return</span> <span class="op">{</span>
         <span class="st">"categoria"</span><span class="op">:</span> <span class="vr">categoria</span><span class="op">,</span>
-        <span class="st">"dados_usados"</span><span class="op">:</span> <span class="vr">dados</span> <span class="kw">if</span> <span class="vr">dados</span> <span class="kw">else</span> <span class="kw">None</span><span class="op">,</span>
+        <span class="st">"dados_usados"</span><span class="op">:</span> <span class="vr">dados</span> <span class="kw2">if</span> <span class="vr">dados</span> <span class="kw2">else</span> <span class="bi">None</span><span class="op">,</span>
         <span class="st">"resposta"</span><span class="op">:</span> <span class="vr">texto</span>
     <span class="op">}</span></pre>
 </div>
@@ -539,7 +462,7 @@ urllib3.<span class="fn">disable_warnings</span>()
 </table>
 
 
-<div class="downloads" style="margin:16px 0 28px;">
+<div class="downloads u-style-028">
   <div class="dl-grid">
     <a class="dl-item" href="arquivos/064_index.html" target="_blank">
       <span class="dl-icon">🌐</span>
@@ -566,56 +489,56 @@ urllib3.<span class="fn">disable_warnings</span>()
 <div class="exercise">
   <span class="ex-tag">⚡ exercício 065 - classificador para um tema à sua escolha</span>
   <h3>Crie um sistema de classificação para um domínio diferente <span class="ex-diff diff-1">iniciante</span></h3>
-  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">
+  <p class="u-style-024">
 Crie um chatbot do zero, para um tema à sua escolha, como restaurante, clínica ou academia. Defina pelo menos três categorias de perguntas, cada uma com sua própria lista de palavras-chave. Crie uma base de dados local com pelo menos quatro entradas. Implemente <code>classificar()</code> e <code>buscar()</code> e teste com dez mensagens diferentes no terminal, mostrando a categoria e os dados retornados.</p>
   <div class="ex-ans">
     <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
     <div class="ex-ans-body">
-      <div class="cblock" style="margin-top:14px;">
+      <div class="cblock u-style-025">
         <div class="cblock-head">
           <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
           <div class="cfname">065_Exercicio.py</div>
         </div>
-        <pre><span class="kw">import</span> unicodedata
-<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+        <pre><span class="kw2">import</span> <span class="lib">unicodedata</span>
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="vr">t</span>.<span class="fn">lower</span>()
-    <span class="vr">t</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>)
-    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+    <span class="vr">t</span> <span class="op">=</span> <span class="lib">unicodedata</span>.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>)
+    <span class="kw2">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">if</span> <span class="lib">unicodedata</span>.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
 <span class="cm"># dominio: restaurante</span>
-<span class="vr">CARDAPIO</span> <span class="op">=</span> {
-    <span class="st">"frango grelhado"</span>: {<span class="st">"preco"</span>: <span class="st">"R$ 38"</span>, <span class="st">"desc"</span>: <span class="st">"Com arroz, feijao e salada"</span>, <span class="st">"ok"</span>: <span class="kw">True</span>},
-    <span class="st">"file mignon"</span>:    {<span class="st">"preco"</span>: <span class="st">"R$ 65"</span>, <span class="st">"desc"</span>: <span class="st">"Ao molho com batatas"</span>,        <span class="st">"ok"</span>: <span class="kw">True</span>},
-    <span class="st">"risoto camarao"</span>: {<span class="st">"preco"</span>: <span class="st">"R$ 55"</span>, <span class="st">"desc"</span>: <span class="st">"Risoto cremoso"</span>,               <span class="st">"ok"</span>: <span class="kw">False</span>},
-    <span class="st">"lasanha bolonhesa"</span>: {<span class="st">"preco"</span>: <span class="st">"R$ 42"</span>, <span class="st">"desc"</span>: <span class="st">"Bolonhesa tradicional"</span>,       <span class="st">"ok"</span>: <span class="kw">True</span>},
+<span class="const">CARDAPIO</span> <span class="op">=</span> {
+    <span class="key">"frango grelhado"</span>: {<span class="key">"preco"</span>: <span class="st">"R$ 38"</span>, <span class="key">"desc"</span>: <span class="st">"Com arroz, feijao e salada"</span>, <span class="key">"ok"</span>: <span class="bi">True</span>},
+    <span class="key">"file mignon"</span>:    {<span class="key">"preco"</span>: <span class="st">"R$ 65"</span>, <span class="key">"desc"</span>: <span class="st">"Ao molho com batatas"</span>,        <span class="key">"ok"</span>: <span class="bi">True</span>},
+    <span class="key">"risoto camarao"</span>: {<span class="key">"preco"</span>: <span class="st">"R$ 55"</span>, <span class="key">"desc"</span>: <span class="st">"Risoto cremoso"</span>,               <span class="key">"ok"</span>: <span class="bi">False</span>},
+    <span class="key">"lasanha bolonhesa"</span>: {<span class="key">"preco"</span>: <span class="st">"R$ 42"</span>, <span class="key">"desc"</span>: <span class="st">"Bolonhesa tradicional"</span>,       <span class="key">"ok"</span>: <span class="bi">True</span>},
 }
-<span class="vr">HORARIOS</span> <span class="op">=</span> {<span class="st">"seg-sex"</span>: <span class="st">"12h-15h e 19h-23h"</span>, <span class="st">"sabado"</span>: <span class="st">"12h-23h"</span>, <span class="st">"domingo"</span>: <span class="st">"12h-16h"</span>}
-<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+<span class="const">HORARIOS</span> <span class="op">=</span> {<span class="key">"seg-sex"</span>: <span class="st">"12h-15h e 19h-23h"</span>, <span class="key">"sabado"</span>: <span class="st">"12h-23h"</span>, <span class="key">"domingo"</span>: <span class="st">"12h-16h"</span>}
+<span class="kw">def</span> <span class="fn">classificar</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"reserva"</span>, <span class="st">"mesa"</span>, <span class="st">"lugar"</span>]):   <span class="kw">return</span> <span class="st">"reserva"</span>
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"horario"</span>, <span class="st">"abre"</span>, <span class="st">"fecha"</span>]): <span class="kw">return</span> <span class="st">"horario"</span>
-    <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">g</span> <span class="kw">in</span> [<span class="st">"cardapio"</span>, <span class="st">"preco"</span>, <span class="st">"prato"</span>,
-                                        <span class="st">"frango"</span>, <span class="st">"file"</span>, <span class="st">"risoto"</span>, <span class="st">"lasanha"</span>]): <span class="kw">return</span> <span class="st">"cardapio"</span>
-    <span class="kw">return</span> <span class="st">"conversa"</span>
-<span class="kw">def</span> <span class="fn">buscar_prato</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"reserva"</span>, <span class="st">"mesa"</span>, <span class="st">"lugar"</span>]):   <span class="kw2">return</span> <span class="st">"reserva"</span>
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"horario"</span>, <span class="st">"abre"</span>, <span class="st">"fecha"</span>]): <span class="kw2">return</span> <span class="st">"horario"</span>
+    <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">g</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">g</span> <span class="kw2">in</span> [<span class="st">"cardapio"</span>, <span class="st">"preco"</span>, <span class="st">"prato"</span>,
+                                        <span class="st">"frango"</span>, <span class="st">"file"</span>, <span class="st">"risoto"</span>, <span class="st">"lasanha"</span>]): <span class="kw2">return</span> <span class="st">"cardapio"</span>
+    <span class="kw2">return</span> <span class="st">"conversa"</span>
+<span class="kw">def</span> <span class="fn">buscar_prato</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
     <span class="vr">r</span> <span class="op">=</span> [<span class="st">f"{n.title()}: {d['preco']} | {d['desc']} | {'disponivel' if d['ok'] else 'indisponivel'}"</span>
-         <span class="kw">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">CARDAPIO</span>.<span class="fn">items</span>() <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="fn">normalizar</span>(<span class="vr">n</span>).<span class="fn">split</span>())]
-    <span class="kw">if not</span> <span class="vr">r</span>: <span class="vr">r</span> <span class="op">=</span> [<span class="st">f"{n.title()}: {d['preco']}"</span> <span class="kw">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw">in</span> <span class="vr">CARDAPIO</span>.<span class="fn">items</span>()]
-    <span class="kw">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">r</span>)
-<span class="kw">def</span> <span class="fn">buscar_horario</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
+         <span class="kw2">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw2">in</span> <span class="const">CARDAPIO</span>.<span class="fn">items</span>() <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">p</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="fn">normalizar</span>(<span class="vr">n</span>).<span class="fn">split</span>())]
+    <span class="kw2">if not</span> <span class="vr">r</span>: <span class="vr">r</span> <span class="op">=</span> [<span class="st">f"{n.title()}: {d['preco']}"</span> <span class="kw2">for</span> <span class="vr">n</span>, <span class="vr">d</span> <span class="kw2">in</span> <span class="const">CARDAPIO</span>.<span class="fn">items</span>()]
+    <span class="kw2">return</span> <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="vr">r</span>)
+<span class="kw">def</span> <span class="fn">buscar_horario</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
-    <span class="kw">if</span> <span class="st">"sabado"</span> <span class="kw">in</span> <span class="vr">t</span>: <span class="kw">return</span> <span class="st">f"Sabado: {HORARIOS['sabado']}"</span>
-    <span class="kw">if</span> <span class="st">"domingo"</span> <span class="kw">in</span> <span class="vr">t</span>: <span class="kw">return</span> <span class="st">f"Domingo: {HORARIOS['domingo']}"</span>
-    <span class="kw">return</span> <span class="st">f"Seg-sex: {HORARIOS['seg-sex']} | Sab: {HORARIOS['sabado']} | Dom: {HORARIOS['domingo']}"</span>
-<span class="kw">if</span> __name__ <span class="op">==</span> <span class="st">"__main__"</span>:
+    <span class="kw2">if</span> <span class="st">"sabado"</span> <span class="kw2">in</span> <span class="vr">t</span>: <span class="kw2">return</span> <span class="st">f"Sabado: {HORARIOS['sabado']}"</span>
+    <span class="kw2">if</span> <span class="st">"domingo"</span> <span class="kw2">in</span> <span class="vr">t</span>: <span class="kw2">return</span> <span class="st">f"Domingo: {HORARIOS['domingo']}"</span>
+    <span class="kw2">return</span> <span class="st">f"Seg-sex: {HORARIOS['seg-sex']} | Sab: {HORARIOS['sabado']} | Dom: {HORARIOS['domingo']}"</span>
+<span class="kw2">if</span> __name__ <span class="op">==</span> <span class="key">"__main__"</span>:
     <span class="vr">testes</span> <span class="op">=</span> [<span class="st">"Qual o preco do frango?"</span>, <span class="st">"Que horas abre?"</span>, <span class="st">"Quero reservar mesa"</span>,
               <span class="st">"Tem lasanha hoje?"</span>, <span class="st">"O que voces servem?"</span>, <span class="st">"Aceitam cartao?"</span>,
               <span class="st">"Funciona domingo?"</span>, <span class="st">"Tem risoto?"</span>, <span class="st">"Horario de sabado?"</span>, <span class="st">"Boa tarde!"</span>]
-    <span class="kw">for</span> <span class="vr">m</span> <span class="kw">in</span> <span class="vr">testes</span>:
+    <span class="kw2">for</span> <span class="vr">m</span> <span class="kw2">in</span> <span class="vr">testes</span>:
         <span class="vr">c</span> <span class="op">=</span> <span class="fn">classificar</span>(<span class="vr">m</span>)
         <span class="fn">print</span>(<span class="st">f"[{c}] {m}"</span>)
-        <span class="kw">if</span> <span class="vr">c</span> <span class="op">==</span> <span class="st">"cardapio"</span>: <span class="fn">print</span>(<span class="st">"  ->"</span>, <span class="fn">buscar_prato</span>(<span class="vr">m</span>))
-        <span class="kw">elif</span> <span class="vr">c</span> <span class="op">==</span> <span class="st">"horario"</span>: <span class="fn">print</span>(<span class="st">"  ->"</span>, <span class="fn">buscar_horario</span>(<span class="vr">m</span>))
+        <span class="kw2">if</span> <span class="vr">c</span> <span class="op">==</span> <span class="key">"cardapio"</span>: <span class="fn">print</span>(<span class="st">"  ->"</span>, <span class="fn">buscar_prato</span>(<span class="vr">m</span>))
+        <span class="kw2">elif</span> <span class="vr">c</span> <span class="op">==</span> <span class="key">"horario"</span>: <span class="fn">print</span>(<span class="st">"  ->"</span>, <span class="fn">buscar_horario</span>(<span class="vr">m</span>))
         <span class="fn">print</span>()</pre>
       </div>
     </div>
@@ -626,88 +549,88 @@ Crie um chatbot do zero, para um tema à sua escolha, como restaurante, clínica
 <div class="exercise">
   <span class="ex-tag">⚡ exercício 066 - chatbot com FAQ e fallback para IA</span>
   <h3>Crie um chatbot que responde perguntas frequentes direto e usa a IA só quando precisa <span class="ex-diff diff-2">médio</span></h3>
-  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">
+  <p class="u-style-024">
 Crie um chatbot do zero. Defina um dicionário <code>FAQ</code> com pelo menos seis perguntas frequentes mapeadas para respostas prontas, como horários, endereço, formas de pagamento e política de troca. Implemente <code>buscar_faq(texto)</code> que verifica se a mensagem contém palavras de alguma pergunta do FAQ e retorna a resposta direta, sem acionar a IA. Só quando o FAQ não tiver resposta o sistema chama a IA. O front-end envia o user_id e o sistema separa os usuários. Teste confirmando que perguntas do FAQ respondem instantaneamente.</p>
   <div class="ex-ans">
     <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
     <div class="ex-ans-body">
-      <div class="cblock" style="margin-top:14px;">
+      <div class="cblock u-style-025">
         <div class="cblock-head">
           <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
           <div class="cfname">066_Exercicio.py</div>
         </div>
-        <pre><span class="kw">import</span> warnings, urllib3, unicodedata, httpx, os
-<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
-<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
-<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
-<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
-<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
-warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>); urllib3.<span class="fn">disable_warnings</span>(); <span class="fn">load_dotenv</span>()
-<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span>()
-<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="fn">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span>(<span class="vr">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="vr">http_client</span><span class="op">=</span>httpx.<span class="fn">Client</span>(<span class="vr">verify</span><span class="op">=</span><span class="kw">False</span>))
-<span class="vr">FAQ</span> <span class="op">=</span> {
-    <span class="st">"horario|abre|fecha|funciona"</span>:    <span class="st">"Atendemos seg-sex 9h-18h e sab 9h-13h."</span>,
-    <span class="st">"endereco|localizacao|onde fica"</span>: <span class="st">"Rua das Flores, 123, Centro."</span>,
-    <span class="st">"pagamento|cartao|pix|parcelar"</span>:  <span class="st">"PIX, credito ate 12x e dinheiro."</span>,
-    <span class="st">"troca|devolucao|devolver"</span>:       <span class="st">"30 dias para troca com nota fiscal."</span>,
-    <span class="st">"entrega|frete|envio|prazo"</span>:      <span class="st">"Frete gratis acima de R$150. Prazo 3-7 dias."</span>,
-    <span class="st">"contato|whatsapp|telefone"</span>:     <span class="st">"WhatsApp: (11) 99999-9999"</span>,
+        <pre><span class="kw2">import</span> <span class="lib">warnings</span>, urllib3, unicodedata, httpx, os
+<span class="kw2">from</span> <span class="lib">fastapi</span> <span class="kw2">import</span> <span class="lib">FastAPI</span>
+<span class="kw2">from</span> <span class="lib">fastapi.middleware</span>.cors <span class="kw2">import</span> <span class="lib">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="lib">pydantic</span> <span class="kw2">import</span> <span class="lib">BaseModel</span>
+<span class="kw2">from</span> <span class="lib">openai</span> <span class="kw2">import</span> <span class="lib">OpenAI</span>
+<span class="kw2">from</span> <span class="lib">dotenv</span> <span class="kw2">import</span> <span class="lib">load_dotenv</span>
+<span class="lib">warnings</span>.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>); urllib3.<span class="fn">disable_warnings</span>(); <span class="fn">load_dotenv</span>()
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span>()
+<span class="vr">app</span>.<span class="fn">add_middleware</span>(<span class="cls">CORSMiddleware</span>, <span class="vr">allow_origins</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_methods</span><span class="op">=</span>[<span class="st">"*"</span>], <span class="vr">allow_headers</span><span class="op">=</span>[<span class="st">"*"</span>])
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span>(<span class="arg">api_key</span><span class="op">=</span>os.<span class="fn">getenv</span>(<span class="st">"OPENAI_API_KEY"</span>), <span class="arg">http_client</span><span class="op">=</span>httpx.<span class="cls">Client</span>(<span class="arg">verify</span><span class="op">=</span><span class="bi">False</span>))
+<span class="const">FAQ</span> <span class="op">=</span> {
+    <span class="key">"horario|abre|fecha|funciona"</span>:    <span class="st">"Atendemos seg-sex 9h-18h e sab 9h-13h."</span>,
+    <span class="key">"endereco|localizacao|onde fica"</span>: <span class="st">"Rua das Flores, 123, Centro."</span>,
+    <span class="key">"pagamento|cartao|pix|parcelar"</span>:  <span class="st">"PIX, credito ate 12x e dinheiro."</span>,
+    <span class="key">"troca|devolucao|devolver"</span>:       <span class="st">"30 dias para troca com nota fiscal."</span>,
+    <span class="key">"entrega|frete|envio|prazo"</span>:      <span class="st">"Frete gratis acima de R$150. Prazo 3-7 dias."</span>,
+    <span class="key">"contato|whatsapp|telefone"</span>:     <span class="st">"WhatsApp: (11) 99999-9999"</span>,
 }
-<span class="vr">SYSTEM_BASE</span> <span class="op">=</span> <span class="st">"Voce e o assistente da TechShop. Responda de forma clara. Se nao souber, encaminhe para atendente."</span>
-<span class="vr">usuarios</span>: <span class="bi">dict</span> <span class="op">=</span> {}
-<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span>:
-    <span class="vr">t</span> <span class="op">=</span> unicodedata.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>.<span class="fn">lower</span>())
-    <span class="kw">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">if</span> unicodedata.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
-<span class="kw">def</span> <span class="fn">buscar_faq</span>(<span class="vr">texto</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span>:
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> <span class="st">"Voce e o assistente da TechShop. Responda de forma clara. Se nao souber, encaminhe para atendente."</span>
+<span class="vr">usuarios</span>: <span class="cls">dict</span> <span class="op">=</span> {}
+<span class="kw">def</span> <span class="fn">normalizar</span>(<span class="vr">t</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span>:
+    <span class="vr">t</span> <span class="op">=</span> <span class="lib">unicodedata</span>.<span class="fn">normalize</span>(<span class="st">"NFD"</span>, <span class="vr">t</span>.<span class="fn">lower</span>())
+    <span class="kw2">return</span> <span class="st">""</span>.<span class="fn">join</span>(<span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">if</span> <span class="lib">unicodedata</span>.<span class="fn">category</span>(<span class="vr">c</span>) <span class="op">!=</span> <span class="st">"Mn"</span>)
+<span class="kw">def</span> <span class="fn">buscar_faq</span>(<span class="vr">texto</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">str</span> <span class="op">|</span> <span class="bi">None</span>:
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto</span>)
-    <span class="kw">for</span> <span class="vr">chaves</span>, <span class="vr">resp</span> <span class="kw">in</span> <span class="vr">FAQ</span>.<span class="fn">items</span>():
-        <span class="kw">if</span> <span class="fn">any</span>(<span class="vr">k</span> <span class="kw">in</span> <span class="vr">t</span> <span class="kw">for</span> <span class="vr">k</span> <span class="kw">in</span> <span class="vr">chaves</span>.<span class="fn">split</span>(<span class="st">"|"</span>)): <span class="kw">return</span> <span class="vr">resp</span>
-    <span class="kw">return</span> <span class="kw">None</span>
-<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="bi">str</span>) <span class="op">-></span> <span class="bi">dict</span>:
-    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">not in</span> <span class="vr">usuarios</span>:
-        <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {<span class="st">"perfil"</span>: {<span class="st">"nome"</span>: <span class="kw">None</span>}, <span class="st">"mensagens"</span>: [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="vr">SYSTEM_BASE</span>}]}
-    <span class="kw">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
-<span class="kw">class</span> <span class="fn">Pergunta</span>(<span class="fn">BaseModel</span>):
-    <span class="vr">texto</span>: <span class="bi">str</span>; <span class="vr">user_id</span>: <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
-<span class="dc">@app.get</span>(<span class="st">"/"</span>)
-<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw">return</span> {<span class="st">"mensagem"</span>: <span class="st">"TechShop FAQ no ar!"</span>}
-<span class="dc">@app.post</span>(<span class="st">"/chat"</span>)
-<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="fn">Pergunta</span>):
-    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
+    <span class="kw2">for</span> <span class="vr">chaves</span>, <span class="vr">resp</span> <span class="kw2">in</span> <span class="const">FAQ</span>.<span class="fn">items</span>():
+        <span class="kw2">if</span> <span class="fn">any</span>(<span class="vr">k</span> <span class="kw2">in</span> <span class="vr">t</span> <span class="kw2">for</span> <span class="vr">k</span> <span class="kw2">in</span> <span class="vr">chaves</span>.<span class="fn">split</span>(<span class="st">"|"</span>)): <span class="kw2">return</span> <span class="vr">resp</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>: <span class="cls">str</span>) <span class="op">-></span> <span class="cls">dict</span>:
+    <span class="kw2">if</span> <span class="vr">uid</span> <span class="kw2">not in</span> <span class="vr">usuarios</span>:
+        <span class="vr">usuarios</span>[<span class="vr">uid</span>] <span class="op">=</span> {<span class="key">"perfil"</span>: {<span class="key">"nome"</span>: <span class="bi">None</span>}, <span class="key">"mensagens"</span>: [{<span class="key">"role"</span>: <span class="st">"system"</span>, <span class="key">"content"</span>: <span class="const">SYSTEM_BASE</span>}]}
+    <span class="kw2">return</span> <span class="vr">usuarios</span>[<span class="vr">uid</span>]
+<span class="kw">class</span> <span class="cls">Pergunta</span>(<span class="cls">BaseModel</span>):
+    <span class="vr">texto</span>: <span class="cls">str</span>; <span class="vr">user_id</span>: <span class="cls">str</span> <span class="op">|</span> <span class="bi">None</span> <span class="op">=</span> <span class="st">"default"</span>
+<span class="dec">@app.get</span>(<span class="st">"/"</span>)
+<span class="kw">def</span> <span class="fn">raiz</span>(): <span class="kw2">return</span> {<span class="key">"mensagem"</span>: <span class="st">"TechShop FAQ no ar!"</span>}
+<span class="dec">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="vr">pergunta</span>: <span class="cls">Pergunta</span>):
+    <span class="vr">uid</span> <span class="op">=</span> (<span class="vr">pergunta</span>.<span class="attr">user_id</span> <span class="kw2">or</span> <span class="st">"default"</span>).<span class="fn">strip</span>()
     <span class="vr">u</span> <span class="op">=</span> <span class="fn">obter_usuario</span>(<span class="vr">uid</span>)
-    <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="vr">texto</span>.<span class="fn">strip</span>()
-    <span class="kw">if not</span> <span class="vr">texto_usuario</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">""</span>}
+    <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span>.<span class="attr">texto</span>.<span class="fn">strip</span>()
+    <span class="kw2">if not</span> <span class="vr">texto_usuario</span>: <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">""</span>}
     <span class="vr">t</span> <span class="op">=</span> <span class="fn">normalizar</span>(<span class="vr">texto_usuario</span>)
-    <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">t</span>:
+    <span class="kw2">if</span> <span class="st">"meu nome e"</span> <span class="kw2">in</span> <span class="vr">t</span>:
         <span class="vr">nome</span> <span class="op">=</span> <span class="vr">texto_usuario</span>.<span class="fn">split</span>(<span class="st">"meu nome e"</span>)[<span class="op">-</span><span class="nm">1</span>].<span class="fn">strip</span>().<span class="fn">title</span>()
         <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>] <span class="op">=</span> <span class="vr">nome</span>
-        <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="st">f"Prazer, {nome}! Como posso ajudar?"</span>}
+        <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="st">f"Prazer, {nome}! Como posso ajudar?"</span>}
     <span class="cm"># FAQ primeiro, sem acionar a IA</span>
     <span class="vr">faq</span> <span class="op">=</span> <span class="fn">buscar_faq</span>(<span class="vr">texto_usuario</span>)
-    <span class="kw">if</span> <span class="vr">faq</span>: <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">faq</span>}
+    <span class="kw2">if</span> <span class="vr">faq</span>: <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="vr">faq</span>}
     <span class="cm"># so chega aqui se o FAQ nao tinha resposta</span>
     <span class="vr">msgs</span> <span class="op">=</span> <span class="vr">u</span>[<span class="st">"mensagens"</span>]
-    <span class="vr">ctx</span> <span class="op">=</span> <span class="vr">SYSTEM_BASE</span>
-    <span class="kw">if</span> <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {u['perfil']['nome']}."</span>
+    <span class="vr">ctx</span> <span class="op">=</span> <span class="const">SYSTEM_BASE</span>
+    <span class="kw2">if</span> <span class="vr">u</span>[<span class="st">"perfil"</span>][<span class="st">"nome"</span>]: <span class="vr">ctx</span> <span class="op">+=</span> <span class="st">f" O cliente se chama {u['perfil']['nome']}."</span>
     <span class="vr">msgs</span>[<span class="nm">0</span>][<span class="st">"content"</span>] <span class="op">=</span> <span class="vr">ctx</span>
-    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="vr">texto_usuario</span>})
-    <span class="kw">try</span>:
-        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="vr">chat</span>.<span class="vr">completions</span>.<span class="fn">create</span>(
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>, <span class="vr">messages</span><span class="op">=</span><span class="vr">msgs</span>, <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"user"</span>, <span class="key">"content"</span>: <span class="vr">texto_usuario</span>})
+    <span class="kw2">try</span>:
+        <span class="vr">r</span> <span class="op">=</span> <span class="vr">client</span>.<span class="attr">chat</span>.<span class="attr">completions</span>.<span class="fn">create</span>(
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span>, <span class="arg">messages</span><span class="op">=</span><span class="vr">msgs</span>, <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">100</span>, <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.4</span>
         )
-        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">r</span>.<span class="vr">choices</span>[<span class="nm">0</span>].<span class="vr">message</span>.<span class="vr">content</span>
-    <span class="kw">except</span> <span class="fn">Exception</span>:
+        <span class="vr">texto</span> <span class="op">=</span> <span class="vr">r</span>.<span class="attr">choices</span>[<span class="nm">0</span>].<span class="attr">message</span>.<span class="attr">content</span>
+    <span class="kw2">except</span> <span class="cls">Exception</span>:
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Servico indisponivel."</span>
-    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="vr">texto</span>})
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">msgs</span>) <span class="op">></span> <span class="nm">10</span>: <span class="vr">msgs</span> <span class="op">=</span> [<span class="vr">msgs</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">msgs</span>[<span class="op">-</span><span class="nm">9</span>:]
+    <span class="vr">msgs</span>.<span class="fn">append</span>({<span class="key">"role"</span>: <span class="st">"assistant"</span>, <span class="key">"content"</span>: <span class="vr">texto</span>})
+    <span class="kw2">if</span> <span class="fn">len</span>(<span class="vr">msgs</span>) <span class="op">></span> <span class="nm">10</span>: <span class="vr">msgs</span> <span class="op">=</span> [<span class="vr">msgs</span>[<span class="nm">0</span>]] <span class="op">+</span> <span class="vr">msgs</span>[<span class="op">-</span><span class="nm">9</span>:]
     <span class="vr">u</span>[<span class="st">"mensagens"</span>] <span class="op">=</span> <span class="vr">msgs</span>
-    <span class="kw">return</span> {<span class="st">"resposta"</span>: <span class="vr">texto</span>}</pre>
+    <span class="kw2">return</span> {<span class="key">"resposta"</span>: <span class="vr">texto</span>}</pre>
       </div>
     </div>
   </div>
 </div>
-<div class="downloads" style="margin:16px 0 28px;">
+<div class="downloads u-style-028">
   <div class="dl-grid">
     <a class="dl-item" href="arquivos/066_index.html" target="_blank">
       <span class="dl-icon">🌐</span>
@@ -721,9 +644,9 @@ warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>
 <div class="exercise">
   <span class="ex-tag">⚡ exercício 067 - sistema completo do zero ao produto</span>
   <h3>Sistema com classificação, dados, FAQ e separação de usuários <span class="ex-diff diff-3">desafio</span></h3>
-  <p style="font-size:.88rem;color:var(--text2);margin-top:8px;margin-bottom:12px;line-height:1.75;">
+  <p class="u-style-024">
 Crie um chatbot do zero, para um tema à sua escolha, reunindo todos os conceitos que você sente que aprendeu.</p>
-  <ol style="font-size:.88rem;color:var(--text2);line-height:2.1;padding-left:18px;margin-top:8px;">
+  <ol class="u-style-027">
     <li><strong>Detecção de palavras-chave</strong> com <code>normalizar()</code> para dados do usuário, como nome e cidade</li>
     <li><strong>FAQ</strong> com pelo menos cinco entradas respondendo perguntas frequentes sem acionar a IA</li>
     <li><strong>Base de dados local</strong> com pelo menos quatro entradas e função de busca</li>
@@ -732,55 +655,55 @@ Crie um chatbot do zero, para um tema à sua escolha, reunindo todos os conceito
     <li><strong>Padrão híbrido</strong>: injeta dados no contexto e ajusta a temperatura conforme o caminho</li>
     <li><strong>Separação por user_id</strong> com dicionário de usuários e rota <code>/limpar</code></li>
   </ol>
-  <p style="font-size:.85rem;color:var(--text3);margin:10px 0 0;font-style:italic;">💡 Dica: construa do zero. Consulte os exemplos da aula, mas escreva cada parte novamente para fixar a lógica.</p>
+  <p class="u-style-023">💡 Dica: construa do zero. Consulte os exemplos da aula, mas escreva cada parte novamente para fixar a lógica.</p>
   <div class="ex-ans">
     <button class="btn-ans" onclick="toggleAns(this)">▶ ver uma possível solução</button>
     <div class="ex-ans-body">
-      <div class="cblock" style="margin-top:14px;">
+      <div class="cblock u-style-025">
         <div class="cblock-head">
           <div class="cdots"><span class="c1"></span><span class="c2"></span><span class="c3"></span></div>
           <div class="cfname">067_Exercicio.py</div>
         </div>
-        <pre><span class="kw">import</span> <span class="vr">warnings</span>
-<span class="kw">import</span> <span class="vr">urllib3</span>
-<span class="kw">import</span> <span class="vr">unicodedata</span>
-<span class="kw">import</span> <span class="vr">httpx</span>
-<span class="kw">import</span> <span class="vr">os</span>
+        <pre><span class="kw2">import</span> <span class="vr">warnings</span>
+<span class="kw2">import</span> <span class="vr">urllib3</span>
+<span class="kw2">import</span> <span class="vr">unicodedata</span>
+<span class="kw2">import</span> <span class="vr">httpx</span>
+<span class="kw2">import</span> <span class="vr">os</span>
 
-<span class="kw">from</span> <span class="vr">fastapi</span> <span class="kw">import</span> <span class="vr">FastAPI</span>
-<span class="kw">from</span> <span class="vr">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw">import</span> <span class="vr">CORSMiddleware</span>
-<span class="kw">from</span> <span class="vr">pydantic</span> <span class="kw">import</span> <span class="vr">BaseModel</span>
-<span class="kw">from</span> <span class="vr">openai</span> <span class="kw">import</span> <span class="vr">OpenAI</span>
-<span class="kw">from</span> <span class="vr">dotenv</span> <span class="kw">import</span> <span class="vr">load_dotenv</span>
+<span class="kw2">from</span> <span class="vr">fastapi</span> <span class="kw2">import</span> <span class="vr">FastAPI</span>
+<span class="kw2">from</span> <span class="vr">fastapi</span><span class="op">.</span><span class="vr">middleware</span><span class="op">.</span><span class="vr">cors</span> <span class="kw2">import</span> <span class="vr">CORSMiddleware</span>
+<span class="kw2">from</span> <span class="vr">pydantic</span> <span class="kw2">import</span> <span class="vr">BaseModel</span>
+<span class="kw2">from</span> <span class="vr">openai</span> <span class="kw2">import</span> <span class="vr">OpenAI</span>
+<span class="kw2">from</span> <span class="vr">dotenv</span> <span class="kw2">import</span> <span class="vr">load_dotenv</span>
 <span class="vr">warnings</span><span class="op">.</span><span class="fn">filterwarnings</span><span class="op">(</span><span class="st">"ignore"</span><span class="op">)</span>
 <span class="vr">urllib3</span><span class="op">.</span><span class="fn">disable_warnings</span><span class="op">(</span><span class="op">)</span>
 <span class="fn">load_dotenv</span><span class="op">(</span><span class="op">)</span>
-<span class="vr">app</span> <span class="op">=</span> <span class="fn">FastAPI</span><span class="op">(</span><span class="op">)</span>
+<span class="vr">app</span> <span class="op">=</span> <span class="cls">FastAPI</span><span class="op">(</span><span class="op">)</span>
 <span class="vr">app</span><span class="op">.</span><span class="fn">add_middleware</span><span class="op">(</span>
     <span class="vr">CORSMiddleware</span><span class="op">,</span>
     <span class="vr">allow_origins</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
     <span class="vr">allow_methods</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
     <span class="vr">allow_headers</span><span class="op">=</span><span class="op">[</span><span class="st">"*"</span><span class="op">]</span><span class="op">,</span>
 <span class="op">)</span>
-<span class="vr">client</span> <span class="op">=</span> <span class="fn">OpenAI</span><span class="op">(</span>
-    <span class="vr">api_key</span><span class="op">=</span><span class="vr">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">,</span>
-    <span class="vr">http_client</span><span class="op">=</span><span class="vr">httpx</span><span class="op">.</span><span class="fn">Client</span><span class="op">(</span><span class="vr">verify</span><span class="op">=</span><span class="kw">False</span><span class="op">)</span>
+<span class="vr">client</span> <span class="op">=</span> <span class="cls">OpenAI</span><span class="op">(</span>
+    <span class="arg">api_key</span><span class="op">=</span><span class="vr">os</span><span class="op">.</span><span class="fn">getenv</span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">,</span>
+    <span class="arg">http_client</span><span class="op">=</span><span class="vr">httpx</span><span class="op">.</span><span class="cls">Client</span><span class="op">(</span><span class="arg">verify</span><span class="op">=</span><span class="bi">False</span><span class="op">)</span>
 <span class="op">)</span>
-<span class="vr">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
+<span class="const">SYSTEM_BASE</span> <span class="op">=</span> <span class="op">(</span>
     <span class="st">"Contexto: você é a assistente virtual da Casa Fácil Imóveis. "</span>
     <span class="st">"Tarefa: atender pessoas interessadas em imóveis, usando dados reais quando houver. "</span>
     <span class="st">"Formato: responda em português, com frases curtas e claras. "</span>
     <span class="st">"Restrições: nunca invente preço, endereço, disponibilidade ou condição de pagamento. "</span>
     <span class="st">"Se não houver informação suficiente, diga que não tem essa informação e ofereça encaminhar para um atendente."</span>
 <span class="op">)</span>
-<span class="vr">FAQ</span> <span class="op">=</span> <span class="op">{</span>
+<span class="const">FAQ</span> <span class="op">=</span> <span class="op">{</span>
     <span class="st">"horario|abre|fecha|funciona"</span><span class="op">:</span> <span class="st">"Atendemos de segunda a sexta das 9h às 18h e aos sábados das 9h às 13h."</span><span class="op">,</span>
     <span class="st">"endereco|localizacao|onde fica"</span><span class="op">:</span> <span class="st">"Nossa unidade fica na Rua das Flores, 123, Centro."</span><span class="op">,</span>
     <span class="st">"financiamento|financiar|entrada"</span><span class="op">:</span> <span class="st">"Trabalhamos com simulação de financiamento, mas a aprovação depende da análise do banco."</span><span class="op">,</span>
     <span class="st">"visita|agendar|agenda"</span><span class="op">:</span> <span class="st">"Para agendar uma visita, informe o imóvel desejado, o melhor dia e o melhor horário."</span><span class="op">,</span>
     <span class="st">"documentos|documentacao"</span><span class="op">:</span> <span class="st">"Para iniciar uma proposta, normalmente são solicitados RG, CPF, comprovante de renda e comprovante de residência."</span><span class="op">,</span>
 <span class="op">}</span>
-<span class="vr">IMOVEIS</span> <span class="op">=</span> <span class="op">{</span>
+<span class="const">IMOVEIS</span> <span class="op">=</span> <span class="op">{</span>
     <span class="st">"apartamento centro"</span><span class="op">:</span> <span class="op">{</span>
         <span class="st">"tipo"</span><span class="op">:</span> <span class="st">"apartamento"</span><span class="op">,</span>
         <span class="st">"bairro"</span><span class="op">:</span> <span class="st">"Centro"</span><span class="op">,</span>
@@ -814,176 +737,176 @@ Crie um chatbot do zero, para um tema à sua escolha, reunindo todos os conceito
         <span class="st">"descricao"</span><span class="op">:</span> <span class="st">"Sobrado amplo, com escritório e área gourmet."</span>
     <span class="op">}</span><span class="op">,</span>
 <span class="op">}</span>
-<span class="vr">usuarios</span><span class="op">:</span> <span class="bi">dict</span> <span class="op">=</span> <span class="op">{</span><span class="op">}</span>
-<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+<span class="vr">usuarios</span><span class="op">:</span> <span class="cls">dict</span> <span class="op">=</span> <span class="op">{</span><span class="op">}</span>
+<span class="kw">def</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">texto</span><span class="op">.</span><span class="fn">lower</span><span class="op">(</span><span class="op">)</span>
     <span class="vr">texto</span> <span class="op">=</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">normalize</span><span class="op">(</span><span class="st">"NFD"</span><span class="op">,</span> <span class="vr">texto</span><span class="op">)</span>
-    <span class="kw">return</span> <span class="st">""</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
-        <span class="vr">c</span> <span class="kw">for</span> <span class="vr">c</span> <span class="kw">in</span> <span class="vr">texto</span>
-        <span class="kw">if</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">c</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"Mn"</span>
+    <span class="kw2">return</span> <span class="st">""</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span>
+        <span class="vr">c</span> <span class="kw2">for</span> <span class="vr">c</span> <span class="kw2">in</span> <span class="vr">texto</span>
+        <span class="kw2">if</span> <span class="vr">unicodedata</span><span class="op">.</span><span class="fn">category</span><span class="op">(</span><span class="vr">c</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"Mn"</span>
     <span class="op">)</span>
-<span class="kw">def</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">:</span> <span class="bi">str</span><span class="op">,</span> <span class="vr">texto_normalizado</span><span class="op">:</span> <span class="bi">str</span><span class="op">,</span> <span class="vr">marcador</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+<span class="kw">def</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_original</span><span class="op">:</span> <span class="cls">str</span><span class="op">,</span> <span class="vr">texto_normalizado</span><span class="op">:</span> <span class="cls">str</span><span class="op">,</span> <span class="vr">marcador</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">posicao</span> <span class="op">=</span> <span class="vr">texto_normalizado</span><span class="op">.</span><span class="fn">find</span><span class="op">(</span><span class="vr">marcador</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">posicao</span> <span class="op">==</span> <span class="op">-</span><span class="nm">1</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">""</span>
+    <span class="kw2">if</span> <span class="vr">posicao</span> <span class="op">==</span> <span class="op">-</span><span class="nm">1</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">""</span>
     <span class="vr">inicio</span> <span class="op">=</span> <span class="vr">posicao</span> <span class="op">+</span> <span class="fn">len</span><span class="op">(</span><span class="vr">marcador</span><span class="op">)</span>
-    <span class="kw">return</span> <span class="vr">texto_original</span><span class="op">[</span><span class="vr">inicio</span><span class="op">:</span><span class="op">]</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="st">".,!?:; "</span><span class="op">)</span>
-<span class="kw">def</span> <span class="fn">obter_usuario</span><span class="op">(</span><span class="vr">user_id</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">dict</span><span class="op">:</span>
-    <span class="kw">if</span> <span class="vr">user_id</span> <span class="kw">not</span> <span class="kw">in</span> <span class="vr">usuarios</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="vr">texto_original</span><span class="op">[</span><span class="vr">inicio</span><span class="op">:</span><span class="op">]</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="st">".,!?:; "</span><span class="op">)</span>
+<span class="kw">def</span> <span class="fn">obter_usuario</span><span class="op">(</span><span class="vr">user_id</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">dict</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">user_id</span> <span class="kw2">not</span> <span class="kw2">in</span> <span class="vr">usuarios</span><span class="op">:</span>
         <span class="vr">usuarios</span><span class="op">[</span><span class="vr">user_id</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>
             <span class="st">"perfil"</span><span class="op">:</span> <span class="op">{</span>
-                <span class="st">"nome"</span><span class="op">:</span> <span class="kw">None</span><span class="op">,</span>
-                <span class="st">"cidade"</span><span class="op">:</span> <span class="kw">None</span>
+                <span class="st">"nome"</span><span class="op">:</span> <span class="bi">None</span><span class="op">,</span>
+                <span class="st">"cidade"</span><span class="op">:</span> <span class="bi">None</span>
             <span class="op">}</span><span class="op">,</span>
             <span class="st">"mensagens"</span><span class="op">:</span> <span class="op">[</span>
-                <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"system"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">SYSTEM_BASE</span><span class="op">}</span>
+                <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"system"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="const">SYSTEM_BASE</span><span class="op">}</span>
             <span class="op">]</span>
         <span class="op">}</span>
-    <span class="kw">return</span> <span class="vr">usuarios</span><span class="op">[</span><span class="vr">user_id</span><span class="op">]</span>
-<span class="kw">def</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span><span class="op">:</span>
+    <span class="kw2">return</span> <span class="vr">usuarios</span><span class="op">[</span><span class="vr">user_id</span><span class="op">]</span>
+<span class="kw">def</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span> <span class="op">|</span> <span class="bi">None</span><span class="op">:</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span>
-    <span class="kw">for</span> <span class="vr">chaves</span><span class="op">,</span> <span class="vr">resposta</span> <span class="kw">in</span> <span class="vr">FAQ</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">chaves</span><span class="op">,</span> <span class="vr">resposta</span> <span class="kw2">in</span> <span class="const">FAQ</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
         <span class="vr">palavras</span> <span class="op">=</span> <span class="vr">chaves</span><span class="op">.</span><span class="fn">split</span><span class="op">(</span><span class="st">"|"</span><span class="op">)</span>
-        <span class="kw">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">palavras</span><span class="op">)</span><span class="op">:</span>
-            <span class="kw">return</span> <span class="vr">resposta</span>
-    <span class="kw">return</span> <span class="kw">None</span>
-<span class="kw">def</span> <span class="fn">buscar_imovel</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">palavras</span><span class="op">)</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="vr">resposta</span>
+    <span class="kw2">return</span> <span class="bi">None</span>
+<span class="kw">def</span> <span class="fn">buscar_imovel</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span>
     <span class="vr">encontrados</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>
-    <span class="kw">for</span> <span class="vr">nome</span><span class="op">,</span> <span class="vr">dados</span> <span class="kw">in</span> <span class="vr">IMOVEIS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
+    <span class="kw2">for</span> <span class="vr">nome</span><span class="op">,</span> <span class="vr">dados</span> <span class="kw2">in</span> <span class="const">IMOVEIS</span><span class="op">.</span><span class="fn">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
         <span class="vr">palavras_nome</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">nome</span><span class="op">)</span><span class="op">.</span><span class="fn">split</span><span class="op">(</span><span class="op">)</span>
         <span class="vr">palavras_tipo</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">dados</span><span class="op">[</span><span class="st">"tipo"</span><span class="op">]</span><span class="op">)</span><span class="op">.</span><span class="fn">split</span><span class="op">(</span><span class="op">)</span>
         <span class="vr">palavras_bairro</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">dados</span><span class="op">[</span><span class="st">"bairro"</span><span class="op">]</span><span class="op">)</span><span class="op">.</span><span class="fn">split</span><span class="op">(</span><span class="op">)</span>
         <span class="vr">palavras_busca</span> <span class="op">=</span> <span class="vr">palavras_nome</span> <span class="op">+</span> <span class="vr">palavras_tipo</span> <span class="op">+</span> <span class="vr">palavras_bairro</span>
-        <span class="kw">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">palavra</span> <span class="kw">in</span> <span class="vr">palavras_busca</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">palavra</span> <span class="kw2">in</span> <span class="vr">palavras_busca</span><span class="op">)</span><span class="op">:</span>
             <span class="vr">encontrados</span><span class="op">.</span><span class="fn">append</span><span class="op">(</span>
                 f"<span class="op">{</span><span class="vr">nome</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span><span class="op">}</span>: <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'tipo'</span><span class="op">]</span><span class="op">}</span>, bairro <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'bairro'</span><span class="op">]</span><span class="op">}</span>, "
                 f"<span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'preco'</span><span class="op">]</span><span class="op">}</span>, <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'quartos'</span><span class="op">]</span><span class="op">}</span> quarto(s), "
                 f"<span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'status'</span><span class="op">]</span><span class="op">}</span>. <span class="op">{</span><span class="vr">dados</span><span class="op">[</span><span class="st">'descricao'</span><span class="op">]</span><span class="op">}</span>"
             <span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">encontrados</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"\n"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="vr">encontrados</span><span class="op">)</span>
-    <span class="kw">return</span> <span class="st">""</span>
-<span class="kw">def</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="bi">str</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">encontrados</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"\n"</span><span class="op">.</span><span class="fn">join</span><span class="op">(</span><span class="vr">encontrados</span><span class="op">)</span>
+    <span class="kw2">return</span> <span class="st">""</span>
+<span class="kw">def</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="cls">str</span><span class="op">:</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="op">[</span><span class="st">"meu nome"</span><span class="op">,</span> <span class="st">"eu me chamo"</span><span class="op">,</span> <span class="st">"minha cidade"</span><span class="op">,</span> <span class="st">"moro em"</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"dados_usuario"</span>
-    <span class="kw">if</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"faq"</span>
+    <span class="kw2">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="op">[</span><span class="st">"meu nome"</span><span class="op">,</span> <span class="st">"eu me chamo"</span><span class="op">,</span> <span class="st">"minha cidade"</span><span class="op">,</span> <span class="st">"moro em"</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"dados_usuario"</span>
+    <span class="kw2">if</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"faq"</span>
     <span class="vr">palavras_imovel</span> <span class="op">=</span> <span class="op">[</span>
         <span class="st">"apartamento"</span><span class="op">,</span> <span class="st">"casa"</span><span class="op">,</span> <span class="st">"studio"</span><span class="op">,</span> <span class="st">"sobrado"</span><span class="op">,</span> <span class="st">"imovel"</span><span class="op">,</span>
         <span class="st">"preco"</span><span class="op">,</span> <span class="st">"valor"</span><span class="op">,</span> <span class="st">"quartos"</span><span class="op">,</span> <span class="st">"bairro"</span><span class="op">,</span> <span class="st">"disponivel"</span><span class="op">,</span>
         <span class="st">"centro"</span><span class="op">,</span> <span class="st">"jardim"</span><span class="op">,</span> <span class="st">"paulista"</span><span class="op">,</span> <span class="st">"vila"</span>
     <span class="op">]</span>
-    <span class="kw">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw">in</span> <span class="vr">texto_norm</span> <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="vr">palavras_imovel</span><span class="op">)</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="st">"busca_imovel"</span>
-    <span class="kw">return</span> <span class="st">"conversa"</span>
-<span class="kw">class</span> <span class="fn">Pergunta</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
-    <span class="vr">texto</span><span class="op">:</span> <span class="bi">str</span>
-    <span class="vr">user_id</span><span class="op">:</span> <span class="bi">str</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="st">"default"</span>
-<span class="kw">class</span> <span class="fn">LimparRequest</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
-    <span class="vr">user_id</span><span class="op">:</span> <span class="bi">str</span>
+    <span class="kw2">if</span> <span class="fn">any</span><span class="op">(</span><span class="vr">p</span> <span class="kw2">in</span> <span class="vr">texto_norm</span> <span class="kw2">for</span> <span class="vr">p</span> <span class="kw2">in</span> <span class="vr">palavras_imovel</span><span class="op">)</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="st">"busca_imovel"</span>
+    <span class="kw2">return</span> <span class="st">"conversa"</span>
+<span class="kw">class</span> <span class="cls">Pergunta</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">texto</span><span class="op">:</span> <span class="cls">str</span>
+    <span class="vr">user_id</span><span class="op">:</span> <span class="cls">str</span> <span class="op">|</span> <span class="bi">None</span> <span class="op">=</span> <span class="st">"default"</span>
+<span class="kw">class</span> <span class="cls">LimparRequest</span><span class="op">(</span><span class="vr">BaseModel</span><span class="op">)</span><span class="op">:</span>
+    <span class="vr">user_id</span><span class="op">:</span> <span class="cls">str</span>
 <span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">get</span><span class="op">(</span><span class="st">"/"</span><span class="op">)</span>
 <span class="kw">def</span> <span class="fn">raiz</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>
-    <span class="kw">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"API da Casa Fácil Imóveis no ar!"</span><span class="op">}</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"API da Casa Fácil Imóveis no ar!"</span><span class="op">}</span>
 <span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">post</span><span class="op">(</span><span class="st">"/limpar"</span><span class="op">)</span>
 <span class="kw">def</span> <span class="fn">limpar</span><span class="op">(</span><span class="vr">req</span><span class="op">:</span> <span class="vr">LimparRequest</span><span class="op">)</span><span class="op">:</span>
     <span class="vr">uid</span> <span class="op">=</span> <span class="vr">req</span><span class="op">.</span><span class="vr">user_id</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">uid</span> <span class="kw">in</span> <span class="vr">usuarios</span><span class="op">:</span>
-        <span class="kw">del</span> <span class="vr">usuarios</span><span class="op">[</span><span class="vr">uid</span><span class="op">]</span>
-        <span class="kw">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> f"Memória do usuário <span class="op">{</span><span class="vr">uid</span><span class="op">}</span> apagada."<span class="op">}</span>
-    <span class="kw">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"Usuário não encontrado."</span><span class="op">}</span>
+    <span class="kw2">if</span> <span class="vr">uid</span> <span class="kw2">in</span> <span class="vr">usuarios</span><span class="op">:</span>
+        <span class="kw2">del</span> <span class="vr">usuarios</span><span class="op">[</span><span class="vr">uid</span><span class="op">]</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> f"Memória do usuário <span class="op">{</span><span class="vr">uid</span><span class="op">}</span> apagada."<span class="op">}</span>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"mensagem"</span><span class="op">:</span> <span class="st">"Usuário não encontrado."</span><span class="op">}</span>
 <span class="op">@</span><span class="vr">app</span><span class="op">.</span><span class="fn">post</span><span class="op">(</span><span class="st">"/chat"</span><span class="op">)</span>
 <span class="kw">def</span> <span class="fn">chat</span><span class="op">(</span><span class="vr">pergunta</span><span class="op">:</span> <span class="vr">Pergunta</span><span class="op">)</span><span class="op">:</span>
-    <span class="vr">uid</span> <span class="op">=</span> <span class="op">(</span><span class="vr">pergunta</span><span class="op">.</span><span class="vr">user_id</span> <span class="kw">or</span> <span class="st">"default"</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span> <span class="kw">or</span> <span class="st">"default"</span>
+    <span class="vr">uid</span> <span class="op">=</span> <span class="op">(</span><span class="vr">pergunta</span><span class="op">.</span><span class="vr">user_id</span> <span class="kw2">or</span> <span class="st">"default"</span><span class="op">)</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span> <span class="kw2">or</span> <span class="st">"default"</span>
     <span class="vr">usuario</span> <span class="op">=</span> <span class="fn">obter_usuario</span><span class="op">(</span><span class="vr">uid</span><span class="op">)</span>
     <span class="vr">perfil</span> <span class="op">=</span> <span class="vr">usuario</span><span class="op">[</span><span class="st">"perfil"</span><span class="op">]</span>
     <span class="vr">mensagens</span> <span class="op">=</span> <span class="vr">usuario</span><span class="op">[</span><span class="st">"mensagens"</span><span class="op">]</span>
     <span class="vr">texto_usuario</span> <span class="op">=</span> <span class="vr">pergunta</span><span class="op">.</span><span class="vr">texto</span><span class="op">.</span><span class="fn">strip</span><span class="op">(</span><span class="op">)</span>
     <span class="vr">texto_norm</span> <span class="op">=</span> <span class="fn">normalizar</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="kw">not</span> <span class="vr">texto_usuario</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">""</span><span class="op">}</span>
+    <span class="kw2">if</span> <span class="kw2">not</span> <span class="vr">texto_usuario</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">""</span><span class="op">}</span>
     <span class="vr">categoria</span> <span class="op">=</span> <span class="fn">classificar</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"dados_usuario"</span><span class="op">:</span>
-        <span class="kw">if</span> <span class="st">"meu nome e"</span> <span class="kw">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"dados_usuario"</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="st">"meu nome e"</span> <span class="kw2">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
             <span class="vr">nome</span> <span class="op">=</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">,</span> <span class="vr">texto_norm</span><span class="op">,</span> <span class="st">"meu nome e"</span><span class="op">)</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span>
             <span class="vr">perfil</span><span class="op">[</span><span class="st">"nome"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">nome</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Prazer, <span class="op">{</span><span class="vr">nome</span><span class="op">}</span>! Como posso ajudar?"<span class="op">}</span>
-        <span class="kw">if</span> <span class="st">"eu me chamo"</span> <span class="kw">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Prazer, <span class="op">{</span><span class="vr">nome</span><span class="op">}</span>! Como posso ajudar?"<span class="op">}</span>
+        <span class="kw2">if</span> <span class="st">"eu me chamo"</span> <span class="kw2">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
             <span class="vr">nome</span> <span class="op">=</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">,</span> <span class="vr">texto_norm</span><span class="op">,</span> <span class="st">"eu me chamo"</span><span class="op">)</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span>
             <span class="vr">perfil</span><span class="op">[</span><span class="st">"nome"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">nome</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Prazer, <span class="op">{</span><span class="vr">nome</span><span class="op">}</span>! Como posso ajudar?"<span class="op">}</span>
-        <span class="kw">if</span> <span class="st">"minha cidade e"</span> <span class="kw">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Prazer, <span class="op">{</span><span class="vr">nome</span><span class="op">}</span>! Como posso ajudar?"<span class="op">}</span>
+        <span class="kw2">if</span> <span class="st">"minha cidade e"</span> <span class="kw2">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
             <span class="vr">cidade</span> <span class="op">=</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">,</span> <span class="vr">texto_norm</span><span class="op">,</span> <span class="st">"minha cidade e"</span><span class="op">)</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span>
             <span class="vr">perfil</span><span class="op">[</span><span class="st">"cidade"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">cidade</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Perfeito. Vou considerar sua cidade como <span class="op">{</span><span class="vr">cidade</span><span class="op">}</span>."<span class="op">}</span>
-        <span class="kw">if</span> <span class="st">"moro em"</span> <span class="kw">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Perfeito. Vou considerar sua cidade como <span class="op">{</span><span class="vr">cidade</span><span class="op">}</span>."<span class="op">}</span>
+        <span class="kw2">if</span> <span class="st">"moro em"</span> <span class="kw2">in</span> <span class="vr">texto_norm</span><span class="op">:</span>
             <span class="vr">cidade</span> <span class="op">=</span> <span class="fn">pegar_depois</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">,</span> <span class="vr">texto_norm</span><span class="op">,</span> <span class="st">"moro em"</span><span class="op">)</span><span class="op">.</span><span class="fn">title</span><span class="op">(</span><span class="op">)</span>
             <span class="vr">perfil</span><span class="op">[</span><span class="st">"cidade"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">cidade</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Perfeito. Vou considerar sua cidade como <span class="op">{</span><span class="vr">cidade</span><span class="op">}</span>."<span class="op">}</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"faq"</span><span class="op">:</span>
-        <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span><span class="op">}</span>
-    <span class="kw">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"busca_imovel"</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> f"Perfeito. Vou considerar sua cidade como <span class="op">{</span><span class="vr">cidade</span><span class="op">}</span>."<span class="op">}</span>
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"faq"</span><span class="op">:</span>
+        <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="fn">buscar_faq</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span><span class="op">}</span>
+    <span class="kw2">if</span> <span class="vr">categoria</span> <span class="op">==</span> <span class="st">"busca_imovel"</span><span class="op">:</span>
         <span class="vr">dados</span> <span class="op">=</span> <span class="fn">buscar_imovel</span><span class="op">(</span><span class="vr">texto_usuario</span><span class="op">)</span>
-        <span class="kw">if</span> <span class="vr">dados</span><span class="op">:</span>
+        <span class="kw2">if</span> <span class="vr">dados</span><span class="op">:</span>
             <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
-                f"<span class="op">{</span><span class="vr">SYSTEM_BASE</span><span class="op">}</span>\n\n"
+                f"<span class="op">{</span><span class="const">SYSTEM_BASE</span><span class="op">}</span>\n\n"
                 <span class="st">"Perfil do usuário:\n"</span>
-                f"Nome: <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'nome'</span><span class="op">]</span> <span class="kw">or</span> <span class="st">'não informado'</span><span class="op">}</span>\n"
-                f"Cidade: <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'cidade'</span><span class="op">]</span> <span class="kw">or</span> <span class="st">'não informada'</span><span class="op">}</span>\n\n"
+                f"Nome: <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'nome'</span><span class="op">]</span> <span class="kw2">or</span> <span class="st">'não informado'</span><span class="op">}</span>\n"
+                f"Cidade: <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'cidade'</span><span class="op">]</span> <span class="kw2">or</span> <span class="st">'não informada'</span><span class="op">}</span>\n\n"
                 <span class="st">"Dados de imóveis encontrados:\n"</span>
                 f"<span class="op">{</span><span class="vr">dados</span><span class="op">}</span>\n\n"
                 <span class="st">"Use apenas esses dados para responder sobre preço, bairro, quartos, status e descrição."</span>
             <span class="op">)</span>
             <span class="vr">temperatura</span> <span class="op">=</span> <span class="nm">0.2</span>
-        <span class="kw">else</span><span class="op">:</span>
+        <span class="kw2">else</span><span class="op">:</span>
             <span class="vr">contexto</span> <span class="op">=</span> <span class="op">(</span>
-                f"<span class="op">{</span><span class="vr">SYSTEM_BASE</span><span class="op">}</span>\n\n"
+                f"<span class="op">{</span><span class="const">SYSTEM_BASE</span><span class="op">}</span>\n\n"
                 <span class="st">"Nenhum imóvel foi encontrado na base local. "</span>
-                <span class="st">"Não invente imóveis, preços ou endereços."</span>
+                <span class="st">"Não invente imóveis, preços ou endereç<span class="lib">os</span>."</span>
             <span class="op">)</span>
             <span class="vr">temperatura</span> <span class="op">=</span> <span class="nm">0.4</span>
-        <span class="kw">try</span><span class="op">:</span>
+        <span class="kw2">try</span><span class="op">:</span>
             <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="vr">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
-                <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
-                <span class="vr">messages</span><span class="op">=</span><span class="op">[</span>
+                <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
+                <span class="arg">messages</span><span class="op">=</span><span class="op">[</span>
                     <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"system"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">contexto</span><span class="op">}</span><span class="op">,</span>
                     <span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"user"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">texto_usuario</span><span class="op">}</span>
                 <span class="op">]</span><span class="op">,</span>
-                <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">140</span><span class="op">,</span>
-                <span class="vr">temperature</span><span class="op">=</span><span class="vr">temperatura</span>
+                <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">140</span><span class="op">,</span>
+                <span class="arg">temperature</span><span class="op">=</span><span class="vr">temperatura</span>
             <span class="op">)</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span><span class="op">}</span>
-        <span class="kw">except</span> <span class="vr">Exception</span><span class="op">:</span>
-            <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">"Serviço temporariamente indisponível."</span><span class="op">}</span>
-    <span class="vr">contexto</span> <span class="op">=</span> <span class="vr">SYSTEM_BASE</span>
-    <span class="kw">if</span> <span class="vr">perfil</span><span class="op">[</span><span class="st">"nome"</span><span class="op">]</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span><span class="op">}</span>
+        <span class="kw2">except</span> <span class="vr">Exception</span><span class="op">:</span>
+            <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="st">"Serviço temporariamente indisponível."</span><span class="op">}</span>
+    <span class="vr">contexto</span> <span class="op">=</span> <span class="const">SYSTEM_BASE</span>
+    <span class="kw2">if</span> <span class="vr">perfil</span><span class="op">[</span><span class="st">"nome"</span><span class="op">]</span><span class="op">:</span>
         <span class="vr">contexto</span> <span class="op">+=</span> f" O usuário se chama <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'nome'</span><span class="op">]</span><span class="op">}</span>."
-    <span class="kw">if</span> <span class="vr">perfil</span><span class="op">[</span><span class="st">"cidade"</span><span class="op">]</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="vr">perfil</span><span class="op">[</span><span class="st">"cidade"</span><span class="op">]</span><span class="op">:</span>
         <span class="vr">contexto</span> <span class="op">+=</span> f" O usuário informou que mora em <span class="op">{</span><span class="vr">perfil</span><span class="op">[</span><span class="st">'cidade'</span><span class="op">]</span><span class="op">}</span>."
     <span class="vr">mensagens</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">[</span><span class="st">"content"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">contexto</span>
     <span class="vr">mensagens</span><span class="op">.</span><span class="fn">append</span><span class="op">(</span><span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"user"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">texto_usuario</span><span class="op">}</span><span class="op">)</span>
-    <span class="kw">try</span><span class="op">:</span>
+    <span class="kw2">try</span><span class="op">:</span>
         <span class="vr">resposta</span> <span class="op">=</span> <span class="vr">client</span><span class="op">.</span><span class="vr">chat</span><span class="op">.</span><span class="vr">completions</span><span class="op">.</span><span class="fn">create</span><span class="op">(</span>
-            <span class="vr">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
-            <span class="vr">messages</span><span class="op">=</span><span class="vr">mensagens</span><span class="op">,</span>
-            <span class="vr">max_tokens</span><span class="op">=</span><span class="nm">120</span><span class="op">,</span>
-            <span class="vr">temperature</span><span class="op">=</span><span class="nm">0.4</span>
+            <span class="arg">model</span><span class="op">=</span><span class="st">"gpt-4.1-mini"</span><span class="op">,</span>
+            <span class="arg">messages</span><span class="op">=</span><span class="vr">mensagens</span><span class="op">,</span>
+            <span class="arg">max_tokens</span><span class="op">=</span><span class="nm">120</span><span class="op">,</span>
+            <span class="arg">temperature</span><span class="op">=</span><span class="nm">0.4</span>
         <span class="op">)</span>
         <span class="vr">texto</span> <span class="op">=</span> <span class="vr">resposta</span><span class="op">.</span><span class="vr">choices</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">.</span><span class="vr">message</span><span class="op">.</span><span class="vr">content</span>
-    <span class="kw">except</span> <span class="vr">Exception</span><span class="op">:</span>
+    <span class="kw2">except</span> <span class="vr">Exception</span><span class="op">:</span>
         <span class="vr">texto</span> <span class="op">=</span> <span class="st">"Serviço temporariamente indisponível."</span>
     <span class="vr">mensagens</span><span class="op">.</span><span class="fn">append</span><span class="op">(</span><span class="op">{</span><span class="st">"role"</span><span class="op">:</span> <span class="st">"assistant"</span><span class="op">,</span> <span class="st">"content"</span><span class="op">:</span> <span class="vr">texto</span><span class="op">}</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="fn">len</span><span class="op">(</span><span class="vr">mensagens</span><span class="op">)</span> <span class="op">&gt;</span> <span class="nm">10</span><span class="op">:</span>
+    <span class="kw2">if</span> <span class="fn">len</span><span class="op">(</span><span class="vr">mensagens</span><span class="op">)</span> <span class="op">&gt;</span> <span class="nm">10</span><span class="op">:</span>
         <span class="vr">mensagens</span> <span class="op">=</span> <span class="op">[</span><span class="vr">mensagens</span><span class="op">[</span><span class="nm">0</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="vr">mensagens</span><span class="op">[</span><span class="op">-</span><span class="nm">9</span><span class="op">:</span><span class="op">]</span>
     <span class="vr">usuario</span><span class="op">[</span><span class="st">"mensagens"</span><span class="op">]</span> <span class="op">=</span> <span class="vr">mensagens</span>
-    <span class="kw">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="vr">texto</span><span class="op">}</span></pre>
+    <span class="kw2">return</span> <span class="op">{</span><span class="st">"resposta"</span><span class="op">:</span> <span class="vr">texto</span><span class="op">}</span></pre>
       </div>
     </div>
   </div>
 </div>
 
-<div class="downloads" style="margin:16px 0 28px;">
+<div class="downloads u-style-028">
   <div class="dl-grid">
     <a class="dl-item" href="arquivos/067_index.html" target="_blank">
       <span class="dl-icon">🌐</span>
